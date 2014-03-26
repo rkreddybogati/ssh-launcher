@@ -1,0 +1,23 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+// Test the signing plugin :)
+
+sourceCompatibility = 1.5
+version = '0.1.0'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'SSH Launcher',
+                   'Implementation-Version': version,
+                   'Main-Class': 'com.scalr.SSHLauncher'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
