@@ -1,5 +1,9 @@
 package com.scalr;
 
+import com.scalr.exception.EnvironmentSetupException;
+import com.scalr.exception.InvalidEnvironmentException;
+import com.scalr.launcher.MacOSLauncher;
+import com.scalr.launcher.SSHLauncherInterface;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -12,7 +16,7 @@ public class SSHLauncher {
         System.out.println("Launching SSH Session");
 
         SSHConfiguration sshConfiguration = new SSHConfiguration("root", "orozco.fr");
-        SSHLauncherInterface launcher = new MacOSSSHLauncher();
+        SSHLauncherInterface launcher = new MacOSLauncher();
 
         try {
             launcher.setUpEnvironment(sshConfiguration);

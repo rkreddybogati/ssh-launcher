@@ -1,5 +1,8 @@
-package com.scalr;
+package com.scalr.launcher;
 
+import com.scalr.SSHConfiguration;
+import com.scalr.exception.EnvironmentSetupException;
+import com.scalr.exception.InvalidEnvironmentException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
