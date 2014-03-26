@@ -1,20 +1,28 @@
 package com.scalr;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class MacOSSSHLauncher implements LocalSSHLauncher {
+public class MacOSSSHLauncher implements SSHLauncherInterface {
     File commandFile;
 
     @Override
-    public void setUpEnvironment() throws IOException, EnvironmentSetupException {
+    public void setUpEnvironment(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException {
         commandFile = File.createTempFile("ssh-command", ".sh");
         //commandFile.deleteOnExit(); // TODO: Find how we handle this
 
+        String[] destinationBits = {sshConfiguration.getUsername(), "@", sshConfiguration.getHost()};
+        String   destination = StringUtils.join(destinationBits, "");
+
+        String[] sshCommandLineBits = {"ssh", destination};
+        String   sshCommandLine = StringUtils.join(sshCommandLineBits, " ");
+
         PrintWriter writer = new PrintWriter(commandFile, "UTF-8");
         writer.println("#!/bin/bash");
-        writer.println("ssh orozco.fr");  //TODO: Implement for real
+        writer.println(sshCommandLine);  //TODO: Implement for real
         writer.close();
 
         if (!commandFile.setExecutable(true, true)) {

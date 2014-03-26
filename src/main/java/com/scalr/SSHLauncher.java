@@ -11,10 +11,11 @@ public class SSHLauncher {
         //String[] command = {"/bin/bash", "-c", "ssh", "orozco.fr"};
         System.out.println("Launching SSH Session");
 
-        LocalSSHLauncher launcher = new MacOSSSHLauncher();
+        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "orozco.fr");
+        SSHLauncherInterface launcher = new MacOSSSHLauncher();
 
         try {
-            launcher.setUpEnvironment();
+            launcher.setUpEnvironment(sshConfiguration);
         } catch (EnvironmentSetupException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -28,7 +29,6 @@ public class SSHLauncher {
             ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
             Process p = pb.start();
             p.waitFor();
-            Thread.sleep(10000);
         } catch (InvalidEnvironmentException e) {
             e.printStackTrace();
         } catch (IOException e) {
