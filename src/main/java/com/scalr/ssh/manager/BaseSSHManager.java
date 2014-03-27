@@ -1,7 +1,9 @@
-package com.scalr.ssh;
+package com.scalr.ssh.manager;
+
+import com.scalr.ssh.configuration.SSHConfiguration;
 
 abstract public class BaseSSHManager implements SSHManager {
-    SSHConfiguration sshConfiguration;
+    protected SSHConfiguration sshConfiguration;
 
     public BaseSSHManager (SSHConfiguration sshConfiguration) {
         this.sshConfiguration = sshConfiguration;

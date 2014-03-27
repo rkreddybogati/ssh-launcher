@@ -1,4 +1,4 @@
-package com.scalr.fs;
+package com.scalr.ssh.fs;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,7 +1,7 @@
-package com.scalr;
+package com.scalr.ssh;
 
-import com.scalr.exception.InvalidConfigurationException;
-import com.scalr.ssh.SSHConfiguration;
+import com.scalr.ssh.exception.InvalidConfigurationException;
+import com.scalr.ssh.configuration.SSHConfiguration;
 
 import java.applet.Applet;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.scalr.launcher;
+package com.scalr.ssh.launcher;
 
 public class LinuxSSHLauncher extends UnixSSHLauncher {
 

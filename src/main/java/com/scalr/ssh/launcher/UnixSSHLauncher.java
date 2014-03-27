@@ -1,10 +1,10 @@
-package com.scalr.launcher;
+package com.scalr.ssh.launcher;
 
-import com.scalr.exception.EnvironmentSetupException;
-import com.scalr.exception.InvalidEnvironmentException;
-import com.scalr.fs.FileSystemManager;
-import com.scalr.ssh.SSHConfiguration;
-import com.scalr.ssh.UnixSSHManager;
+import com.scalr.ssh.exception.EnvironmentSetupException;
+import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.manager.UnixSSHManager;
 
 import java.io.*;
 

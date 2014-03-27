@@ -1,7 +1,8 @@
-package com.scalr.ssh;
+package com.scalr.ssh.manager;
 
-import com.scalr.exception.EnvironmentSetupException;
-import com.scalr.fs.FileSystemManager;
+import com.scalr.ssh.exception.EnvironmentSetupException;
+import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.configuration.SSHConfiguration;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 

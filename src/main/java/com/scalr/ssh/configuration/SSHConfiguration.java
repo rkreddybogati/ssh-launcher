@@ -1,4 +1,4 @@
-package com.scalr.ssh;
+package com.scalr.ssh.configuration;
 
 public class SSHConfiguration {
     private String username;

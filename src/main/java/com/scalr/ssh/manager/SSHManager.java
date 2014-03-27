@@ -1,6 +1,6 @@
-package com.scalr.ssh;
+package com.scalr.ssh.manager;
 
-import com.scalr.exception.EnvironmentSetupException;
+import com.scalr.ssh.exception.EnvironmentSetupException;
 
 public interface SSHManager {
     public void setUpSSHEnvironment() throws EnvironmentSetupException;
