@@ -3,12 +3,10 @@ package com.scalr.launcher;
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListParser;
-import com.scalr.exception.EnvironmentSetupException;
 import com.scalr.fs.FileSystemManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -49,26 +47,7 @@ public class MacSSHLauncher extends UnixSSHLauncher {
     }
 
     @Override
-    public void createCommandFile (String sshCommandLine) throws EnvironmentSetupException {
-        final NSDictionary root = getBaseTerminalConfiguration();
-        root.put("CommandString", sshCommandLine);
-        root.put("RunCommandAsShell", true);
-        root.put("name", "Scalr SSH");
-        root.put("shellExitAction", 0);
-        root.put("type", "Window Settings");
-
-        //TODO -> Test if a key is already present
-
-        try {
-            commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".terminal");
-            PropertyListParser.saveAsXML(root, commandFile);
-        } catch (IOException e) {
-            throw new EnvironmentSetupException();
-        }
-    }
-
-    @Override
     protected String[] getSSHCommandFromPath(String path) {
-        return new String[] {"/usr/bin/open", path};
+        return new String[] {"/usr/bin/open", "--fresh", "--new", "-b", "com.apple.terminal", path};
     }
 }

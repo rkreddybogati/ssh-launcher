@@ -2,16 +2,43 @@ package com.scalr.launcher;
 
 import com.scalr.exception.EnvironmentSetupException;
 import com.scalr.exception.InvalidEnvironmentException;
+import com.scalr.fs.FileSystemManager;
 import com.scalr.ssh.SSHConfiguration;
 import com.scalr.ssh.UnixSSHManager;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 public abstract class UnixSSHLauncher implements SSHLauncher {
     File commandFile;
 
-    abstract void createCommandFile (String sshCommandLine) throws EnvironmentSetupException;
+    void createCommandFile(String sshCommandLine) throws EnvironmentSetupException {
+        try {
+            commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".sh");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new EnvironmentSetupException();
+        }
+        //commandFile.deleteOnExit(); // TODO: Find how we handle this
+
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(commandFile, "UTF-8");
+        } catch (FileNotFoundException e) {
+            throw new EnvironmentSetupException();
+        } catch (UnsupportedEncodingException e) {
+            throw new EnvironmentSetupException();
+        }
+
+        writer.println("#!/bin/bash");
+        writer.println(sshCommandLine);
+        writer.close();
+
+        if (!commandFile.setExecutable(true, true)) {
+            throw new EnvironmentSetupException();
+        }
+    }
+
+
 
     @Override
     public void setUpEnvironment(SSHConfiguration sshConfiguration) throws EnvironmentSetupException {
