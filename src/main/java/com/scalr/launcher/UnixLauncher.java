@@ -8,13 +8,32 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public abstract class UnixLauncher implements SSHLauncherInterface {
     File commandFile;
 
     @Override
     public void setUpEnvironment(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException {
-        commandFile = File.createTempFile("ssh-command", ".sh");
+
+        commandFile = AccessController.doPrivileged(
+                new PrivilegedAction<File>() {
+                    @Override
+                    public File run() {
+                        try {
+                            return File.createTempFile("ssh-command", ".sh");
+                        } catch (IOException e) {
+                            return null;
+                        }
+                    }
+                }
+        );
+
+        if (commandFile == null) {
+            throw new IOException();
+        }
+
         //commandFile.deleteOnExit(); // TODO: Find how we handle this
 
         String[] destinationBits = {sshConfiguration.getUsername(), "@", sshConfiguration.getHost()};

@@ -6,8 +6,6 @@ import com.scalr.exception.InvalidEnvironmentException;
 import java.applet.Applet;
 import java.awt.*;
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 public class SSHLauncherApplet extends Applet {
 
@@ -28,24 +26,19 @@ public class SSHLauncherApplet extends Applet {
         String user = getParameter("user");
         String host = getParameter("host");
 
-        final SSHConfiguration sshConfiguration = new SSHConfiguration(user, host);
+        SSHConfiguration sshConfiguration = new SSHConfiguration(user, host);
 
-            AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run() {
-                    try {
-                        SSHLauncher.launchSSHFromConfiguration(sshConfiguration);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (EnvironmentSetupException e) {
-                        e.printStackTrace();
-                    } catch (InvalidEnvironmentException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            });
+        try {
+            SSHLauncher.launchSSHFromConfiguration(sshConfiguration);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (EnvironmentSetupException e) {
+            e.printStackTrace();
+        } catch (InvalidEnvironmentException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void stop() {
