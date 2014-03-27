@@ -37,7 +37,6 @@ public class UnixSSHManager extends BaseSSHManager {
     public void setUpSSHEnvironment() throws EnvironmentSetupException {
         if (sshConfiguration.getPrivateKey() != null) {
             //TODO What if .ssh does not exist?
-            //TODO -> Refactor  this mess.
             final String sshFilePath = getSSHPrivateKeyFilePath();
 
             File sshFile = AccessController.doPrivileged(new PrivilegedAction<File>() {

@@ -5,6 +5,8 @@ import com.scalr.ssh.SSHConfiguration;
 
 import java.applet.Applet;
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class SSHLauncherApplet extends Applet {
 
@@ -12,7 +14,7 @@ public class SSHLauncherApplet extends Applet {
 
     public void init() {
         buffer = new StringBuffer();
-        addItem("initializing... ");
+        addItem("Initializing.");
     }
 
     private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
@@ -49,7 +51,7 @@ public class SSHLauncherApplet extends Applet {
     }
 
     public void start() {
-        addItem("starting... ");
+        addItem("Starting.");
 
         try {
             SSHConfiguration sshConfiguration = getSSHConfiguration();
@@ -62,20 +64,32 @@ public class SSHLauncherApplet extends Applet {
             addItem("Error!");
             //TODO: better handling.
         }
+
+        addItem("SSH session launched.");
+
+        String returnURL = getParameter("returnURL");
+        if (returnURL == null) {
+            return;
+        }
+        try {
+            getAppletContext().showDocument(new URL(returnURL));
+        } catch (MalformedURLException e) {
+            return;
+        }
     }
 
     public void stop() {
-        addItem("stopping... ");
+        addItem("Stopping.");
     }
 
     public void destroy() {
-        addItem("preparing for unloading...");
+        addItem("Unloading.");
     }
 
     void addItem(String newWord) {
         System.out.println(newWord);
         buffer.append(newWord);
-        buffer.append("\n");
+        buffer.append(" ");
         repaint();
     }
 

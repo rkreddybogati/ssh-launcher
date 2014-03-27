@@ -37,8 +37,6 @@ public abstract class UnixSSHLauncher implements SSHLauncher {
         }
     }
 
-
-
     @Override
     public void setUpEnvironment(SSHConfiguration sshConfiguration) throws EnvironmentSetupException {
         UnixSSHManager sshManager = new UnixSSHManager(sshConfiguration);
