@@ -3,8 +3,8 @@ package com.scalr.launcher;
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListParser;
-import com.scalr.SSHConfiguration;
 import com.scalr.exception.EnvironmentSetupException;
+import com.scalr.fs.FileSystemManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -12,13 +12,14 @@ import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-public class MacOSLauncher extends UnixLauncher {
+public class MacSSHLauncher extends UnixSSHLauncher {
     private NSDictionary getBaseTerminalConfiguration () {
+        final String[] pathBits = {FileSystemManager.getUserHome(), "Library",
+                                   "Preferences", "com.apple.Terminal.plist"};
+
         return AccessController.doPrivileged(new PrivilegedAction<NSDictionary>() {
             @Override
             public NSDictionary run() {
-                String[] pathBits = {System.getProperty("user.home"), "Library",
-                                     "Preferences", "com.apple.Terminal.plist"};
                 File configFile = new File(StringUtils.join(pathBits, File.separator));
 
                 NSDictionary root;
@@ -48,9 +49,7 @@ public class MacOSLauncher extends UnixLauncher {
     }
 
     @Override
-    public void setUpEnvironment(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException {
-        String sshCommandLine = getSSHCommandLine(sshConfiguration);
-
+    public void createCommandFile (String sshCommandLine) throws EnvironmentSetupException {
         final NSDictionary root = getBaseTerminalConfiguration();
         root.put("CommandString", sshCommandLine);
         root.put("RunCommandAsShell", true);
@@ -60,13 +59,16 @@ public class MacOSLauncher extends UnixLauncher {
 
         //TODO -> Test if a key is already present
 
-        commandFile = getTemporaryFile("ssh-command", ".terminal");
-        PropertyListParser.saveAsXML(root, commandFile);
+        try {
+            commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".terminal");
+            PropertyListParser.saveAsXML(root, commandFile);
+        } catch (IOException e) {
+            throw new EnvironmentSetupException();
+        }
     }
 
     @Override
     protected String[] getSSHCommandFromPath(String path) {
-        //return new String[] {"/usr/bin/open", "--fresh", "--new", "-b", "com.apple.terminal", path};
         return new String[] {"/usr/bin/open", path};
     }
 }

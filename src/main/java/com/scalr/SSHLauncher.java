@@ -2,8 +2,8 @@ package com.scalr;
 
 import com.scalr.exception.EnvironmentSetupException;
 import com.scalr.exception.InvalidEnvironmentException;
-import com.scalr.launcher.MacOSLauncher;
-import com.scalr.launcher.SSHLauncherInterface;
+import com.scalr.launcher.MacSSHLauncher;
+import com.scalr.ssh.SSHConfiguration;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,7 +18,7 @@ public class SSHLauncher {
     }
 
     public static void launchSSHFromConfiguration(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException, InvalidEnvironmentException, InterruptedException {
-        SSHLauncherInterface launcher = new MacOSLauncher();
+        com.scalr.launcher.SSHLauncher launcher = new MacSSHLauncher();
 
         launcher.setUpEnvironment(sshConfiguration);
         String sshCommand[] = launcher.getSSHCommand();

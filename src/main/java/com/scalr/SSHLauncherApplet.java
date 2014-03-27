@@ -1,11 +1,10 @@
 package com.scalr;
 
-import com.scalr.exception.EnvironmentSetupException;
-import com.scalr.exception.InvalidEnvironmentException;
+import com.scalr.exception.InvalidConfigurationException;
+import com.scalr.ssh.SSHConfiguration;
 
 import java.applet.Applet;
 import java.awt.*;
-import java.io.IOException;
 
 public class SSHLauncherApplet extends Applet {
 
@@ -16,28 +15,52 @@ public class SSHLauncherApplet extends Applet {
         addItem("initializing... ");
     }
 
-    public void start() {
-        addItem("starting... ");
-        addItem("user");
-        addItem(getParameter("user"));
-        addItem("host");
-        addItem(getParameter("host"));
-
+    private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
         String user = getParameter("user");
         String host = getParameter("host");
+        String port = getParameter("port");
+        String sshPrivateKey = getParameter("sshPrivateKey");
+        String name = getParameter("name");
+
+        if (user == null || host == null) {
+            throw new InvalidConfigurationException();
+        }
 
         SSHConfiguration sshConfiguration = new SSHConfiguration(user, host);
 
+        if (port != null) {
+            try {
+                Integer intPort = Integer.parseInt(port);
+                sshConfiguration.setPort(intPort);
+            } catch (NumberFormatException e) {
+                throw new InvalidConfigurationException();
+            }
+        }
+
+        if (sshPrivateKey != null) {
+            sshConfiguration.setPrivateKey(sshPrivateKey);
+        }
+
+        if (name != null) {
+            sshConfiguration.setName(name);
+        }
+
+        return sshConfiguration;
+    }
+
+    public void start() {
+        addItem("starting... ");
+
         try {
+            SSHConfiguration sshConfiguration = getSSHConfiguration();
             SSHLauncher.launchSSHFromConfiguration(sshConfiguration);
-        } catch (IOException e) {
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
-        } catch (EnvironmentSetupException e) {
+            addItem("Invalid configuration!");
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (InvalidEnvironmentException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            addItem("Error!");
+            //TODO: better handling.
         }
     }
 
