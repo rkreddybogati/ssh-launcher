@@ -6,7 +6,7 @@ import com.scalr.ssh.exception.InvalidEnvironmentException;
 
 import java.io.IOException;
 
-public interface SSHLauncher {
+public interface SSHLauncherInterface {
     public void setUpEnvironment(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException;
     public void tearDownEnvironment ();
     public String[] getSSHCommand() throws InvalidEnvironmentException;

@@ -1,13 +1,17 @@
 package com.scalr.ssh;
 
+import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.launcher.MacSSHLauncher;
-import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.launcher.SSHLauncherInterface;
+import com.scalr.ssh.launcher.WindowsSSHLauncher;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 
 public class SSHLauncher {
@@ -17,8 +21,31 @@ public class SSHLauncher {
         System.exit(1);
     }
 
+    private static SSHLauncherInterface getSSHLauncher() throws InvalidEnvironmentException {
+        String osName = AccessController.doPrivileged(new PrivilegedAction<String>() {
+            @Override
+            public String run() {
+                return System.getProperty("os.name").toLowerCase();
+            }
+        });
+
+        System.out.println("Platform detected: " + osName);
+
+        if (osName.contains("win")) {
+            return new WindowsSSHLauncher();
+
+        } else if (osName.contains("mac")) {
+            return new MacSSHLauncher();
+
+        } else if (osName.contains("nux") || osName.contains("nix")) {
+            return new WindowsSSHLauncher();
+        }
+
+        throw new InvalidEnvironmentException();
+    }
+
     public static void launchSSHFromConfiguration(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException, InvalidEnvironmentException, InterruptedException {
-        com.scalr.ssh.launcher.SSHLauncher launcher = new MacSSHLauncher();
+        SSHLauncherInterface launcher = getSSHLauncher();
 
         launcher.setUpEnvironment(sshConfiguration);
         String sshCommand[] = launcher.getSSHCommand();

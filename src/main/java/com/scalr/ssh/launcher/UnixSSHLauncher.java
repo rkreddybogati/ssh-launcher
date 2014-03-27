@@ -1,17 +1,20 @@
 package com.scalr.ssh.launcher;
 
-import com.scalr.ssh.exception.EnvironmentSetupException;
-import com.scalr.ssh.exception.InvalidEnvironmentException;
-import com.scalr.ssh.fs.FileSystemManager;
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.exception.EnvironmentSetupException;
+import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.manager.SSHManagerInterface;
 import com.scalr.ssh.manager.UnixSSHManager;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
-public abstract class UnixSSHLauncher implements SSHLauncher {
-    File commandFile;
+public abstract class UnixSSHLauncher extends BaseSSHLauncher {
 
-    void createCommandFile(String sshCommandLine) throws EnvironmentSetupException {
+    @Override
+    protected void createCommandFile(String sshCommandLine) throws EnvironmentSetupException {
         try {
             commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".sh");
         } catch (IOException e) {
@@ -38,33 +41,8 @@ public abstract class UnixSSHLauncher implements SSHLauncher {
     }
 
     @Override
-    public void setUpEnvironment(SSHConfiguration sshConfiguration) throws EnvironmentSetupException {
-        UnixSSHManager sshManager = new UnixSSHManager(sshConfiguration);
-        sshManager.setUpSSHEnvironment();
-        String sshCommandLine = sshManager.getSSHCommandLine();
-        createCommandFile(sshCommandLine);
+    protected SSHManagerInterface getSSHManager(SSHConfiguration sshConfiguration) {
+        return new UnixSSHManager(sshConfiguration);
     }
 
-    @Override
-    public void tearDownEnvironment() {
-    }
-
-    abstract protected String[] getSSHCommandFromPath (String path);
-
-    @Override
-    public String[] getSSHCommand() throws InvalidEnvironmentException {
-        if (commandFile == null) {
-            throw new InvalidEnvironmentException();
-        }
-
-        String canonicalPath;
-
-        try {
-            canonicalPath = commandFile.getCanonicalPath();
-        } catch (IOException e) {
-            throw new InvalidEnvironmentException();
-        }
-
-        return getSSHCommandFromPath(canonicalPath);
-    }
 }

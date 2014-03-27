@@ -5,7 +5,7 @@ public class SSHConfiguration {
     private String host;
     private Integer port;
     private String privateKey;
-    private String name = "Unknown";
+    private String name = "Unknown";  //TODO -> Remove!
 
     public SSHConfiguration (String username, String host) {
         this.username = username;

@@ -1,10 +1,12 @@
 package com.scalr.ssh;
 
-import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.exception.InvalidConfigurationException;
+import org.apache.commons.codec.binary.Base64;
 
 import java.applet.Applet;
 import java.awt.*;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -40,7 +42,13 @@ public class SSHLauncherApplet extends Applet {
         }
 
         if (sshPrivateKey != null) {
-            sshConfiguration.setPrivateKey(sshPrivateKey);
+            // The private key is base64 encoded to preserve newlines
+            byte[] decoded = Base64.decodeBase64(sshPrivateKey);
+            try {
+                sshConfiguration.setPrivateKey(new String(decoded, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new InvalidConfigurationException(); // TODO -> Add info for those
+            }
         }
 
         if (name != null) {
