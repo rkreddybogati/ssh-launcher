@@ -14,15 +14,13 @@ import java.security.PrivilegedAction;
 public abstract class UnixLauncher implements SSHLauncherInterface {
     File commandFile;
 
-    @Override
-    public void setUpEnvironment(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException {
-
-        commandFile = AccessController.doPrivileged(
+    protected File getTemporaryFile (final String prefix, final String suffix) throws IOException {
+        File tempFile = AccessController.doPrivileged(
                 new PrivilegedAction<File>() {
                     @Override
                     public File run() {
                         try {
-                            return File.createTempFile("ssh-command", ".sh");
+                            return File.createTempFile(prefix, suffix);
                         } catch (IOException e) {
                             return null;
                         }
@@ -30,17 +28,30 @@ public abstract class UnixLauncher implements SSHLauncherInterface {
                 }
         );
 
-        if (commandFile == null) {
+        if (tempFile == null) {
             throw new IOException();
         }
 
-        //commandFile.deleteOnExit(); // TODO: Find how we handle this
+        //TODO: Deletion!
 
+        return tempFile;
+    }
+
+    protected String getSSHCommandLine(SSHConfiguration sshConfiguration) {
         String[] destinationBits = {sshConfiguration.getUsername(), "@", sshConfiguration.getHost()};
         String   destination = StringUtils.join(destinationBits, "");
 
         String[] sshCommandLineBits = {"ssh", destination};
-        String   sshCommandLine = StringUtils.join(sshCommandLineBits, " ");
+        return StringUtils.join(sshCommandLineBits, " ");
+    }
+
+    @Override
+    public void setUpEnvironment(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException {
+
+        commandFile = getTemporaryFile("ssh-command", ".sh");
+        //commandFile.deleteOnExit(); // TODO: Find how we handle this
+
+        String   sshCommandLine = getSSHCommandLine(sshConfiguration);
 
         PrintWriter writer = new PrintWriter(commandFile, "UTF-8");
         writer.println("#!/bin/bash");
