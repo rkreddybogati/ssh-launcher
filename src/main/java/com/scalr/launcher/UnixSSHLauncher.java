@@ -15,8 +15,7 @@ public abstract class UnixSSHLauncher implements SSHLauncher {
         try {
             commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".sh");
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new EnvironmentSetupException();
+            throw new EnvironmentSetupException("Error creating command file.");
         }
         //commandFile.deleteOnExit(); // TODO: Find how we handle this
 
@@ -24,9 +23,9 @@ public abstract class UnixSSHLauncher implements SSHLauncher {
         try {
             writer = new PrintWriter(commandFile, "UTF-8");
         } catch (FileNotFoundException e) {
-            throw new EnvironmentSetupException();
+            throw new EnvironmentSetupException("Error writing to command file.");
         } catch (UnsupportedEncodingException e) {
-            throw new EnvironmentSetupException();
+            throw new EnvironmentSetupException("Error writing to command file.");
         }
 
         writer.println("#!/bin/bash");
@@ -34,7 +33,7 @@ public abstract class UnixSSHLauncher implements SSHLauncher {
         writer.close();
 
         if (!commandFile.setExecutable(true, true)) {
-            throw new EnvironmentSetupException();
+            throw new EnvironmentSetupException("Error setting command file executable.");
         }
     }
 
