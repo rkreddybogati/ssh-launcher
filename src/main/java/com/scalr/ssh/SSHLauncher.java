@@ -3,7 +3,7 @@ package com.scalr.ssh;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.launcher.MacSSHLauncher;
+import com.scalr.ssh.launcher.MacNativeSSHLauncher;
 import com.scalr.ssh.launcher.SSHLauncherInterface;
 import com.scalr.ssh.launcher.WindowsSSHLauncher;
 import org.apache.commons.cli.*;
@@ -35,7 +35,8 @@ public class SSHLauncher {
             return new WindowsSSHLauncher(sshConfiguration);
 
         } else if (osName.contains("mac")) {
-            return new MacSSHLauncher(sshConfiguration);
+            //return new MacSSHLauncher(sshConfiguration);
+            return new MacNativeSSHLauncher(sshConfiguration);
 
         } else if (osName.contains("nux") || osName.contains("nix")) {
             return new WindowsSSHLauncher(sshConfiguration);
@@ -52,10 +53,10 @@ public class SSHLauncher {
         System.out.println("Launching SSH Session");
         System.out.println(StringUtils.join(sshCommand, " "));
 
-        //ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
+        ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
 
         try {
-            Process p = Runtime.getRuntime().exec(sshCommand);
+            Process p = pb.start();
             p.waitFor();
         } catch (IOException e) {
             throw new LauncherException(String.format("Unable to start process: %s", e));
