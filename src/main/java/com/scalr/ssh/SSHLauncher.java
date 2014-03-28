@@ -50,19 +50,18 @@ public class SSHLauncher {
 
         String sshCommand[] = launcher.getSSHCommand();
 
-        System.out.println("Launching SSH Session");
+        System.out.print("Launching SSH Session: ");
         System.out.println(StringUtils.join(sshCommand, " "));
 
         ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
 
         try {
-            Process p = pb.start();
-            p.waitFor();
+            pb.start();
         } catch (IOException e) {
             throw new LauncherException(String.format("Unable to start process: %s", e));
-        } catch (InterruptedException e) {
-            throw new LauncherException(String.format("Process was interrupted: %s", e));
         }
+
+        System.out.println("Assuming SSH is launched - exiting");
 
         //launcher.tearDownEnvironment(); //TODO
     }

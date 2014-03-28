@@ -10,8 +10,12 @@ import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
 
 public class SSHLauncherApplet extends Applet {
+    private final static Logger logger = Logger.getLogger(SSHLauncherApplet.class.getName());
+
 
     StringBuffer buffer;
 
@@ -61,29 +65,32 @@ public class SSHLauncherApplet extends Applet {
 
     public void start() {
         addItem("Starting.");
+        logger.addHandler(new ConsoleHandler());
+        logger.info("Starting");
 
         try {
             SSHConfiguration sshConfiguration = getSSHConfiguration();
+
+            addItem("Launching SSH Session");
             SSHLauncher.launchSSHFromConfiguration(sshConfiguration);
+
+            // If we did not fail, let's cleanup.
+
+            String returnURL = getParameter("returnURL");
+            if (returnURL == null) {
+                return;
+            }
+            try {
+                getAppletContext().showDocument(new URL(returnURL));
+            } catch (MalformedURLException e) {
+                addItem("Unable to exit.");
+                addItem(e.toString());
+            }
+
         } catch (LauncherException e) {
             e.printStackTrace();
             addItem("Error!");
             addItem(e.toString());
-            //TODO: better handling.
-        }
-
-        //TODO -> Do not exit on error!
-
-        addItem("SSH session launched.");
-
-        String returnURL = getParameter("returnURL");
-        if (returnURL == null) {
-            return;
-        }
-        try {
-            getAppletContext().showDocument(new URL(returnURL));
-        } catch (MalformedURLException e) {
-            return;
         }
     }
 
