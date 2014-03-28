@@ -89,4 +89,9 @@ abstract public class BaseSSHManager implements SSHManagerInterface {
             }
         }
     }
+
+    protected String getDestination() {
+        String[] destinationBits = {sshConfiguration.getUsername(), "@", sshConfiguration.getHost()};
+        return StringUtils.join(destinationBits, "");
+    }
 }

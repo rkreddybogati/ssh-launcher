@@ -2,6 +2,7 @@ package com.scalr.ssh;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidConfigurationException;
+import com.scalr.ssh.exception.LauncherException;
 import org.apache.commons.codec.binary.Base64;
 
 import java.applet.Applet;
@@ -27,7 +28,7 @@ public class SSHLauncherApplet extends Applet {
         String name = getParameter("name");
 
         if (user == null || host == null) {
-            throw new InvalidConfigurationException();
+            throw new InvalidConfigurationException("User ('user') and Host ('host') must be specified.");
         }
 
         SSHConfiguration sshConfiguration = new SSHConfiguration(user, host);
@@ -37,7 +38,7 @@ public class SSHLauncherApplet extends Applet {
                 Integer intPort = Integer.parseInt(port);
                 sshConfiguration.setPort(intPort);
             } catch (NumberFormatException e) {
-                throw new InvalidConfigurationException();
+                throw new InvalidConfigurationException(String.format("Port must be a number (received: '%s')", port));
             }
         }
 
@@ -47,7 +48,7 @@ public class SSHLauncherApplet extends Applet {
             try {
                 sshConfiguration.setPrivateKey(new String(decoded, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                throw new InvalidConfigurationException(); // TODO -> Add info for those
+                throw new InvalidConfigurationException("UTF-8 encoded is not supported"); // TODO -> Add info for those
             }
         }
 
@@ -64,14 +65,14 @@ public class SSHLauncherApplet extends Applet {
         try {
             SSHConfiguration sshConfiguration = getSSHConfiguration();
             SSHLauncher.launchSSHFromConfiguration(sshConfiguration);
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            addItem("Invalid configuration!");
-        } catch (Exception e) {
+        } catch (LauncherException e) {
             e.printStackTrace();
             addItem("Error!");
+            addItem(e.toString());
             //TODO: better handling.
         }
+
+        //TODO -> Do not exit on error!
 
         addItem("SSH session launched.");
 

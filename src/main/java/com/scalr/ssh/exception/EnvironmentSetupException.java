@@ -1,7 +1,7 @@
 package com.scalr.ssh.exception;
 
-public class EnvironmentSetupException extends Exception {
-    public EnvironmentSetupException (String message) {
+public class EnvironmentSetupException extends LauncherException {
+    public EnvironmentSetupException(String message) {
         super(message);
     }
 }

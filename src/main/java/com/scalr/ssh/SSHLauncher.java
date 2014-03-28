@@ -1,8 +1,8 @@
 package com.scalr.ssh;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.launcher.MacSSHLauncher;
 import com.scalr.ssh.launcher.SSHLauncherInterface;
 import com.scalr.ssh.launcher.WindowsSSHLauncher;
@@ -21,7 +21,7 @@ public class SSHLauncher {
         System.exit(1);
     }
 
-    private static SSHLauncherInterface getSSHLauncher() throws InvalidEnvironmentException {
+    private static SSHLauncherInterface getSSHLauncher(SSHConfiguration sshConfiguration) throws InvalidEnvironmentException {
         String osName = AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
             public String run() {
@@ -32,35 +32,41 @@ public class SSHLauncher {
         System.out.println("Platform detected: " + osName);
 
         if (osName.contains("win")) {
-            return new WindowsSSHLauncher();
+            return new WindowsSSHLauncher(sshConfiguration);
 
         } else if (osName.contains("mac")) {
-            return new MacSSHLauncher();
+            return new MacSSHLauncher(sshConfiguration);
 
         } else if (osName.contains("nux") || osName.contains("nix")) {
-            return new WindowsSSHLauncher();
+            return new WindowsSSHLauncher(sshConfiguration);
         }
 
-        throw new InvalidEnvironmentException();
+        throw new InvalidEnvironmentException(String.format("No SSH Launcher for platform: %s", osName));
     }
 
-    public static void launchSSHFromConfiguration(SSHConfiguration sshConfiguration) throws IOException, EnvironmentSetupException, InvalidEnvironmentException, InterruptedException {
-        SSHLauncherInterface launcher = getSSHLauncher();
+    public static void launchSSHFromConfiguration(SSHConfiguration sshConfiguration) throws LauncherException {
+        SSHLauncherInterface launcher = getSSHLauncher(sshConfiguration);
 
-        launcher.setUpEnvironment(sshConfiguration);
         String sshCommand[] = launcher.getSSHCommand();
 
         System.out.println("Launching SSH Session");
         System.out.println(StringUtils.join(sshCommand, " "));
 
-        ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
-        Process p = pb.start();
-        p.waitFor();
+        //ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
 
-        launcher.tearDownEnvironment();
+        try {
+            Process p = Runtime.getRuntime().exec(sshCommand);
+            p.waitFor();
+        } catch (IOException e) {
+            throw new LauncherException(String.format("Unable to start process: %s", e));
+        } catch (InterruptedException e) {
+            throw new LauncherException(String.format("Process was interrupted: %s", e));
+        }
+
+        //launcher.tearDownEnvironment(); //TODO
     }
 
-    public static void main(String args[]) throws IOException, EnvironmentSetupException, InterruptedException, InvalidEnvironmentException {
+    public static void main(String args[]) throws IOException, LauncherException, InterruptedException {
         Options options = new Options();
         options.addOption("u", "username", true, "SSH user to login as");
         options.addOption("h", "host", true, "Host to connect to");

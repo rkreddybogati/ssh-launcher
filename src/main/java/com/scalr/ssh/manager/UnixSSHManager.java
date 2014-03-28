@@ -1,7 +1,6 @@
 package com.scalr.ssh.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 
@@ -11,7 +10,7 @@ public class UnixSSHManager extends BaseSSHManager {
     }
 
     @Override
-    public String getSSHCommandLine() {
+    public String[] getSSHCommandLineBits() {
         //TODO: Get me that SSH PK path
         ArrayList<String> sshCommandLineBits = new ArrayList<String>();
 
@@ -27,10 +26,8 @@ public class UnixSSHManager extends BaseSSHManager {
             sshCommandLineBits.add(getSSHPrivateKeyFilePath());
         }
 
-        String[] destinationBits = {sshConfiguration.getUsername(), "@", sshConfiguration.getHost()};
-        String   destination = StringUtils.join(destinationBits, "");
-        sshCommandLineBits.add(destination);
+        sshCommandLineBits.add(getDestination());
 
-        return StringUtils.join(sshCommandLineBits, " ");
+        return sshCommandLineBits.toArray(new String[sshCommandLineBits.size()]);
     }
 }

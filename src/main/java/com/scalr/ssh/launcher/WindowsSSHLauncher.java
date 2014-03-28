@@ -1,51 +1,21 @@
 package com.scalr.ssh.launcher;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.EnvironmentSetupException;
-import com.scalr.ssh.fs.FileSystemManager;
-import com.scalr.ssh.manager.SSHManagerInterface;
-import com.scalr.ssh.manager.WindowsSSHManager;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import com.scalr.ssh.exception.LauncherException;
+import com.scalr.ssh.manager.PuTTYSSHManager;
 
 public class WindowsSSHLauncher extends BaseSSHLauncher {
-    @Override
-    protected void createCommandFile(String sshCommandLine) throws EnvironmentSetupException {
-            try {
-                commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".bat");
-            } catch (IOException e) {
-                throw new EnvironmentSetupException("Error creating command file.");
-            }
-            //commandFile.deleteOnExit(); // TODO: Find how we handle this
-
-            PrintWriter writer = null;
-            try {
-                writer = new PrintWriter(commandFile, "UTF-8");
-            } catch (FileNotFoundException e) {
-                throw new EnvironmentSetupException("Error writing to command file.");
-            } catch (UnsupportedEncodingException e) {
-                throw new EnvironmentSetupException("Error writing to command file.");
-            }
-
-            writer.println("@echo on");
-            writer.println(sshCommandLine);
-            writer.close();
-
-            if (!commandFile.setExecutable(true, true)) {
-                throw new EnvironmentSetupException("Error setting command file executable.");
-            }
+    public WindowsSSHLauncher(SSHConfiguration sshConfiguration) {
+        super(sshConfiguration);
     }
 
     @Override
-    protected SSHManagerInterface getSSHManager(SSHConfiguration sshConfiguration) {
-        return new WindowsSSHManager(sshConfiguration);
-    }
+    public String[] getSSHCommand() throws LauncherException {
+        PuTTYSSHManager sshManager = new PuTTYSSHManager(sshConfiguration);
 
-    @Override
-    protected String[] getSSHCommandFromPath(String path) {
-        return new String[] {"cmd.exe", "/c", "start", "\"Scalr SSH Session\"", "/b", path};
+        sshManager.setUpSSHEnvironment();
+        //TODO -> Quoting of the SSH command
+        return sshManager.getSSHCommandLineBits();
+        //return new String[] {"cmd.exe", "/c", "start", "\"Scalr SSH Session\"", "/b", sshManager.getSSHCommandLineBits()};
     }
 }
