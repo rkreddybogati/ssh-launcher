@@ -1,8 +1,10 @@
 package com.scalr.ssh.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import org.apache.commons.lang3.StringUtils;
+import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.fs.FileSystemManager;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class PuTTYSSHManager extends BaseSSHManager {
@@ -10,23 +12,30 @@ public class PuTTYSSHManager extends BaseSSHManager {
         super(sshConfiguration);
     }
 
-    private String getPuTTYPath() {
-        String[] pathBits = {"C:/", "Program Files (x86)", "PuTTY", "putty.exe"};
-        ArrayList<String> escapedPathBits = new ArrayList<String>();
+    private String getPuTTYPath() throws InvalidEnvironmentException {
+        String[] candidateLocations = {"Program Files (x86)", "Program Files"};
+        String basePath = "C:/";
+        String execPath = new File("PuTTY", "putty.exe").getPath();
 
-        for (String pathBit : pathBits) {
-            if (pathBit.contains(" ")) {
-                escapedPathBits.add(String.format("\"%s\"", pathBit));
-            } else {
-                escapedPathBits.add(pathBit);
+        File candidateFile;
+        Boolean foundPuTTY;
+        for (String candidateLocation : candidateLocations) {
+            candidateFile = new File(new File(basePath, candidateLocation), execPath);
+            getLogger().fine(String.format("Looking up PuTTY in '%s'", candidateFile.getPath()));
+
+            if (FileSystemManager.fileExists(candidateFile)) {
+                getLogger().fine(String.format("Found PuTTY in %s", candidateFile.getPath()));
+                return candidateFile.getAbsolutePath();
             }
         }
 
-        return StringUtils.join(pathBits, "\\");
+        getLogger().severe("Unable to find PuTTY");
+
+        throw new InvalidEnvironmentException(String.format("Unable to find PuTTy"));
     }
 
     @Override
-    public String[] getSSHCommandLineBits() {
+    public String[] getSSHCommandLineBits() throws InvalidEnvironmentException {
         ArrayList<String> sshCommandLineBits = new ArrayList<String>();
 
         sshCommandLineBits.add(getPuTTYPath());

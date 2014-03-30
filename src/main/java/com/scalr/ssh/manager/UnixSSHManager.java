@@ -11,10 +11,9 @@ public class UnixSSHManager extends BaseSSHManager {
 
     @Override
     public String[] getSSHCommandLineBits() {
-        //TODO: Get me that SSH PK path
         ArrayList<String> sshCommandLineBits = new ArrayList<String>();
 
-        sshCommandLineBits.add("ssh");
+        sshCommandLineBits.add("ssh");  // TODO -> Where is this installed?
 
         if (sshConfiguration.getPort() != null) {
             sshCommandLineBits.add("-p");

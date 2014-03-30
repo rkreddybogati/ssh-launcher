@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,19 +32,34 @@ public class SSHLauncherApplet extends JApplet {
 
         JScrollPane jScrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
+        System.out.println("Added pane");
+
         getContentPane().add(jScrollPane);
 
-        //textArea.setText("Hello!\n");
-//        textArea.append("from the applet");
 
+        Handler textAreaHandler = new JTextAreaHandler(textArea);
+        Handler consoleHandler = new ConsoleHandler();
 
-        Logger loggerForAddition;
+        Logger rootLogger = Logger.getLogger("");
+        rootLogger.addHandler(textAreaHandler);
+        rootLogger.addHandler(consoleHandler);
 
-        // TODO - Check which logger is the right one.
-        for (String loggerName: new String[] {Logger.GLOBAL_LOGGER_NAME, ""}) {
-            loggerForAddition = Logger.getLogger(loggerName);
-            loggerForAddition.addHandler(new JTextAreaHandler(textArea));
-            loggerForAddition.addHandler(new ConsoleHandler());
+        Logger globalLogger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+        globalLogger.addHandler(textAreaHandler);
+        globalLogger.addHandler(consoleHandler);
+
+        String requestedLogLevel = getParameter("logLevel");
+        Level logLevel;
+
+        if (requestedLogLevel != null) {
+            try {
+                logLevel = Level.parse(requestedLogLevel);
+            } catch (IllegalArgumentException e) {
+                logLevel = Level.INFO;
+                logger.warning(String.format("logLevel '%s' could not be parsed. Defaulting to INFO.", requestedLogLevel));
+            }
+            rootLogger.setLevel(logLevel);
+            globalLogger.setLevel(logLevel);
         }
 
         // Info

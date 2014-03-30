@@ -7,6 +7,20 @@ import java.security.PrivilegedAction;
 
 
 public class FileSystemManager {
+
+    private static class FileExistencePrivilegedAction implements PrivilegedAction<Boolean> {
+        private final File file;
+
+        public FileExistencePrivilegedAction (File file) {
+            this.file = file;
+        }
+
+        @Override
+        public Boolean run() {
+            return (file.exists() && !file.isDirectory());
+        }
+    }
+
     public static File getTemporaryFile (final String prefix, final String suffix) throws IOException {
         File tempFile = AccessController.doPrivileged(
                 new PrivilegedAction<File>() {
@@ -28,6 +42,10 @@ public class FileSystemManager {
         //TODO: Deletion!
 
         return tempFile;
+    }
+
+    public static boolean fileExists (File file) {
+        return AccessController.doPrivileged(new FileExistencePrivilegedAction(file));
     }
 
     public static String getUserHome () {

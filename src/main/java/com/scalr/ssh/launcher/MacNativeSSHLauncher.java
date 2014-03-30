@@ -14,12 +14,20 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MacNativeSSHLauncher extends BaseSSHLauncher {
+
+
     public MacNativeSSHLauncher(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
+
     private NSDictionary getBaseTerminalConfiguration () {
+        final Logger logger = getLogger();
+        logger.fine("Querying default Terminal configuration");
+
         return AccessController.doPrivileged(new PrivilegedAction<NSDictionary>() {
             final String[] pathBits = {FileSystemManager.getUserHome(), "Library", "Preferences",
                                        "com.apple.Terminal.plist"};
@@ -31,25 +39,31 @@ public class MacNativeSSHLauncher extends BaseSSHLauncher {
                 NSDictionary root;
 
                 try {
+                    logger.finer(String.format("Parsing Terminal configuration at '%s'", configFile.getPath()));
                     root = (NSDictionary) PropertyListParser.parse(configFile);
                 } catch (Exception e) {
                     //TODO: Fix.
-                    e.printStackTrace();
+                    logger.log(Level.WARNING, "Unable to parse Terminal configuration", e);
                     return new NSDictionary();  // Default configuration
                 }
 
                 String defaultConfiguration = root.objectForKey("Default Window Settings").toString();
-                // TODO -> This is unsafe.
-                NSDictionary configurations = (NSDictionary) root.objectForKey("Window Settings");
 
-                NSObject ret = configurations.objectForKey(defaultConfiguration);
 
-                if (ret == null) {
+                try {
+                    NSDictionary configurations = (NSDictionary) root.objectForKey("Window Settings");
+                    NSObject ret = configurations.objectForKey(defaultConfiguration);
+
+                    if (ret == null) {
+                        logger.warning("Unable to find Terminal window configuration");
+                        return new NSDictionary();
+                    }
+
+                    return (NSDictionary) ret;
+                } catch (ClassCastException e) {
+                    logger.log(Level.WARNING, "An error occcured parsing Terminal configuration", e);
                     return new NSDictionary();
                 }
-
-                return (NSDictionary) ret;
-
             }
         });
     }
