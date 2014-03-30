@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SSHLauncherApplet extends JApplet {
@@ -38,6 +39,7 @@ public class SSHLauncherApplet extends JApplet {
 
         Logger loggerForAddition;
 
+        // TODO - Check which logger is the right one.
         for (String loggerName: new String[] {Logger.GLOBAL_LOGGER_NAME, ""}) {
             loggerForAddition = Logger.getLogger(loggerName);
             loggerForAddition.addHandler(new JTextAreaHandler(textArea));
@@ -93,7 +95,8 @@ public class SSHLauncherApplet extends JApplet {
         try {
             SSHConfiguration sshConfiguration = getSSHConfiguration();
 
-            addItem("Launching SSH Session");
+            logger.info("Creating SSH Session");
+
             SSHLauncher.launchSSHFromConfiguration(sshConfiguration);
 
             // If we did not fail, let's cleanup.
@@ -105,27 +108,19 @@ public class SSHLauncherApplet extends JApplet {
             try {
                 getAppletContext().showDocument(new URL(returnURL));
             } catch (MalformedURLException e) {
-                addItem("Unable to exit.");
-                addItem(e.toString());
+                logger.warning(String.format("Unable to exit: %s", e.toString()));
             }
 
         } catch (LauncherException e) {
-            e.printStackTrace();
-            addItem("Error!");
-            addItem(e.toString());
+            logger.log(Level.SEVERE, "Unable to create SSH Session", e);
         }
     }
 
     public void stop() {
-        addItem("Stopping.");
+        logger.info("Exiting");
     }
 
     public void destroy() {
-        addItem("Unloading.");
-    }
-
-    void addItem(String newWord) {
-        System.out.println(newWord);
-        //repaint();
+        logger.info("Unloading");
     }
 }
