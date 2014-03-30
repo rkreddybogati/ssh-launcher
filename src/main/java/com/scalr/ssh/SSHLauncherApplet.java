@@ -3,9 +3,10 @@ package com.scalr.ssh;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
+import com.scalr.ssh.logging.JTextAreaHandler;
 import org.apache.commons.codec.binary.Base64;
 
-import java.applet.Applet;
+import javax.swing.*;
 import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -13,15 +14,38 @@ import java.net.URL;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
-public class SSHLauncherApplet extends Applet {
+public class SSHLauncherApplet extends JApplet {
     private final static Logger logger = Logger.getLogger(SSHLauncherApplet.class.getName());
 
-
-    StringBuffer buffer;
+    public SSHLauncherApplet () {
+    }
 
     public void init() {
-        buffer = new StringBuffer();
-        addItem("Initializing.");
+        GridLayout layout = new GridLayout(1, 1);
+        setLayout(layout);
+
+        JTextArea textArea  = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+
+        JScrollPane jScrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        getContentPane().add(jScrollPane);
+
+        //textArea.setText("Hello!\n");
+//        textArea.append("from the applet");
+
+
+        Logger loggerForAddition;
+
+        for (String loggerName: new String[] {Logger.GLOBAL_LOGGER_NAME, ""}) {
+            loggerForAddition = Logger.getLogger(loggerName);
+            loggerForAddition.addHandler(new JTextAreaHandler(textArea));
+            loggerForAddition.addHandler(new ConsoleHandler());
+        }
+
+        // Info
+        logger.info("Initialized applet.");
     }
 
     private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
@@ -64,8 +88,6 @@ public class SSHLauncherApplet extends Applet {
     }
 
     public void start() {
-        addItem("Starting.");
-        logger.addHandler(new ConsoleHandler());
         logger.info("Starting");
 
         try {
@@ -104,16 +126,6 @@ public class SSHLauncherApplet extends Applet {
 
     void addItem(String newWord) {
         System.out.println(newWord);
-        buffer.append(newWord);
-        buffer.append(" ");
-        repaint();
-    }
-
-    public void paint(Graphics g) {
-        //Draw a Rectangle around the applet's display area.
-        g.drawRect(0, 0, size().width - 1, size().height - 1);
-
-        //Draw the current string inside the rectangle.
-        g.drawString(buffer.toString(), 5, 15);
+        //repaint();
     }
 }
