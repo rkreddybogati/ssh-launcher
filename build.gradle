@@ -1,8 +1,17 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+    }
+}
+
+apply plugin: 'shadow'
 apply plugin: 'java'
 apply plugin: 'idea'
 
 sourceCompatibility = 1.5
-version = '0.1.0'
 
 repositories {
     mavenCentral()
@@ -16,18 +25,24 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
-task copyToLib(type: Copy) {
-    into "$buildDir/libs"
-    from configurations.runtime
-}
-build.dependsOn(copyToLib)
-
 jar {
     manifest {
-        attributes  'Implementation-Title': 'SSH Launcher',
+        attributes  'Application-Name': 'Scalr SSH Launcher',
+                    'Implementation-Title': 'SSH Launcher',
                     'Implementation-Version': version,
                     'Main-Class': 'com.scalr.ssh.SSHLauncher',
-                    'Permissions': 'all-permissions'
+                    'Permissions': 'all-permissions',
+                    'Codebase': codebase,
+                    'Application-Library-Allowable-Codebase': allowableCodebase,
+                    'Created-By': '1.7.0_51'
+                    //'Manifest-Version': '1.0',
+                    //'Trusted-Only': 'true',
+                    //'Trusted-Library': 'true',
+                    //'Created-By': ''
     }
 }
 
+shadow {
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+}
