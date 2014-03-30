@@ -12,9 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class SSHLauncher {
+    private final static Logger logger = Logger.getLogger(SSHLauncher.class.getName());
+
     public static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("ssh-launcher", options);
@@ -29,7 +33,7 @@ public class SSHLauncher {
             }
         });
 
-        System.out.println("Platform detected: " + osName);
+        logger.info(String.format("Detected Platform: '%s'", osName));
 
         if (osName.contains("win")) {
             return new WindowsSSHLauncher(sshConfiguration);
@@ -42,6 +46,7 @@ public class SSHLauncher {
             return new WindowsSSHLauncher(sshConfiguration);
         }
 
+        logger.severe(String.format("Platform '%s' is not supported", osName));
         throw new InvalidEnvironmentException(String.format("No SSH Launcher for platform: %s", osName));
     }
 
@@ -50,20 +55,18 @@ public class SSHLauncher {
 
         String sshCommand[] = launcher.getSSHCommand();
 
-        System.out.print("Launching SSH Session: ");
-        System.out.println(StringUtils.join(sshCommand, " "));
+        logger.info(String.format("Creating SSH Session: %s", StringUtils.join(sshCommand, " ")));
 
         ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
 
         try {
             pb.start();
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Unable to create SSH Session", e);
             throw new LauncherException(String.format("Unable to start process: %s", e));
         }
 
-        System.out.println("Assuming SSH is launched - exiting");
-
-        //launcher.tearDownEnvironment(); //TODO
+        logger.info("Assuming SSH session was launched. Exiting.");
     }
 
     public static void main(String args[]) throws IOException, LauncherException, InterruptedException {

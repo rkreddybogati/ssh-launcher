@@ -55,16 +55,16 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                     File sshFile = new File(sshFilePath);
 
                     if (sshFile.exists()) {
-                        getLogger().log(Level.FINER, "SSH File '{0}' already exists - aborting", sshFilePath);
+                        getLogger().finer(String.format("SSH file '%s' already exists - not replacing", sshFilePath));
                         // The key file names are derived from their contents, if the file is there,
                         // if must be correct.
                         return sshFile;
                     }
 
                     try {
-                        getLogger().log(Level.FINER, "Creating new SSH File '{0}'", sshFilePath);
+                        getLogger().finer(String.format("Creating new SSH file: '%s'", sshFilePath));
                         if (!sshFile.createNewFile()) {
-                            System.out.println("Failed to create SSH key file.");
+                            getLogger().severe("Failed to create SSH key file.");
                             return null;
                         }
                     } catch (IOException e) {
@@ -72,11 +72,11 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                         return null;
                     }
                     if (!sshFile.setWritable(true, true)) {
-                        getLogger().log(Level.SEVERE, "Failed to make SSH File '{0}' writable", sshFile);
+                        getLogger().severe(String.format("Failed to make SSH File '%s' writable", sshFilePath));
                         return null;
                     }
                     if (!sshFile.setReadable(true, true)) {
-                        getLogger().log(Level.SEVERE, "Failed to make SSH File '{0}' readable", sshFile);
+                        getLogger().severe(String.format("Failed to make SSH File '%s' readable", sshFilePath));
                         return null;
                     }
 

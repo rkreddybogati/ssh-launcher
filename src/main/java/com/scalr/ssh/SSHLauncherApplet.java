@@ -11,7 +11,6 @@ import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,15 +37,10 @@ public class SSHLauncherApplet extends JApplet {
 
 
         Handler textAreaHandler = new JTextAreaHandler(textArea);
-        Handler consoleHandler = new ConsoleHandler();
 
         Logger rootLogger = Logger.getLogger("");
         rootLogger.addHandler(textAreaHandler);
-        rootLogger.addHandler(consoleHandler);
 
-        Logger globalLogger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-        globalLogger.addHandler(textAreaHandler);
-        globalLogger.addHandler(consoleHandler);
 
         String requestedLogLevel = getParameter("logLevel");
         Level logLevel;
@@ -56,14 +50,20 @@ public class SSHLauncherApplet extends JApplet {
                 logLevel = Level.parse(requestedLogLevel);
             } catch (IllegalArgumentException e) {
                 logLevel = Level.INFO;
-                logger.warning(String.format("logLevel '%s' could not be parsed. Defaulting to INFO.", requestedLogLevel));
+                logger.warning(String.format("logLevel '%s' could not be parsed - defaulting to INFO", requestedLogLevel));
             }
-            rootLogger.setLevel(logLevel);
-            globalLogger.setLevel(logLevel);
+
+            logger.info(String.format("Setting LogLevel to '%s'. Requested '%s'", logLevel.getName(),
+                    requestedLogLevel));
+
+            // Do not set this on the main logger. Too much output crashes the Java applet console (?!).
+            Logger launcherLogger = Logger.getLogger("com.scalr.ssh");
+            textAreaHandler.setLevel(logLevel);
+            launcherLogger.setLevel(logLevel);
         }
 
         // Info
-        logger.info("Initialized applet.");
+        logger.info("Initialized applet");
     }
 
     private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
