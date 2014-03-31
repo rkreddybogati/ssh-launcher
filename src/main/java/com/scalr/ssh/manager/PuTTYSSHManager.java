@@ -2,11 +2,16 @@ package com.scalr.ssh.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.fs.FileSystemManager;
 
 import java.io.File;
 import java.io.IOException;
 
 public class PuTTYSSHManager extends BaseSSHManager {
+    public PuTTYSSHManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
+        super(sshConfiguration, fsManager);
+    }
+
     public PuTTYSSHManager(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
@@ -29,6 +34,8 @@ public class PuTTYSSHManager extends BaseSSHManager {
                 } catch (IOException e) {
                     throw new InvalidEnvironmentException("Unable to resolve path to PuTTY");
                 }
+            } else {
+                getLogger().warning(String.format("PuTTY not found in '%s'", candidateFile.getPath()));
             }
         }
 

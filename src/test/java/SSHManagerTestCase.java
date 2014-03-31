@@ -2,6 +2,7 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.manager.PuTTYSSHManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
 import com.scalr.ssh.manager.UnixSSHManager;
 import org.apache.commons.io.FileUtils;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
@@ -83,10 +85,15 @@ public class SSHManagerTestCase {
 
     private class TestFileSystemManager extends FileSystemManager {
         public String userHome = "";
+        public ArrayList<String> existingPaths = new ArrayList<String>();
 
         @Override
         public String getUserHome() {
             return userHome;
+        }
+
+        public boolean fileExists (File file) {
+            return existingPaths.contains(file.getPath());
         }
     }
 
@@ -116,13 +123,9 @@ public class SSHManagerTestCase {
     public void testSSHKeyCreation () throws IOException, LauncherException {
         //TODO --> Use ExternalResource
         String privateKey = "Private\nKey\nContents";
-        TestFileSystemManager fsManager = new TestFileSystemManager();
-        Path testDirectory = Files.createTempDirectory("test");
-        fsManager.userHome = testDirectory.toFile().getCanonicalPath();
 
         SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
         sshConfiguration.setPrivateKey(privateKey);
-
         SSHManagerInterface sshManager = new UnixSSHManager(sshConfiguration, fsManager);
 
         // Check a key is created
@@ -134,7 +137,33 @@ public class SSHManagerTestCase {
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
         String sshPrivateKeyPath = sshCommandLineBits[2];
 
-        // Check the contnets
+        // Check the contents
         assertEquals(privateKey, FileUtils.readFileToString(new File(sshPrivateKeyPath)));
+    }
+
+    @Test
+    public void testFindPuTTY () throws InvalidEnvironmentException {
+        fsManager.existingPaths.add("C:/Program Files (x86)/PuTTY/putty.exe");
+
+        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHManagerInterface sshManager = new PuTTYSSHManager(sshConfiguration, fsManager);
+
+        String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
+
+        assertEquals(3, sshCommandLineBits.length);
+
+        assertEquals("-ssh", sshCommandLineBits[1]);
+        assertEquals("root@example.com", sshCommandLineBits[2]);
+
+        String puttyExecutable = sshCommandLineBits[0];
+        assertThat(puttyExecutable, containsString("PuTTY"));
+        assertThat(puttyExecutable, containsString("putty.exe"));
+    }
+
+    @Test(expected=InvalidEnvironmentException.class)
+    public void testPuTTYNotFound () throws InvalidEnvironmentException {
+        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHManagerInterface sshManager = new PuTTYSSHManager(sshConfiguration, fsManager);
+        sshManager.getSSHCommandLineBits();
     }
 }
