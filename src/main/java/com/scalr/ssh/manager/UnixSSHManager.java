@@ -4,9 +4,6 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.fs.FileSystemManager;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 public class UnixSSHManager extends BaseSSHManager {
     public UnixSSHManager(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
@@ -17,28 +14,22 @@ public class UnixSSHManager extends BaseSSHManager {
     }
 
     @Override
-    public String[] getSSHCommandLineBits() throws InvalidEnvironmentException {
-        // TODO --> Share code with PuTTY Manager
-        ArrayList<String> sshCommandLineBits = new ArrayList<String>();
+    protected String getExecutablePath() throws InvalidEnvironmentException {
+        return "ssh";
+    }
 
-        sshCommandLineBits.add("ssh");  // TODO -> Where is this installed?
+    @Override
+    protected String[] getExecutableExtraOptions() {
+        return new String[0];
+    }
 
-        if (sshConfiguration.getPort() != null) {
-            sshCommandLineBits.add("-p");
-            sshCommandLineBits.add(sshConfiguration.getPort().toString());
-        }
+    @Override
+    protected String getPortOption() {
+        return "-p";
+    }
 
-        if (sshConfiguration.getPrivateKey() != null) {
-            sshCommandLineBits.add("-i");
-            try {
-                sshCommandLineBits.add(getSSHPrivateKeyFilePath());
-            } catch (IOException e) {
-                throw new InvalidEnvironmentException("Unable to resolve SSH Key file path");
-            }
-        }
-
-        sshCommandLineBits.add(getDestination());
-
-        return sshCommandLineBits.toArray(new String[sshCommandLineBits.size()]);
+    @Override
+    protected String getPrivateKeyOption() {
+        return "-i";
     }
 }

@@ -5,14 +5,14 @@ import com.scalr.ssh.exception.InvalidEnvironmentException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class PuTTYSSHManager extends BaseSSHManager {
     public PuTTYSSHManager(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 
-    private String getPuTTYPath() throws InvalidEnvironmentException {
+    @Override
+    protected String getExecutablePath() throws InvalidEnvironmentException {
         String[] candidateLocations = {"Program Files (x86)", "Program Files"};
         String basePath = "C:/";
         String execPath = new File("PuTTY", "putty.exe").getPath();
@@ -37,28 +37,17 @@ public class PuTTYSSHManager extends BaseSSHManager {
     }
 
     @Override
-    public String[] getSSHCommandLineBits() throws InvalidEnvironmentException {
-        ArrayList<String> sshCommandLineBits = new ArrayList<String>();
+    protected String[] getExecutableExtraOptions() {
+        return new String[] {"-ssh"};
+    }
 
-        sshCommandLineBits.add(getPuTTYPath());
-        sshCommandLineBits.add("-ssh");
+    @Override
+    protected String getPortOption() {
+        return "-P";
+    }
 
-        if (sshConfiguration.getPort() != null) {
-            sshCommandLineBits.add("-P");
-            sshCommandLineBits.add(sshConfiguration.getPort().toString());
-        }
-
-        if (sshConfiguration.getPrivateKey() != null) {
-            sshCommandLineBits.add("-i");
-            try {
-                sshCommandLineBits.add(getSSHPrivateKeyFilePath());
-            } catch (IOException e) {
-                throw new InvalidEnvironmentException("Unable to resolve SSH Key file path");
-            }
-        }
-
-        sshCommandLineBits.add(getDestination());
-
-        return sshCommandLineBits.toArray(new String[sshCommandLineBits.size()]);
+    @Override
+    protected String getPrivateKeyOption() {
+        return "-i";
     }
 }

@@ -2,6 +2,7 @@ package com.scalr.ssh.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.EnvironmentSetupException;
+import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.fs.FileSystemManager;
 import com.scalr.ssh.logging.Loggable;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -13,6 +14,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Level;
 
 abstract public class BaseSSHManager extends Loggable implements SSHManagerInterface {
@@ -128,5 +131,35 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
     protected String getDestination() {
         String[] destinationBits = {sshConfiguration.getUsername(), "@", sshConfiguration.getHost()};
         return StringUtils.join(destinationBits, "");
+    }
+
+    abstract protected String   getExecutablePath () throws InvalidEnvironmentException;
+    abstract protected String[] getExecutableExtraOptions ();
+    abstract protected String   getPortOption ();
+    abstract protected String   getPrivateKeyOption ();
+
+    @Override
+    public String[] getSSHCommandLineBits() throws InvalidEnvironmentException {
+        ArrayList<String> sshCommandLineBits = new ArrayList<String>();
+
+        sshCommandLineBits.add(getExecutablePath());
+        Collections.addAll(sshCommandLineBits, getExecutableExtraOptions());
+
+        if (sshConfiguration.getPort() != null) {
+            sshCommandLineBits.add(getPortOption());
+            sshCommandLineBits.add(sshConfiguration.getPort().toString());
+        }
+
+        if (sshConfiguration.getPrivateKey() != null) {
+            sshCommandLineBits.add(getPrivateKeyOption());
+            try {
+                sshCommandLineBits.add(getSSHPrivateKeyFilePath());
+            } catch (IOException e) {
+                throw new InvalidEnvironmentException("Unable to resolve SSH Key file path");
+            }
+        }
+
+        sshCommandLineBits.add(getDestination());
+        return sshCommandLineBits.toArray(new String[sshCommandLineBits.size()]);
     }
 }
