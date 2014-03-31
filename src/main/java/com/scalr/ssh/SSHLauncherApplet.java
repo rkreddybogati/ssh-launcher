@@ -74,11 +74,15 @@ public class SSHLauncherApplet extends JApplet {
         String puttyPrivateKey = getParameter("putty-private-key");
 
 
-        if (user == null || host == null) {
-            throw new InvalidConfigurationException("User ('user') and Host ('host') must be specified.");
+        if (host == null) {
+            throw new InvalidConfigurationException("Host ('host') must be specified.");
         }
 
-        SSHConfiguration sshConfiguration = new SSHConfiguration(user, host);
+        SSHConfiguration sshConfiguration = new SSHConfiguration(host);
+
+        if (user != null) {
+            sshConfiguration.setUsername(user);
+        }
 
         if (port != null) {
             try {

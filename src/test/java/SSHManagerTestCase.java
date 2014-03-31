@@ -28,22 +28,30 @@ public class SSHManagerTestCase {
 
     @Test
     public void testUnixSSHManager () throws InvalidEnvironmentException {
-        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"ssh", "root@example.com"}, sshManager.getSSHCommandLineBits());
+        assertArrayEquals(new String[]{"ssh", "example.com"}, sshManager.getSSHCommandLineBits());
+    }
+
+    @Test
+    public void testUnixSSHManagerWithUser () throws InvalidEnvironmentException {
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        sshConfiguration.setUsername("user");
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
+        assertArrayEquals(new String[]{"ssh", "user@example.com"}, sshManager.getSSHCommandLineBits());
     }
 
     @Test
     public void testUnixSSHManagerWithPort () throws InvalidEnvironmentException {
-        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setPort(2222);
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"ssh", "-p", "2222", "root@example.com"}, sshManager.getSSHCommandLineBits());
+        assertArrayEquals(new String[]{"ssh", "-p", "2222", "example.com"}, sshManager.getSSHCommandLineBits());
     }
 
     @Test
     public void testUnixSSHManagerWithKey () throws InvalidEnvironmentException {
-        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("My Private Key");
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
 
@@ -53,7 +61,7 @@ public class SSHManagerTestCase {
 
         assertEquals("ssh", sshCommandLineBits[0]);
         assertEquals("-i", sshCommandLineBits[1]);
-        assertEquals("root@example.com", sshCommandLineBits[3]);
+        assertEquals("example.com", sshCommandLineBits[3]);
 
         String privateKeyPath = sshCommandLineBits[2];
         assertThat(privateKeyPath, containsString(".ssh"));
@@ -63,11 +71,11 @@ public class SSHManagerTestCase {
 
     @Test
     public void testSSHKeyPathDependsOnKey () throws InvalidEnvironmentException {
-        SSHConfiguration sshConfiguration1 = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration1 = new SSHConfiguration("example.com");
         sshConfiguration1.setOpenSSHPrivateKey("Private Key 1");
         SSHManagerInterface sshManager1 = new OpenSSHManager(sshConfiguration1);
 
-        SSHConfiguration sshConfiguration2 = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration2 = new SSHConfiguration("example.com");
         sshConfiguration2.setOpenSSHPrivateKey("Private Key 2");
         SSHManagerInterface sshManager2 = new OpenSSHManager(sshConfiguration2);
 
@@ -124,7 +132,7 @@ public class SSHManagerTestCase {
         //TODO --> Use ExternalResource
         String privateKey = "Private\nKey\nContents";
 
-        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey(privateKey);
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsManager);
 
@@ -145,7 +153,7 @@ public class SSHManagerTestCase {
     public void testFindPuTTY () throws InvalidEnvironmentException {
         fsManager.existingPaths.add("C:/Program Files (x86)/PuTTY/putty.exe");
 
-        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         SSHManagerInterface sshManager = new PuTTYManager(sshConfiguration, fsManager);
 
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
@@ -153,7 +161,7 @@ public class SSHManagerTestCase {
         assertEquals(3, sshCommandLineBits.length);
 
         assertEquals("-ssh", sshCommandLineBits[1]);
-        assertEquals("root@example.com", sshCommandLineBits[2]);
+        assertEquals("example.com", sshCommandLineBits[2]);
 
         String puttyExecutable = sshCommandLineBits[0];
         assertThat(puttyExecutable, containsString("PuTTY"));
@@ -162,7 +170,7 @@ public class SSHManagerTestCase {
 
     @Test(expected=InvalidEnvironmentException.class)
     public void testPuTTYNotFound () throws InvalidEnvironmentException {
-        SSHConfiguration sshConfiguration = new SSHConfiguration("root", "example.com");
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         SSHManagerInterface sshManager = new PuTTYManager(sshConfiguration, fsManager);
         sshManager.getSSHCommandLineBits();
     }

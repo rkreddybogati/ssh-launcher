@@ -103,6 +103,7 @@ public class MacNativeSSHLauncher extends BaseSSHLauncher {
             throw new LauncherException("Terminal command file has no canonical path");
         }
 
+        // TODO -> If we the attr is not present, it's OK.
         ProcessBuilder pb = new ProcessBuilder().command("/usr/bin/xattr", "-d", "com.apple.quarantine", canonicalPath);
         try {
             Process p = pb.start();

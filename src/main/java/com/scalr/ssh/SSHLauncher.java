@@ -55,7 +55,7 @@ public class SSHLauncher {
 
         String sshCommand[] = launcher.getSSHCommand();
 
-        logger.info(String.format("Creating SSH Session: %s", StringUtils.join(sshCommand, " ")));
+        logger.info(String.format("Launcher Command Line: '%s'", StringUtils.join(sshCommand, " ")));
 
         ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
 
@@ -91,7 +91,8 @@ public class SSHLauncher {
             System.exit(1);
         }
 
-        SSHConfiguration sshConfiguration = new SSHConfiguration(cmd.getOptionValue("username"),cmd.getOptionValue("host"));
+        SSHConfiguration sshConfiguration = new SSHConfiguration(cmd.getOptionValue("host"));
+        sshConfiguration.setUsername(username);
         launchSSHFromConfiguration(sshConfiguration);
 
         System.out.println("Exiting");

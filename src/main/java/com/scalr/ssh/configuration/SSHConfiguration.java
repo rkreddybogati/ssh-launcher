@@ -7,13 +7,16 @@ public class SSHConfiguration {
     private String openSSHPrivateKey;
     private String puttySSHPrivateKey;
 
-    public SSHConfiguration (String username, String host) {
-        this.username = username;
+    public SSHConfiguration (String host) {
         this.host = host;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getHost() {

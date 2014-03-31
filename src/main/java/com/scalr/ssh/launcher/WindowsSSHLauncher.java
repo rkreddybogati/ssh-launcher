@@ -16,6 +16,5 @@ public class WindowsSSHLauncher extends BaseSSHLauncher {
         sshManager.setUpSSHEnvironment();
         //TODO -> Quoting of the SSH command
         return sshManager.getSSHCommandLineBits();
-        //return new String[] {"cmd.exe", "/c", "start", "\"Scalr SSH Session\"", "/b", sshManager.getSSHCommandLineBits()};
     }
 }

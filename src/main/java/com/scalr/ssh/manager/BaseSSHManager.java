@@ -47,8 +47,6 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                                 getPrivateKeyExtension()};
         String keyName = StringUtils.join(keyNameBits, "");
 
-        // TODO -> Use File.
-
         File retFile = new File(fsManager.getUserHome());
         String[] pathBits = {".ssh", keyName};
 
@@ -133,7 +131,12 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
     }
 
     protected String getDestination() {
-        String[] destinationBits = {sshConfiguration.getUsername(), "@", sshConfiguration.getHost()};
+        ArrayList<String> destinationBits = new ArrayList<String>();
+        if (sshConfiguration.getUsername() != null) {
+            destinationBits.add(sshConfiguration.getUsername());
+            destinationBits.add("@");
+        }
+        destinationBits.add(sshConfiguration.getHost());
         return StringUtils.join(destinationBits, "");
     }
 
@@ -164,6 +167,9 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
         }
 
         sshCommandLineBits.add(getDestination());
+
+        getLogger().info(String.format("SSH Command Line: '%s'", StringUtils.join(sshCommandLineBits, " ")));
+
         return sshCommandLineBits.toArray(new String[sshCommandLineBits.size()]);
     }
 }
