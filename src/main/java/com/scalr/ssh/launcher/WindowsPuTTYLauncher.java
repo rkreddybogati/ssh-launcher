@@ -4,8 +4,8 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.PuTTYManager;
 
-public class WindowsSSHLauncher extends BaseSSHLauncher {
-    public WindowsSSHLauncher(SSHConfiguration sshConfiguration) {
+public class WindowsPuTTYLauncher extends BaseSSHLauncher {
+    public WindowsPuTTYLauncher(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 

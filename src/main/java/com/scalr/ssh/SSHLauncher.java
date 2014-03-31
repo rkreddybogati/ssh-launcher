@@ -5,7 +5,8 @@ import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.launcher.MacNativeSSHLauncher;
 import com.scalr.ssh.launcher.SSHLauncherInterface;
-import com.scalr.ssh.launcher.WindowsSSHLauncher;
+import com.scalr.ssh.launcher.WindowsOpenSSHLauncher;
+import com.scalr.ssh.launcher.WindowsPuTTYLauncher;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,14 +37,15 @@ public class SSHLauncher {
         logger.info(String.format("Detected Platform: '%s'", osName));
 
         if (osName.contains("win")) {
-            return new WindowsSSHLauncher(sshConfiguration);
+            return new WindowsOpenSSHLauncher(sshConfiguration);
+            //return new WindowsPuTTYLauncher(sshConfiguration);
 
         } else if (osName.contains("mac")) {
             //return new MacSSHLauncher(sshConfiguration);
             return new MacNativeSSHLauncher(sshConfiguration);
 
         } else if (osName.contains("nux") || osName.contains("nix")) {
-            return new WindowsSSHLauncher(sshConfiguration);
+            return new WindowsPuTTYLauncher(sshConfiguration);  // TODO -> This is bad.
         }
 
         logger.severe(String.format("Platform '%s' is not supported", osName));

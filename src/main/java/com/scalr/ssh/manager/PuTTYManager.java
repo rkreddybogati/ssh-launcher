@@ -28,29 +28,21 @@ public class PuTTYManager extends BaseSSHManager {
 
     @Override
     protected String getExecutablePath() throws InvalidEnvironmentException {
-        String[] candidateLocations = {"Program Files (x86)", "Program Files"};
-        String basePath = "C:/";
+        File[] candidateLocations = new File[] {new File("C:/", "Program Files (x86)"), new File("C:/", "Program Files")};
         String execPath = new File("PuTTY", "putty.exe").getPath();
 
-        File candidateFile;
-        for (String candidateLocation : candidateLocations) {
-            candidateFile = new File(new File(basePath, candidateLocation), execPath);
-            getLogger().fine(String.format("Looking up PuTTY in '%s'", candidateFile.getPath()));
+        File puttyExecutable = fsManager.findInPaths(candidateLocations, execPath);
 
-            if (fsManager.fileExists(candidateFile)) {
-                getLogger().fine(String.format("Found PuTTY in %s", candidateFile.getPath()));
-                try {
-                    return candidateFile.getCanonicalPath();
-                } catch (IOException e) {
-                    throw new InvalidEnvironmentException("Unable to resolve path to PuTTY");
-                }
-            } else {
-                getLogger().warning(String.format("PuTTY not found in '%s'", candidateFile.getPath()));
-            }
+        if (puttyExecutable == null) {
+            getLogger().severe("Unable to locate PuTTY executable");
+            throw new InvalidEnvironmentException(String.format("Unable to find PuTTy. Is it installed?"));
         }
 
-        getLogger().severe("Unable to find PuTTY");
-        throw new InvalidEnvironmentException(String.format("Unable to find PuTTy"));
+        try {
+            return puttyExecutable.getCanonicalPath();
+        } catch (IOException e) {
+            throw new InvalidEnvironmentException("Unable to resolve path to PuTTY");
+        }
     }
 
     @Override

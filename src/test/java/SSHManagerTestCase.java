@@ -28,29 +28,37 @@ public class SSHManagerTestCase {
 
     @Test
     public void testUnixSSHManager () throws InvalidEnvironmentException {
+        fsManager.existingPaths.add("/usr/bin/ssh");
+
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"ssh", "example.com"}, sshManager.getSSHCommandLineBits());
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "example.com"}, sshManager.getSSHCommandLineBits());
     }
 
     @Test
     public void testUnixSSHManagerWithUser () throws InvalidEnvironmentException {
+        fsManager.existingPaths.add("/usr/bin/ssh");
+
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setUsername("user");
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"ssh", "user@example.com"}, sshManager.getSSHCommandLineBits());
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "user@example.com"}, sshManager.getSSHCommandLineBits());
     }
 
     @Test
     public void testUnixSSHManagerWithPort () throws InvalidEnvironmentException {
+        fsManager.existingPaths.add("/usr/bin/ssh");
+
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setPort(2222);
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"ssh", "-p", "2222", "example.com"}, sshManager.getSSHCommandLineBits());
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "-p", "2222", "example.com"}, sshManager.getSSHCommandLineBits());
     }
 
     @Test
     public void testUnixSSHManagerWithKey () throws InvalidEnvironmentException {
+        fsManager.existingPaths.add("/usr/bin/ssh");
+
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("My Private Key");
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
@@ -59,7 +67,7 @@ public class SSHManagerTestCase {
 
         assertEquals(4, sshCommandLineBits.length);
 
-        assertEquals("ssh", sshCommandLineBits[0]);
+        assertEquals("/usr/bin/ssh", sshCommandLineBits[0]);
         assertEquals("-i", sshCommandLineBits[1]);
         assertEquals("example.com", sshCommandLineBits[3]);
 
@@ -71,6 +79,8 @@ public class SSHManagerTestCase {
 
     @Test
     public void testSSHKeyPathDependsOnKey () throws InvalidEnvironmentException {
+        fsManager.existingPaths.add("/usr/bin/ssh");
+
         SSHConfiguration sshConfiguration1 = new SSHConfiguration("example.com");
         sshConfiguration1.setOpenSSHPrivateKey("Private Key 1");
         SSHManagerInterface sshManager1 = new OpenSSHManager(sshConfiguration1);
@@ -129,7 +139,8 @@ public class SSHManagerTestCase {
 
     @Test
     public void testSSHKeyCreation () throws IOException, LauncherException {
-        //TODO --> Use ExternalResource
+        fsManager.existingPaths.add("/usr/bin/ssh");
+
         String privateKey = "Private\nKey\nContents";
 
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
@@ -147,6 +158,13 @@ public class SSHManagerTestCase {
 
         // Check the contents
         assertEquals(privateKey, FileUtils.readFileToString(new File(sshPrivateKeyPath)));
+    }
+
+    @Test(expected=InvalidEnvironmentException.class)
+    public void testSSHNotFound () throws InvalidEnvironmentException {
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsManager);
+        sshManager.getSSHCommandLineBits();
     }
 
     @Test
