@@ -1,7 +1,10 @@
 package com.scalr.ssh.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.fs.FileSystemManager;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class UnixSSHManager extends BaseSSHManager {
@@ -9,8 +12,13 @@ public class UnixSSHManager extends BaseSSHManager {
         super(sshConfiguration);
     }
 
+    public UnixSSHManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
+        super(sshConfiguration, fsManager);
+    }
+
     @Override
-    public String[] getSSHCommandLineBits() {
+    public String[] getSSHCommandLineBits() throws InvalidEnvironmentException {
+        // TODO --> Share code with PuTTY Manager
         ArrayList<String> sshCommandLineBits = new ArrayList<String>();
 
         sshCommandLineBits.add("ssh");  // TODO -> Where is this installed?
@@ -22,7 +30,11 @@ public class UnixSSHManager extends BaseSSHManager {
 
         if (sshConfiguration.getPrivateKey() != null) {
             sshCommandLineBits.add("-i");
-            sshCommandLineBits.add(getSSHPrivateKeyFilePath());
+            try {
+                sshCommandLineBits.add(getSSHPrivateKeyFilePath());
+            } catch (IOException e) {
+                throw new InvalidEnvironmentException("Unable to resolve SSH Key file path");
+            }
         }
 
         sshCommandLineBits.add(getDestination());

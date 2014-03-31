@@ -2,9 +2,9 @@ package com.scalr.ssh.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
-import com.scalr.ssh.fs.FileSystemManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class PuTTYSSHManager extends BaseSSHManager {
@@ -18,19 +18,21 @@ public class PuTTYSSHManager extends BaseSSHManager {
         String execPath = new File("PuTTY", "putty.exe").getPath();
 
         File candidateFile;
-        Boolean foundPuTTY;
         for (String candidateLocation : candidateLocations) {
             candidateFile = new File(new File(basePath, candidateLocation), execPath);
             getLogger().fine(String.format("Looking up PuTTY in '%s'", candidateFile.getPath()));
 
-            if (FileSystemManager.fileExists(candidateFile)) {
+            if (fsManager.fileExists(candidateFile)) {
                 getLogger().fine(String.format("Found PuTTY in %s", candidateFile.getPath()));
-                return candidateFile.getAbsolutePath();
+                try {
+                    return candidateFile.getCanonicalPath();
+                } catch (IOException e) {
+                    throw new InvalidEnvironmentException("Unable to resolve path to PuTTY");
+                }
             }
         }
 
         getLogger().severe("Unable to find PuTTY");
-
         throw new InvalidEnvironmentException(String.format("Unable to find PuTTy"));
     }
 
@@ -48,7 +50,11 @@ public class PuTTYSSHManager extends BaseSSHManager {
 
         if (sshConfiguration.getPrivateKey() != null) {
             sshCommandLineBits.add("-i");
-            sshCommandLineBits.add(getSSHPrivateKeyFilePath());
+            try {
+                sshCommandLineBits.add(getSSHPrivateKeyFilePath());
+            } catch (IOException e) {
+                throw new InvalidEnvironmentException("Unable to resolve SSH Key file path");
+            }
         }
 
         sshCommandLineBits.add(getDestination());

@@ -8,7 +8,7 @@ import java.security.PrivilegedAction;
 
 public class FileSystemManager {
 
-    private static class FileExistencePrivilegedAction implements PrivilegedAction<Boolean> {
+    private class FileExistencePrivilegedAction implements PrivilegedAction<Boolean> {
         private final File file;
 
         public FileExistencePrivilegedAction (File file) {
@@ -21,7 +21,7 @@ public class FileSystemManager {
         }
     }
 
-    public static File getTemporaryFile (final String prefix, final String suffix) throws IOException {
+    public File getTemporaryFile (final String prefix, final String suffix) throws IOException {
         File tempFile = AccessController.doPrivileged(
                 new PrivilegedAction<File>() {
                     @Override
@@ -44,11 +44,11 @@ public class FileSystemManager {
         return tempFile;
     }
 
-    public static boolean fileExists (File file) {
+    public boolean fileExists (File file) {
         return AccessController.doPrivileged(new FileExistencePrivilegedAction(file));
     }
 
-    public static String getUserHome () {
+    public String getUserHome () {
         return AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
             public String run() {

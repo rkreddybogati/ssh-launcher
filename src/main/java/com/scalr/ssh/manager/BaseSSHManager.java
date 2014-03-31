@@ -17,12 +17,18 @@ import java.util.logging.Level;
 
 abstract public class BaseSSHManager extends Loggable implements SSHManagerInterface {
     protected SSHConfiguration sshConfiguration;
+    protected FileSystemManager fsManager;
 
-    public BaseSSHManager (SSHConfiguration sshConfiguration) {
+    public BaseSSHManager (SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
         this.sshConfiguration = sshConfiguration;
+        this.fsManager = fsManager;
     }
 
-    protected String getSSHPrivateKeyFilePath() {
+    public BaseSSHManager (SSHConfiguration sshConfiguration) {
+        this(sshConfiguration, new FileSystemManager());
+    }
+
+    protected String getSSHPrivateKeyFilePath() throws IOException {
         // We compute the filename based on the SSH key contents.
         // If an existing file is there, we'll be able to safely ignore it.
 
@@ -34,15 +40,28 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
         String[] keyNameBits = {"scalr-key-", DigestUtils.sha256Hex(this.sshConfiguration.getPrivateKey()), ".pem"};
         String keyName = StringUtils.join(keyNameBits, "");
 
-        String[] pathBits = {FileSystemManager.getUserHome(), ".ssh", keyName};
-        return StringUtils.join(pathBits, File.separator);
+        // TODO -> Use File.
+
+        File retFile = new File(fsManager.getUserHome());
+        String[] pathBits = {".ssh", keyName};
+
+        for (String pathBit : pathBits) {
+            retFile = new File(retFile, pathBit);
+        }
+
+        return retFile.getCanonicalPath();
     }
 
     @Override
     public void setUpSSHEnvironment() throws EnvironmentSetupException {
         if (sshConfiguration.getPrivateKey() != null) {
-            //TODO What if .ssh does not exist?
-            final String sshFilePath = getSSHPrivateKeyFilePath();
+            final String sshFilePath;
+
+            try {
+                sshFilePath = getSSHPrivateKeyFilePath();
+            } catch (IOException e) {
+                throw new EnvironmentSetupException("Unable to resolve path to SSH key");
+            }
 
             if (sshFilePath == null ) {
                 getLogger().finer("No SSH private key will be written to disk.");
@@ -61,14 +80,20 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                         return sshFile;
                     }
 
+                    if (!sshFile.getParentFile().mkdirs()) {
+                        getLogger().severe(String.format("Failed to create directory tree for SSH File '%s'",
+                                sshFilePath));
+                        return null;
+                    }
+
                     try {
                         getLogger().finer(String.format("Creating new SSH file: '%s'", sshFilePath));
                         if (!sshFile.createNewFile()) {
-                            getLogger().severe("Failed to create SSH key file.");
+                            getLogger().severe(String.format("Failed to create SSH key file: %s", sshFilePath));
                             return null;
                         }
                     } catch (IOException e) {
-                        getLogger().log(Level.SEVERE, "Error creating SSH File", e);
+                        getLogger().log(Level.SEVERE, String.format("Error creating SSH File '%s'", sshFilePath), e);
                         return null;
                     }
                     if (!sshFile.setWritable(true, true)) {

@@ -5,7 +5,6 @@ import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListParser;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.fs.FileSystemManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
 import com.scalr.ssh.manager.UnixSSHManager;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +28,7 @@ public class MacNativeSSHLauncher extends BaseSSHLauncher {
         logger.fine("Querying default Terminal configuration");
 
         return AccessController.doPrivileged(new PrivilegedAction<NSDictionary>() {
-            final String[] pathBits = {FileSystemManager.getUserHome(), "Library", "Preferences",
+            final String[] pathBits = {fsManager.getUserHome(), "Library", "Preferences",
                                        "com.apple.Terminal.plist"};
 
             @Override
@@ -86,7 +85,7 @@ public class MacNativeSSHLauncher extends BaseSSHLauncher {
         File commandFile;
 
         try {
-            commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".terminal");
+            commandFile = fsManager.getTemporaryFile("ssh-command", ".terminal");
         } catch (IOException e) {
             throw new LauncherException("Unable to provision a temporary file for Terminal command.");
         }

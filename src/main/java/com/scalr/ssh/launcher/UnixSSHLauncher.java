@@ -4,7 +4,6 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.fs.FileSystemManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
 import com.scalr.ssh.manager.UnixSSHManager;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +19,7 @@ public abstract class UnixSSHLauncher extends BaseSSHLauncher {
         File commandFile;
 
         try {
-            commandFile = FileSystemManager.getTemporaryFile("ssh-command", ".sh");
+            commandFile = fsManager.getTemporaryFile("ssh-command", ".sh");
         } catch (IOException e) {
             throw new EnvironmentSetupException("Error creating command file.");
         }
