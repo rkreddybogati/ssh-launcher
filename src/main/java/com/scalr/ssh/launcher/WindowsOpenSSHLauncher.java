@@ -4,9 +4,9 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.fs.FileSystemManager;
 import com.scalr.ssh.manager.OpenSSHManager;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class WindowsOpenSSHLauncher extends BaseSSHLauncher {
     public WindowsOpenSSHLauncher(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
@@ -22,10 +22,22 @@ public class WindowsOpenSSHLauncher extends BaseSSHLauncher {
         OpenSSHManager sshManager = new OpenSSHManager(sshConfiguration);
         sshManager.setUpSSHEnvironment();
 
-        ArrayList<String> sshCommandBits = new ArrayList<String>();
-        sshCommandBits.add("cmd.exe");
-        sshCommandBits.add("/c");
-        sshCommandBits.add("\"\"" + StringUtils.join(sshManager.getSSHCommandLineBits(), "\" \"") + "\"\"");
-        return sshCommandBits.toArray(new String[sshCommandBits.size()]);
+        ArrayList<String> launcherCommandLineBits = new ArrayList<String>();
+
+        launcherCommandLineBits.add("cmd.exe");
+        launcherCommandLineBits.add("/c");
+        launcherCommandLineBits.add("start");
+        launcherCommandLineBits.add("Scalr SSH Session");
+        Collections.addAll(launcherCommandLineBits, sshManager.getSSHCommandLineBits());
+
+        ArrayList<String> escapedLauncherCommandLineBits = new ArrayList<String>();
+        for (String sshCommandLineBit : launcherCommandLineBits) {
+            if (sshCommandLineBit.contains(" ")) {
+                escapedLauncherCommandLineBits.add("\"" + sshCommandLineBit + "\"");
+            } else {
+                escapedLauncherCommandLineBits.add(sshCommandLineBit);
+            }
+        }
+        return escapedLauncherCommandLineBits.toArray(new String[escapedLauncherCommandLineBits.size()]);
     }
 }
