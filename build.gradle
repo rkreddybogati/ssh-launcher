@@ -25,6 +25,12 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
+
+jar.ext {
+    javaVersion = System.properties["java.version"]
+    javaVendor  = System.properties["java.vendor"]
+}
+
 jar {
     manifest {
         attributes  'Application-Name': 'Scalr SSH Launcher',
@@ -34,11 +40,10 @@ jar {
                     'Permissions': 'all-permissions',
                     'Codebase': codebase,
                     'Application-Library-Allowable-Codebase': allowableCodebase,
-                    'Created-By': '1.7.0_51'
-                    //'Manifest-Version': '1.0',
-                    //'Trusted-Only': 'true',
+                    'Created-By': "$javaVersion ($javaVendor)",
+                    'Manifest-Version': '1.0',
+                    'Trusted-Only': 'true'
                     //'Trusted-Library': 'true',
-                    //'Created-By': ''
     }
 }
 
@@ -46,3 +51,16 @@ shadow {
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
 }
+
+task signedJar (type: Task, dependsOn: shadowJar) << {
+    ant.signjar(
+        jar: shadow.getShadowJar().getCanonicalPath(),
+        keystore: signingKeyStore,
+        storepass: signingKeyPass,
+        alias: signingKeyAlias,
+        strict: true,
+        verbose: true
+    )
+}
+
+task fullBuild(type: Task, dependsOn: signedJar)
