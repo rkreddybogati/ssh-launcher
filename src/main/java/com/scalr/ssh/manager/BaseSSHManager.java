@@ -101,13 +101,13 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                         getLogger().log(Level.SEVERE, String.format("Error creating SSH File '%s'", sshFilePath), e);
                         return null;
                     }
-                    if (!sshFile.setWritable(true, true)) {
-                        getLogger().severe(String.format("Failed to make SSH File '%s' writable", sshFilePath));
-                        return null;
+
+                    if (!sshFile.setWritable(false, false) || !sshFile.setWritable(true, true)) {
+                        getLogger().warning(String.format("Failed to make SSH File '%s' writable", sshFilePath));
                     }
-                    if (!sshFile.setReadable(true, true)) {
-                        getLogger().severe(String.format("Failed to make SSH File '%s' readable", sshFilePath));
-                        return null;
+
+                    if (!sshFile.setReadable(false, false) || !sshFile.setReadable(true, true)) {
+                        getLogger().warning(String.format("Failed to make SSH File '%s' writable", sshFilePath));
                     }
 
                     return sshFile;
