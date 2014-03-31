@@ -70,8 +70,9 @@ public class SSHLauncherApplet extends JApplet {
         String user = getParameter("user");
         String host = getParameter("host");
         String port = getParameter("port");
-        String sshPrivateKey = getParameter("sshPrivateKey");
-        String name = getParameter("name");
+        String openSSHPrivateKey = getParameter("openssh-private-key");
+        String puttyPrivateKey = getParameter("putty-private-key");
+
 
         if (user == null || host == null) {
             throw new InvalidConfigurationException("User ('user') and Host ('host') must be specified.");
@@ -88,19 +89,22 @@ public class SSHLauncherApplet extends JApplet {
             }
         }
 
-        if (sshPrivateKey != null) {
-            // The private key is base64 encoded to preserve newlines
-            byte[] decoded = Base64.decodeBase64(sshPrivateKey);
-            try {
-                sshConfiguration.setPrivateKey(new String(decoded, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                throw new InvalidConfigurationException("UTF-8 encoded is not supported"); // TODO -> Add info for those
+        // The private keys are base64 encoded to preserve newlines
+        try {
+            if (openSSHPrivateKey != null) {
+                byte[] decoded = Base64.decodeBase64(openSSHPrivateKey);
+                sshConfiguration.setOpenSSHPrivateKey(new String(decoded, "UTF-8"));
             }
+
+            if (puttyPrivateKey != null) {
+                byte[] decoded = Base64.decodeBase64(puttyPrivateKey);
+                sshConfiguration.setPuttySSHPrivateKey(new String(decoded, "UTF-8"));
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            throw new InvalidConfigurationException("UTF-8 encoded is not supported"); // TODO -> Add info for those
         }
 
-        if (name != null) {
-            sshConfiguration.setName(name);
-        }
 
         return sshConfiguration;
     }
@@ -121,6 +125,7 @@ public class SSHLauncherApplet extends JApplet {
             if (returnURL == null) {
                 return;
             }
+
             try {
                 getAppletContext().showDocument(new URL(returnURL));
             } catch (MalformedURLException e) {

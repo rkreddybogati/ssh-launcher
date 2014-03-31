@@ -4,8 +4,8 @@ public class SSHConfiguration {
     private String username;
     private String host;
     private Integer port;
-    private String privateKey;
-    private String name = "Unknown";  //TODO -> Remove!
+    private String openSSHPrivateKey;
+    private String puttySSHPrivateKey;
 
     public SSHConfiguration (String username, String host) {
         this.username = username;
@@ -28,19 +28,19 @@ public class SSHConfiguration {
         this.port = port;
     }
 
-    public String getPrivateKey() {
-        return privateKey;
+    public String getOpenSSHPrivateKey() {
+        return openSSHPrivateKey;
     }
 
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
+    public void setOpenSSHPrivateKey(String openSSHPrivateKey) {
+        this.openSSHPrivateKey = openSSHPrivateKey;
     }
 
-    public String getName() {
-        return name;
+    public String getPuttySSHPrivateKey() {
+        return puttySSHPrivateKey;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPuttySSHPrivateKey(String puttySSHPrivateKey) {
+        this.puttySSHPrivateKey = puttySSHPrivateKey;
     }
 }

@@ -7,13 +7,23 @@ import com.scalr.ssh.fs.FileSystemManager;
 import java.io.File;
 import java.io.IOException;
 
-public class PuTTYSSHManager extends BaseSSHManager {
-    public PuTTYSSHManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
+public class PuTTYManager extends BaseSSHManager {
+    public PuTTYManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
         super(sshConfiguration, fsManager);
     }
 
-    public PuTTYSSHManager(SSHConfiguration sshConfiguration) {
+    public PuTTYManager(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
+    }
+
+    @Override
+    protected String getPrivateKey() {
+        return sshConfiguration.getPuttySSHPrivateKey();
+    }
+
+    @Override
+    protected String getPrivateKeyExtension() {
+        return "ppk";
     }
 
     @Override

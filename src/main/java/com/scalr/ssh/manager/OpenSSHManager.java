@@ -4,12 +4,22 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.fs.FileSystemManager;
 
-public class UnixSSHManager extends BaseSSHManager {
-    public UnixSSHManager(SSHConfiguration sshConfiguration) {
+public class OpenSSHManager extends BaseSSHManager {
+    public OpenSSHManager(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 
-    public UnixSSHManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
+    @Override
+    protected String getPrivateKey() {
+        return sshConfiguration.getOpenSSHPrivateKey();
+    }
+
+    @Override
+    protected String getPrivateKeyExtension() {
+        return "pem";
+    }
+
+    public OpenSSHManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
         super(sshConfiguration, fsManager);
     }
 

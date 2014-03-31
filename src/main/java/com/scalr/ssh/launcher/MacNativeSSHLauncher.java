@@ -5,8 +5,8 @@ import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListParser;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
+import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
-import com.scalr.ssh.manager.UnixSSHManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -69,7 +69,7 @@ public class MacNativeSSHLauncher extends BaseSSHLauncher {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManagerInterface sshManager = new UnixSSHManager(sshConfiguration);
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
         sshManager.setUpSSHEnvironment();
 
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();

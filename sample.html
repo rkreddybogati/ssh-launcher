@@ -30,11 +30,12 @@
 
       var parameters = {
         //"returnURL": "http://localhost:8000/",
-        "user": "root",           // User to connect as (required)
-        "host": "orozco.fr",      // Host to connect to (required)
-        "sshPrivateKey": "",      // Private key to connect with (OpenSSH format on Mac, PuTTY format on Windows) (optional)
-        "port": "22",             // Port to connect to (optional: defaults to 22)
-        "logLevel": "FINER"       // Log level to report (optional: defaults to INFO)
+        "user": "root",             // User to connect as (required)
+        "host": "orozco.fr",        // Host to connect to (required)
+        "openssh-private-key": "",  // Private key to connect with (OpenSSH format) (optional)
+        "putty-private-key": "",    // Private key to connect with (PuTTY format) (optional)
+        "port": "22",               // Port to connect to (optional: defaults to 22)
+        "logLevel": "FINER"         // Log level to report (optional: defaults to INFO)
       };
 
       docWriteWrapper($('#ssh-launcher'), function () {

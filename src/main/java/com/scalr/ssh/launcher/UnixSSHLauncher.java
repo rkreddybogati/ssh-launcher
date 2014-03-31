@@ -4,8 +4,8 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
+import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
-import com.scalr.ssh.manager.UnixSSHManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -46,7 +46,7 @@ public abstract class UnixSSHLauncher extends BaseSSHLauncher {
     }
 
     protected SSHManagerInterface getSSHManager(SSHConfiguration sshConfiguration) {
-        return new UnixSSHManager(sshConfiguration);
+        return new OpenSSHManager(sshConfiguration);
     }
 
     @Override

@@ -31,16 +31,20 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
         this(sshConfiguration, new FileSystemManager());
     }
 
+    abstract protected String getPrivateKey ();
+    abstract protected String getPrivateKeyExtension();
+
     protected String getSSHPrivateKeyFilePath() throws IOException {
         // We compute the filename based on the SSH key contents.
         // If an existing file is there, we'll be able to safely ignore it.
 
-        if (this.sshConfiguration.getPrivateKey() == null) {
+        if (getPrivateKey() == null) {
             getLogger().finer("No private key was defined");
             return null;
         }
 
-        String[] keyNameBits = {"scalr-key-", DigestUtils.sha256Hex(this.sshConfiguration.getPrivateKey()), ".pem"};
+        String[] keyNameBits = {"scalr", "-", "key", "-",  DigestUtils.sha256Hex(getPrivateKey()), ".",
+                                getPrivateKeyExtension()};
         String keyName = StringUtils.join(keyNameBits, "");
 
         // TODO -> Use File.
@@ -57,7 +61,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
 
     @Override
     public void setUpSSHEnvironment() throws EnvironmentSetupException {
-        if (sshConfiguration.getPrivateKey() != null) {
+        if (getPrivateKey() != null) {
             final String sshFilePath;
 
             try {
@@ -83,7 +87,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                         return sshFile;
                     }
 
-                    if (!sshFile.getParentFile().mkdirs()) {
+                    if (!sshFile.getParentFile().exists() && !sshFile.getParentFile().mkdirs()) {
                         getLogger().severe(String.format("Failed to create directory tree for SSH File '%s'",
                                 sshFilePath));
                         return null;
@@ -119,7 +123,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
 
             try {
                 BufferedWriter output = new BufferedWriter(new FileWriter(sshFile));
-                output.write(sshConfiguration.getPrivateKey());
+                output.write(getPrivateKey());
                 output.close();
             } catch (IOException e) {
                 getLogger().log(Level.SEVERE, "Error writing private key to SSH File", e);
@@ -150,7 +154,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
             sshCommandLineBits.add(sshConfiguration.getPort().toString());
         }
 
-        if (sshConfiguration.getPrivateKey() != null) {
+        if (getPrivateKey() != null) {
             sshCommandLineBits.add(getPrivateKeyOption());
             try {
                 sshCommandLineBits.add(getSSHPrivateKeyFilePath());
