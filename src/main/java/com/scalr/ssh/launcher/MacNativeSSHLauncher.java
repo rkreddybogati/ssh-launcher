@@ -79,7 +79,7 @@ public class MacNativeSSHLauncher extends BaseSSHLauncher {
         root.put("CommandString", sshCommandLine);
         root.put("RunCommandAsShell", true);
         root.put("name", "Scalr SSH");
-        root.put("shellExitAction", 0);
+        root.put("shellExitAction", 2);  // Do not close the window.
         root.put("type", "Window Settings");
 
         File commandFile;

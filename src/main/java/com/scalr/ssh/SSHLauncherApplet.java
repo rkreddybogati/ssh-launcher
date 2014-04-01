@@ -17,6 +17,14 @@ import java.util.logging.Logger;
 
 public class SSHLauncherApplet extends JApplet {
     private final static Logger logger = Logger.getLogger(SSHLauncherApplet.class.getName());
+    private final static String hostParam                   = "host";
+    private final static String userParam                   = "user";
+    private final static String portParam                   = "port";
+    private final static String logLevelParam               = "logLevel";
+    private final static String openSSHKeyParam             = "sshPrivateKey";
+    private final static String puttyKeyParam               = "puttyPrivateKey";
+    private final static String preferredLauncherParam      = "preferredLauncher";
+    private final static String returnURLParam              = "returnURL";
 
     public SSHLauncherApplet () {
     }
@@ -42,7 +50,7 @@ public class SSHLauncherApplet extends JApplet {
         rootLogger.addHandler(textAreaHandler);
 
 
-        String requestedLogLevel = getParameter("logLevel");
+        String requestedLogLevel = getParameter(logLevelParam);
         Level logLevel;
 
         if (requestedLogLevel != null) {
@@ -67,11 +75,11 @@ public class SSHLauncherApplet extends JApplet {
     }
 
     private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
-        String user = getParameter("user");
-        String host = getParameter("host");
-        String port = getParameter("port");
-        String openSSHPrivateKey = getParameter("openssh-private-key");
-        String puttyPrivateKey = getParameter("putty-private-key");
+        String host = getParameter(hostParam);
+        String user = getParameter(userParam);
+        String port = getParameter(portParam);
+        String openSSHPrivateKey = getParameter(openSSHKeyParam);
+        String puttyPrivateKey = getParameter(puttyKeyParam);
 
 
         if (host == null) {
@@ -123,12 +131,12 @@ public class SSHLauncherApplet extends JApplet {
             try {
 
                 logger.info("Creating SSH Session");
-                String preferredLauncher = getParameter("preferred-launcher");
+                String preferredLauncher = getParameter(preferredLauncherParam);
                 SSHLauncher.launchSSHFromConfiguration(sshConfiguration, preferredLauncher);
 
                 // If we did not fail, let's cleanup.
 
-                String returnURL = getParameter("returnURL");
+                String returnURL = getParameter(returnURLParam);
                 if (returnURL == null) {
                     return;
                 }

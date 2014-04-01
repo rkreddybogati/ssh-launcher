@@ -25,7 +25,7 @@ public class WindowsOpenSSHLauncher extends BaseSSHLauncher {
         ArrayList<String> launcherCommandLineBits = new ArrayList<String>();
 
         launcherCommandLineBits.add("cmd.exe");
-        launcherCommandLineBits.add("/c");
+        launcherCommandLineBits.add("/c"); // TODO -> Use /k?
         launcherCommandLineBits.add("start");
         launcherCommandLineBits.add("Scalr SSH Session");
         Collections.addAll(launcherCommandLineBits, sshManager.getSSHCommandLineBits());

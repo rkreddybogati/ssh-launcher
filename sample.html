@@ -22,7 +22,7 @@
       }
 
       var attributes = {
-        archive: './build/distributions/ssh-launcher-0.2.0-shadow.jar',
+        archive: './build/distributions/ssh-launcher-0.2.1-shadow.jar',
         code:'com.scalr.ssh.SSHLauncherApplet',
         width:'900',
         height:'200',
@@ -32,10 +32,10 @@
         //"returnURL": "http://localhost:8000/",
         "user": "root",             // User to connect as (required)
         "host": "orozco.fr",        // Host to connect to (required)
-        "openssh-private-key": "",  // Private key to connect with (OpenSSH format) (optional)
-        "putty-private-key": "",    // Private key to connect with (PuTTY format) (optional)
+        "sshPrivateKey": "",  // Private key to connect with (OpenSSH format) (optional)
+        "puttyPrivateKey": "",    // Private key to connect with (PuTTY format) (optional)
         "port": "22",               // Port to connect to (optional: defaults to 22)
-        "preferred-launcher": "",   // Fully-qualified class name of the launcher to try first (optional
+        "preferredLauncher": "",   // Fully-qualified class name of the launcher to try first (optional
         "logLevel": "FINER"         // Log level to report (optional: defaults to INFO)
       };
 
