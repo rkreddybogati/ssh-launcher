@@ -1,17 +1,15 @@
 package com.scalr.ssh;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.launcher.MacNativeSSHLauncher;
 import com.scalr.ssh.launcher.SSHLauncherInterface;
-import com.scalr.ssh.launcher.WindowsPuTTYLauncher;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,47 +23,41 @@ public class SSHLauncher {
         System.exit(1);
     }
 
-    private static SSHLauncherInterface getSSHLauncher(SSHConfiguration sshConfiguration) throws InvalidEnvironmentException {
-        String osName = AccessController.doPrivileged(new PrivilegedAction<String>() {
+    public static void launchSSHFromConfiguration(SSHConfiguration sshConfiguration, String preferredLauncher) throws LauncherException {
+        String platformName = AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
             public String run() {
-                return System.getProperty("os.name").toLowerCase();
+                return System.getProperty("os.name");
             }
         });
 
-        logger.info(String.format("Detected Platform: '%s'", osName));
+        logger.info(String.format("Detected Platform: '%s'", platformName));
+        SSHLauncherManager sshLauncherManager = new SSHLauncherManager(platformName);
 
-        if (osName.contains("win")) {
-            return new WindowsPuTTYLauncher(sshConfiguration);
-
-        } else if (osName.contains("mac")) {
-            return new MacNativeSSHLauncher(sshConfiguration);
-
-        } else if (osName.contains("nux") || osName.contains("nix")) {
-            return new WindowsPuTTYLauncher(sshConfiguration);  // TODO -> This is bad.
+        ArrayList<SSHLauncherInterface> sshLaunchers = sshLauncherManager.getOrderedSSHLaunchers(sshConfiguration, preferredLauncher);
+        if (sshLaunchers.isEmpty()) {
+            logger.severe(String.format("No SSH Launcher available for platform '%s'", platformName));
         }
 
-        logger.severe(String.format("Platform '%s' is not supported", osName));
-        throw new InvalidEnvironmentException(String.format("No SSH Launcher for platform: %s", osName));
-    }
+        for (SSHLauncherInterface sshLauncher: sshLaunchers) {
+            logger.info(String.format("Creating SSH Session with launcher: '%s'", sshLauncher.getClass().getCanonicalName()));
+            try {
+                String[] sshCommand = sshLauncher.getSSHCommand();
+                logger.info(String.format("Launcher Command Line: '%s'", StringUtils.join(sshCommand, " ")));
 
-    public static void launchSSHFromConfiguration(SSHConfiguration sshConfiguration) throws LauncherException {
-        SSHLauncherInterface launcher = getSSHLauncher(sshConfiguration);
+                ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
+                pb.start();
 
-        String sshCommand[] = launcher.getSSHCommand();
-
-        logger.info(String.format("Launcher Command Line: '%s'", StringUtils.join(sshCommand, " ")));
-
-        ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
-
-        try {
-            pb.start();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Unable to create SSH Session", e);
-            throw new LauncherException(String.format("Unable to start process: %s", e));
+                logger.info("Assuming SSH session was launched. Exiting.");
+                return;
+            } catch (LauncherException e) {
+                logger.log(Level.WARNING, String.format("Launcher '%s' failed to prepare SSH", sshLauncher.getClass().getCanonicalName()), e);
+            } catch (IOException e) {
+                logger.log(Level.WARNING, String.format("Launcher '%s' failed to launch SSH", sshLauncher.getClass().getCanonicalName()), e);
+            }
         }
 
-        logger.info("Assuming SSH session was launched. Exiting.");
+        throw new LauncherException("All launchers failed to launch SSH");
     }
 
     public static void main(String args[]) throws IOException, LauncherException, InterruptedException {
@@ -92,7 +84,7 @@ public class SSHLauncher {
 
         SSHConfiguration sshConfiguration = new SSHConfiguration(cmd.getOptionValue("host"));
         sshConfiguration.setUsername(username);
-        launchSSHFromConfiguration(sshConfiguration);
+        launchSSHFromConfiguration(sshConfiguration, null);
 
         System.out.println("Exiting");
     }

@@ -37,11 +37,4 @@ and that older versions (the widely distributed sourceforge one) are unable to
 properly parse permissions (and will therefore refuse to launch).
 
 
-TODOs
-=====
-
-  + On systems where we support multiple SSH platforms, we should try each of
-    one of them until one succeeds. Additionally, we should make the prefered
-    platform configurable.
-
   [0]: http://miked.ict.rave.ac.uk/display/sshwindows/OpenSSH+for+Windows

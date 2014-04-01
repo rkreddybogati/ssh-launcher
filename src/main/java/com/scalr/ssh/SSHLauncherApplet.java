@@ -116,28 +116,35 @@ public class SSHLauncherApplet extends JApplet {
     public void start() {
         logger.info("Starting");
 
+
         try {
             SSHConfiguration sshConfiguration = getSSHConfiguration();
 
-            logger.info("Creating SSH Session");
-
-            SSHLauncher.launchSSHFromConfiguration(sshConfiguration);
-
-            // If we did not fail, let's cleanup.
-
-            String returnURL = getParameter("returnURL");
-            if (returnURL == null) {
-                return;
-            }
-
             try {
-                getAppletContext().showDocument(new URL(returnURL));
-            } catch (MalformedURLException e) {
-                logger.warning(String.format("Unable to exit: %s", e.toString()));
+
+                logger.info("Creating SSH Session");
+                String preferredLauncher = getParameter("preferred-launcher");
+                SSHLauncher.launchSSHFromConfiguration(sshConfiguration, preferredLauncher);
+
+                // If we did not fail, let's cleanup.
+
+                String returnURL = getParameter("returnURL");
+                if (returnURL == null) {
+                    return;
+                }
+
+                try {
+                    getAppletContext().showDocument(new URL(returnURL));
+                } catch (MalformedURLException e) {
+                    logger.warning(String.format("Unable to exit: %s", e.toString()));
+                }
+
+            } catch (LauncherException e) {
+                logger.log(Level.SEVERE, "Unable to create SSH Session", e);
             }
 
-        } catch (LauncherException e) {
-            logger.log(Level.SEVERE, "Unable to create SSH Session", e);
+        } catch (InvalidConfigurationException e) {
+            logger.log(Level.SEVERE, "Unable to create SSH Configuration", e);
         }
     }
 
