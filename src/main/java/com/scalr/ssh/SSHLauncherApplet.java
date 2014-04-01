@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 public class SSHLauncherApplet extends JApplet {
     private final static Logger logger = Logger.getLogger(SSHLauncherApplet.class.getName());
+    private final static int    paramLogLength = 20;
     private final static String hostParam                   = "host";
     private final static String userParam                   = "user";
     private final static String portParam                   = "port";
@@ -72,6 +73,22 @@ public class SSHLauncherApplet extends JApplet {
 
         // Info
         logger.info("Initialized applet");
+
+        // Log paramters
+        String paramName;
+        String paramValue;
+
+        for (String[] paramDefinition : getParameterInfo()) {
+            paramName = paramDefinition[0];
+            paramValue = getParameter(paramName);
+            if (paramValue == null) {
+                paramValue = "";
+            }
+            if (paramValue.length() > paramLogLength) {
+                paramValue = String.format("%s...", paramValue.substring(0, paramLogLength));
+            }
+            logger.config(String.format("Applet parameter '%s': '%s'", paramName, paramValue));
+        }
     }
 
     private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
@@ -162,5 +179,19 @@ public class SSHLauncherApplet extends JApplet {
 
     public void destroy() {
         logger.info("Unloading");
+    }
+
+    @Override
+    public String[][] getParameterInfo() {
+        return new String [][] {
+            {hostParam,                 "string",  "Host to SSH into"},
+            {userParam,                 "boolean", "User to SSH as (optional)"},
+            {portParam,                 "int",     "Port to SSH to (optional)"},
+            {logLevelParam,             "string",  "Logging level (optional, defaults to INFO)"},
+            {openSSHKeyParam,           "string",  "base64-encoded OpenSSH Private Key to SSH with (optional)"},
+            {puttyKeyParam,             "url",     "base64-encoded PuTTY Private Key to SSH with (optional)"},
+            {preferredLauncherParam,    "url",     "Preferred SSH Launcher to use (optional)"},
+            {returnURLParam,            "url",     "URL to return to once the applet exits (optional)"},
+        };
     }
 }
