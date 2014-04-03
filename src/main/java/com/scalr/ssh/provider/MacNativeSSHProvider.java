@@ -103,14 +103,13 @@ public class MacNativeSSHProvider extends BaseSSHProvider {
             throw new LauncherException("Terminal command file has no canonical path");
         }
 
-        // TODO -> If we the attr is not present, it's OK.
         ProcessBuilder pb = new ProcessBuilder().command("/usr/bin/xattr", "-d", "com.apple.quarantine", canonicalPath);
         try {
             Process p = pb.start();
             Integer ret = p.waitFor();
 
             if (ret != 0) {
-                throw new LauncherException(String.format("Unable to remove Terminal command file from quarantine: %s", ret));
+                getLogger().warning(String.format("May have failed to remove Terminal command file '%s' from quarantine: return was '%s'", canonicalPath, ret));
             }
         } catch (IOException e) {
             throw new LauncherException("xattr not found.");
