@@ -22,8 +22,8 @@
       }
 
       var attributes = {
-        archive: './build/distributions/ssh-launcher-0.2.2-shadow.jar',
-        code:'com.scalr.ssh.SSHLauncherApplet',
+        archive: './build/distributions/ssh-launcher-0.2.4-shadow.jar',
+        code:'com.scalr.ssh.launcher.SSHLauncherApplet',
         width:'900',
         height:'200',
       };
@@ -32,11 +32,12 @@
         //"returnURL": "http://localhost:8000/",
         "user": "root",             // User to connect as (required)
         "host": "orozco.fr",        // Host to connect to (required)
-        "sshPrivateKey": "",  // Private key to connect with (OpenSSH format) (optional)
-        "puttyPrivateKey": "",    // Private key to connect with (PuTTY format) (optional)
+        "sshPrivateKey": "",        // Private key to connect with (OpenSSH format) (optional)
+        "puttyPrivateKey": "",      // Private key to connect with (PuTTY format) (optional)
         "port": "22",               // Port to connect to (optional: defaults to 22)
-        "preferredLauncher": "",   // Fully-qualified class name of the launcher to try first (optional
+        "preferredProvider": "",    // Fully-qualified class name of the provider to try first (optional)
         "logLevel": "FINER"         // Log level to report (optional: defaults to INFO)
+        "sshKeyName": "",           // Name to use for the SSH key (optional: defaults to a hash of the key)
       };
 
       docWriteWrapper($('#ssh-launcher'), function () {
