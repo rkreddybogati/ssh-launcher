@@ -1,12 +1,14 @@
 package com.scalr.ssh;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.launcher.SSHLauncherInterface;
-import org.apache.commons.cli.*;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -16,14 +18,23 @@ import java.util.logging.Logger;
 
 public class SSHLauncher {
     private final static Logger logger = Logger.getLogger(SSHLauncher.class.getName());
+    private LauncherConfigurationInterface launcherConfiguration;
 
-    public static void printHelp(Options options) {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("ssh-launcher", options);
-        System.exit(1);
+    public final static String hostParam                   = "host";
+    public final static String userParam                   = "user";
+    public final static String portParam                   = "port";
+    public final static String logLevelParam               = "logLevel";
+    public final static String openSSHKeyParam             = "sshPrivateKey";
+    public final static String puttyKeyParam               = "puttyPrivateKey";
+    public final static String sshKeyNameParam             = "sshKeyName";
+    public final static String preferredLauncherParam      = "preferredLauncher";
+    public final static String returnURLParam              = "returnURL";
+
+    public SSHLauncher (LauncherConfigurationInterface launcherConfiguration) {
+        this.launcherConfiguration = launcherConfiguration;
     }
 
-    public static void launchSSHFromConfiguration(SSHConfiguration sshConfiguration, String preferredLauncher) throws LauncherException {
+    private void launchFromSSHConfiguration(SSHConfiguration sshConfiguration, String preferredLauncher) throws LauncherException {
         String platformName = AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
             public String run() {
@@ -60,32 +71,88 @@ public class SSHLauncher {
         throw new LauncherException("All launchers failed to launch SSH");
     }
 
-    public static void main(String args[]) throws IOException, LauncherException, InterruptedException {
-        Options options = new Options();
-        options.addOption("u", "username", true, "SSH user to login as");
-        options.addOption("h", "host", true, "Host to connect to");
-        CommandLineParser parser = new GnuParser();
+    private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
+        String host                 = launcherConfiguration.getOption(hostParam);
+        String user                 = launcherConfiguration.getOption(userParam);
+        String port                 = launcherConfiguration.getOption(portParam);
+        String openSSHPrivateKey    = launcherConfiguration.getOption(openSSHKeyParam);
+        String puttyPrivateKey      = launcherConfiguration.getOption(puttyKeyParam);
+        String sshKeyName           = launcherConfiguration.getOption(sshKeyNameParam);
 
-        CommandLine cmd = null;
+
+        if (host == null) {
+            throw new InvalidConfigurationException("Host ('host') must be specified.");
+        }
+
+        SSHConfiguration sshConfiguration = new SSHConfiguration(host);
+
+        if (user != null) {
+            sshConfiguration.setUsername(user);
+        }
+
+        if (port != null) {
+            try {
+                Integer intPort = Integer.parseInt(port);
+                sshConfiguration.setPort(intPort);
+            } catch (NumberFormatException e) {
+                throw new InvalidConfigurationException(String.format("Port must be a number (received: '%s')", port));
+            }
+        }
+
+        if (sshKeyName != null) {
+            sshConfiguration.setSSHKeyName(sshKeyName);
+        }
+
+        // The private keys are base64 encoded to preserve newlines
         try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException e) {
-            printHelp(options);
-            System.exit(1);
+            if (openSSHPrivateKey != null) {
+                byte[] decoded = Base64.decodeBase64(openSSHPrivateKey);
+                sshConfiguration.setOpenSSHPrivateKey(new String(decoded, "UTF-8"));
+            }
+
+            if (puttyPrivateKey != null) {
+                byte[] decoded = Base64.decodeBase64(puttyPrivateKey);
+                sshConfiguration.setPuttySSHPrivateKey(new String(decoded, "UTF-8"));
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            throw new InvalidConfigurationException("UTF-8 encoded is not supported"); // TODO -> Add info for those
         }
 
-        String username = cmd.getOptionValue("username");
-        String host     = cmd.getOptionValue("host");
 
-        if (username == null || host == null)  {
-            printHelp(options);
-            System.exit(1);
+        return sshConfiguration;
+    }
+
+    /*
+    Launch an SSH session. Return whether the session was (apparently) launched or not.
+     */
+    public boolean launch() {
+        try {
+            SSHConfiguration sshConfiguration = getSSHConfiguration();
+            try {
+                logger.info("Creating SSH Session");
+                String preferredLauncher = launcherConfiguration.getOption(preferredLauncherParam);
+                launchFromSSHConfiguration(sshConfiguration, preferredLauncher);
+                return true;
+            } catch (LauncherException e) {
+                logger.log(Level.SEVERE, "Unable to create SSH Session", e);
+            }
+        } catch (InvalidConfigurationException e) {
+            logger.log(Level.SEVERE, "Unable to create SSH Configuration", e);
         }
-
-        SSHConfiguration sshConfiguration = new SSHConfiguration(cmd.getOptionValue("host"));
-        sshConfiguration.setUsername(username);
-        launchSSHFromConfiguration(sshConfiguration, null);
-
-        System.out.println("Exiting");
+        return false;
+    }
+    public static String[][] getParameterInfo () {
+        return new String [][] {
+                {hostParam,                 "string",  "Host to SSH into"},
+                {userParam,                 "boolean", "User to SSH as (optional)"},
+                {portParam,                 "int",     "Port to SSH to (optional)"},
+                {logLevelParam,             "string",  "Logging level (optional, defaults to INFO)"},
+                {openSSHKeyParam,           "string",  "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
+                {puttyKeyParam,             "url",     "Base64-encoded PuTTY Private Key to SSH with (optional)"},
+                {sshKeyNameParam,           "string",  "Name to use for the private key (optional)"},
+                {preferredLauncherParam,    "url",     "Preferred SSH Launcher to use (optional)"},
+                {returnURLParam,            "url",     "URL to return to once the applet exits (optional)"},
+        };
     }
 }

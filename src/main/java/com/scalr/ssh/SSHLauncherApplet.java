@@ -1,14 +1,9 @@
 package com.scalr.ssh;
 
-import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.InvalidConfigurationException;
-import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.logging.JTextAreaHandler;
-import org.apache.commons.codec.binary.Base64;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Handler;
@@ -18,15 +13,6 @@ import java.util.logging.Logger;
 public class SSHLauncherApplet extends JApplet {
     private final static Logger logger = Logger.getLogger(SSHLauncherApplet.class.getName());
     private final static int    paramLogLength = 20;
-    private final static String hostParam                   = "host";
-    private final static String userParam                   = "user";
-    private final static String portParam                   = "port";
-    private final static String logLevelParam               = "logLevel";
-    private final static String openSSHKeyParam             = "sshPrivateKey";
-    private final static String puttyKeyParam               = "puttyPrivateKey";
-    private final static String sshKeyNameParam             = "sshKeyName";
-    private final static String preferredLauncherParam      = "preferredLauncher";
-    private final static String returnURLParam              = "returnURL";
 
     public SSHLauncherApplet () {
     }
@@ -41,8 +27,6 @@ public class SSHLauncherApplet extends JApplet {
 
         JScrollPane jScrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        System.out.println("Added pane");
-
         getContentPane().add(jScrollPane);
 
 
@@ -52,7 +36,7 @@ public class SSHLauncherApplet extends JApplet {
         rootLogger.addHandler(textAreaHandler);
 
 
-        String requestedLogLevel = getParameter(logLevelParam);
+        String requestedLogLevel = getParameter(SSHLauncher.logLevelParam);
         Level logLevel;
 
         if (requestedLogLevel != null) {
@@ -75,7 +59,6 @@ public class SSHLauncherApplet extends JApplet {
         // Info
         logger.info("Initialized applet");
 
-        // Log paramters
         String paramName;
         String paramValue;
 
@@ -92,90 +75,26 @@ public class SSHLauncherApplet extends JApplet {
         }
     }
 
-    private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
-        String host = getParameter(hostParam);
-        String user = getParameter(userParam);
-        String port = getParameter(portParam);
-        String openSSHPrivateKey = getParameter(openSSHKeyParam);
-        String puttyPrivateKey = getParameter(puttyKeyParam);
-        String sshKeyName = getParameter(sshKeyNameParam);
-
-
-        if (host == null) {
-            throw new InvalidConfigurationException("Host ('host') must be specified.");
-        }
-
-        SSHConfiguration sshConfiguration = new SSHConfiguration(host);
-
-        if (user != null) {
-            sshConfiguration.setUsername(user);
-        }
-
-        if (port != null) {
-            try {
-                Integer intPort = Integer.parseInt(port);
-                sshConfiguration.setPort(intPort);
-            } catch (NumberFormatException e) {
-                throw new InvalidConfigurationException(String.format("Port must be a number (received: '%s')", port));
-            }
-        }
-
-        if (sshKeyName != null) {
-            sshConfiguration.setSSHKeyName(sshKeyName);
-        }
-
-        // The private keys are base64 encoded to preserve newlines
-        try {
-            if (openSSHPrivateKey != null) {
-                byte[] decoded = Base64.decodeBase64(openSSHPrivateKey);
-                sshConfiguration.setOpenSSHPrivateKey(new String(decoded, "UTF-8"));
-            }
-
-            if (puttyPrivateKey != null) {
-                byte[] decoded = Base64.decodeBase64(puttyPrivateKey);
-                sshConfiguration.setPuttySSHPrivateKey(new String(decoded, "UTF-8"));
-            }
-
-        } catch (UnsupportedEncodingException e) {
-            throw new InvalidConfigurationException("UTF-8 encoded is not supported"); // TODO -> Add info for those
-        }
-
-
-        return sshConfiguration;
-    }
 
     public void start() {
         logger.info("Starting");
 
+        SSHLauncher sshLauncher = new SSHLauncher(new AppletLauncherConfiguration(this));
+        boolean hasSucceeded = sshLauncher.launch();
+
+        if (!hasSucceeded){
+            return;
+        }
+
+        String returnURL = getParameter(SSHLauncher.returnURLParam);
+        if (returnURL == null) {
+            return;
+        }
 
         try {
-            SSHConfiguration sshConfiguration = getSSHConfiguration();
-
-            try {
-
-                logger.info("Creating SSH Session");
-                String preferredLauncher = getParameter(preferredLauncherParam);
-                SSHLauncher.launchSSHFromConfiguration(sshConfiguration, preferredLauncher);
-
-                // If we did not fail, let's cleanup.
-
-                String returnURL = getParameter(returnURLParam);
-                if (returnURL == null) {
-                    return;
-                }
-
-                try {
-                    getAppletContext().showDocument(new URL(returnURL));
-                } catch (MalformedURLException e) {
-                    logger.warning(String.format("Unable to exit: %s", e.toString()));
-                }
-
-            } catch (LauncherException e) {
-                logger.log(Level.SEVERE, "Unable to create SSH Session", e);
-            }
-
-        } catch (InvalidConfigurationException e) {
-            logger.log(Level.SEVERE, "Unable to create SSH Configuration", e);
+            getAppletContext().showDocument(new URL(returnURL));
+        } catch (MalformedURLException e) {
+            logger.warning(String.format("Unable to exit: %s", e.toString()));
         }
     }
 
@@ -187,18 +106,7 @@ public class SSHLauncherApplet extends JApplet {
         logger.info("Unloading");
     }
 
-    @Override
-    public String[][] getParameterInfo() {
-        return new String [][] {
-            {hostParam,                 "string",  "Host to SSH into"},
-            {userParam,                 "boolean", "User to SSH as (optional)"},
-            {portParam,                 "int",     "Port to SSH to (optional)"},
-            {logLevelParam,             "string",  "Logging level (optional, defaults to INFO)"},
-            {openSSHKeyParam,           "string",  "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
-            {puttyKeyParam,             "url",     "Base64-encoded PuTTY Private Key to SSH with (optional)"},
-            {sshKeyNameParam,           "string",  "Name to use for the private key (optional)"},
-            {preferredLauncherParam,    "url",     "Preferred SSH Launcher to use (optional)"},
-            {returnURLParam,            "url",     "URL to return to once the applet exits (optional)"},
-        };
+    public String[][] getParameterInfo () {
+        return SSHLauncher.getParameterInfo();
     }
 }

@@ -36,6 +36,7 @@ public abstract class BaseUnixSSHLauncher extends BaseSSHLauncher {
 
         writer.println("#!/bin/bash");
         writer.println(sshCommandLine);
+        writer.println("read"); // TODO -> "Enter to exit"
         writer.close();
 
         if (!commandFile.setExecutable(true, true)) {
