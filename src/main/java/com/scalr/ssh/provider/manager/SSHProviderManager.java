@@ -23,8 +23,8 @@ public class SSHProviderManager {
             availableSSHProviders.add(new WindowsPuTTYProvider(sshConfiguration));
             availableSSHProviders.add(new WindowsOpenSSHProvider(sshConfiguration));
         } else if (platformName.contains("mac")) {
-            availableSSHProviders.add(new MacNativeSSHProvider(sshConfiguration));
             availableSSHProviders.add(new MacSSHProvider(sshConfiguration));
+            availableSSHProviders.add(new MacNativeSSHProvider(sshConfiguration));
         } else if (platformName.contains("nux") || platformName.contains("nix")) {
             // None
         } else {
