@@ -3,7 +3,7 @@ package com.scalr.ssh;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.launcher.SSHLauncherInterface;
+import com.scalr.ssh.provider.SSHProviderInterface;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +27,7 @@ public class SSHLauncher {
     public final static String openSSHKeyParam             = "sshPrivateKey";
     public final static String puttyKeyParam               = "puttyPrivateKey";
     public final static String sshKeyNameParam             = "sshKeyName";
-    public final static String preferredLauncherParam      = "preferredLauncher";
+    public final static String preferredProviderParam      = "preferredProvider";
     public final static String returnURLParam              = "returnURL";
 
     public SSHLauncher (LauncherConfigurationInterface launcherConfiguration) {
@@ -43,15 +43,15 @@ public class SSHLauncher {
         });
 
         logger.info(String.format("Detected Platform: '%s'", platformName));
-        SSHLauncherManager sshLauncherManager = new SSHLauncherManager(platformName);
+        SSHProviderManager sshLauncherManager = new SSHProviderManager(platformName);
 
-        ArrayList<SSHLauncherInterface> sshLaunchers = sshLauncherManager.getOrderedSSHLaunchers(sshConfiguration, preferredLauncher);
+        ArrayList<SSHProviderInterface> sshLaunchers = sshLauncherManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
         if (sshLaunchers.isEmpty()) {
             logger.severe(String.format("No SSH Launcher available for platform '%s'", platformName));
         }
 
-        for (SSHLauncherInterface sshLauncher: sshLaunchers) {
-            logger.info(String.format("Creating SSH Session with launcher: '%s'", sshLauncher.getClass().getCanonicalName()));
+        for (SSHProviderInterface sshLauncher: sshLaunchers) {
+            logger.info(String.format("Creating SSH Session with provider: '%s'", sshLauncher.getClass().getCanonicalName()));
             try {
                 String[] sshCommand = sshLauncher.getSSHCommand();
                 logger.info(String.format("Launcher Command Line: '%s'", StringUtils.join(sshCommand, " ")));
@@ -131,7 +131,7 @@ public class SSHLauncher {
             SSHConfiguration sshConfiguration = getSSHConfiguration();
             try {
                 logger.info("Creating SSH Session");
-                String preferredLauncher = launcherConfiguration.getOption(preferredLauncherParam);
+                String preferredLauncher = launcherConfiguration.getOption(preferredProviderParam);
                 launchFromSSHConfiguration(sshConfiguration, preferredLauncher);
                 return true;
             } catch (LauncherException e) {
@@ -151,7 +151,7 @@ public class SSHLauncher {
                 {openSSHKeyParam,           "string",  "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
                 {puttyKeyParam,             "url",     "Base64-encoded PuTTY Private Key to SSH with (optional)"},
                 {sshKeyNameParam,           "string",  "Name to use for the private key (optional)"},
-                {preferredLauncherParam,    "url",     "Preferred SSH Launcher to use (optional)"},
+                {preferredProviderParam,    "url",     "Preferred SSH Launcher to use (optional)"},
                 {returnURLParam,            "url",     "URL to return to once the applet exits (optional)"},
         };
     }

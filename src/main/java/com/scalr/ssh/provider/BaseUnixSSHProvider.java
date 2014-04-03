@@ -1,4 +1,4 @@
-package com.scalr.ssh.launcher;
+package com.scalr.ssh.provider;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.EnvironmentSetupException;
@@ -10,8 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 
-public abstract class BaseUnixSSHLauncher extends BaseSSHLauncher {
-    public BaseUnixSSHLauncher(SSHConfiguration sshConfiguration) {
+public abstract class BaseUnixSSHProvider extends BaseSSHProvider {
+    public BaseUnixSSHProvider(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 

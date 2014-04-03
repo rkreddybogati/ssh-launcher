@@ -9,7 +9,7 @@ public class SSHLauncherCLI {
 
     public static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("ssh-launcher", options);
+        formatter.printHelp("ssh-provider", options);
         System.exit(1);
     }
 

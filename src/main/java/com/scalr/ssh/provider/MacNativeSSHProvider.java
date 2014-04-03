@@ -1,4 +1,4 @@
-package com.scalr.ssh.launcher;
+package com.scalr.ssh.provider;
 
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
@@ -16,10 +16,10 @@ import java.security.PrivilegedAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MacNativeSSHLauncher extends BaseSSHLauncher {
+public class MacNativeSSHProvider extends BaseSSHProvider {
 
 
-    public MacNativeSSHLauncher(SSHConfiguration sshConfiguration) {
+    public MacNativeSSHProvider(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 

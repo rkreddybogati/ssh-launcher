@@ -1,9 +1,9 @@
-package com.scalr.ssh.launcher;
+package com.scalr.ssh.provider;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 
-public class MacSSHLauncher extends BaseUnixSSHLauncher {
-    public MacSSHLauncher(SSHConfiguration sshConfiguration) {
+public class MacSSHProvider extends BaseUnixSSHProvider {
+    public MacSSHProvider(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 

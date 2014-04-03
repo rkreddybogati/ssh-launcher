@@ -1,10 +1,10 @@
-package com.scalr.ssh.launcher;
+package com.scalr.ssh.provider;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 
-public class LinuxSSHLauncher extends BaseUnixSSHLauncher {
+public class LinuxSSHProvider extends BaseUnixSSHProvider {
 
-    public LinuxSSHLauncher(SSHConfiguration sshConfiguration) {
+    public LinuxSSHProvider(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 
