@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -19,8 +20,8 @@ import java.util.Collections;
 import java.util.logging.Level;
 
 abstract public class BaseSSHManager extends Loggable implements SSHManagerInterface {
-    protected SSHConfiguration sshConfiguration;
-    protected FileSystemManager fsManager;
+    protected final SSHConfiguration sshConfiguration;
+    protected final FileSystemManager fsManager;
 
     public BaseSSHManager (SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
         this.sshConfiguration = sshConfiguration;
@@ -34,7 +35,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
     abstract protected String getPrivateKey ();
     abstract protected String getPrivateKeyExtension();
 
-    protected String getSSHPrivateKeyFilePath() throws IOException {
+    private String getSSHPrivateKeyFilePath() throws IOException {
         // We compute the filename based on the SSH key contents.
         // If an existing file is there, we'll be able to safely ignore it.
 
@@ -43,12 +44,23 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
             return null;
         }
 
-        String[] keyNameBits = {"scalr", "-", "key", "-",  DigestUtils.sha256Hex(getPrivateKey()), ".",
-                                getPrivateKeyExtension()};
-        String keyName = StringUtils.join(keyNameBits, "");
+        String sshKeyName = sshConfiguration.getSSHKeyName();
+
+        if (sshKeyName == null) {
+            // Use a default, auto-generated, key name
+            sshKeyName = String.format("scalr-key-%s", DigestUtils.sha256Hex(getPrivateKey()));
+        } else {
+            // Use the SSH Key Name if provided, but ensure it is not relative, as we do not want to create a
+            // security hole.
+            if (Paths.get(sshKeyName).getFileName() != Paths.get(sshKeyName)) {
+                throw new SecurityException("SSH Key path may not be relative");
+            }
+        }
+
+        // Add the extension and path to the key
 
         File retFile = new File(fsManager.getUserHome());
-        String[] pathBits = {".ssh", keyName};
+        String[] pathBits = {".ssh", "scalr-ssh-keys", String.format("%s.%s", sshKeyName, getPrivateKeyExtension())};
 
         for (String pathBit : pathBits) {
             retFile = new File(retFile, pathBit);
@@ -115,8 +127,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
             });
 
             if (sshFile == null) {
-                // We failed to create the file
-                throw new EnvironmentSetupException("Error setting up SSH configuration.");
+                throw new EnvironmentSetupException("Error creating SSH Key File");
             }
 
             try {
@@ -130,7 +141,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
         }
     }
 
-    protected String getDestination() {
+    private String getDestination() {
         ArrayList<String> destinationBits = new ArrayList<String>();
         if (sshConfiguration.getUsername() != null) {
             destinationBits.add(sshConfiguration.getUsername());

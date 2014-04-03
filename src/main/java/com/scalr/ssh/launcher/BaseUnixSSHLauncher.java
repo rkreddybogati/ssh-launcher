@@ -10,8 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 
-public abstract class UnixSSHLauncher extends BaseSSHLauncher {
-    public UnixSSHLauncher(SSHConfiguration sshConfiguration) {
+public abstract class BaseUnixSSHLauncher extends BaseSSHLauncher {
+    public BaseUnixSSHLauncher(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 

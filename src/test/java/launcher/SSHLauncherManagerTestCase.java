@@ -1,3 +1,5 @@
+package launcher;
+
 import com.scalr.ssh.SSHLauncherManager;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;

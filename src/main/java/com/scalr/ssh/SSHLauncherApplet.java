@@ -24,6 +24,7 @@ public class SSHLauncherApplet extends JApplet {
     private final static String logLevelParam               = "logLevel";
     private final static String openSSHKeyParam             = "sshPrivateKey";
     private final static String puttyKeyParam               = "puttyPrivateKey";
+    private final static String sshKeyNameParam             = "sshKeyName";
     private final static String preferredLauncherParam      = "preferredLauncher";
     private final static String returnURLParam              = "returnURL";
 
@@ -97,6 +98,7 @@ public class SSHLauncherApplet extends JApplet {
         String port = getParameter(portParam);
         String openSSHPrivateKey = getParameter(openSSHKeyParam);
         String puttyPrivateKey = getParameter(puttyKeyParam);
+        String sshKeyName = getParameter(sshKeyNameParam);
 
 
         if (host == null) {
@@ -116,6 +118,10 @@ public class SSHLauncherApplet extends JApplet {
             } catch (NumberFormatException e) {
                 throw new InvalidConfigurationException(String.format("Port must be a number (received: '%s')", port));
             }
+        }
+
+        if (sshKeyName != null) {
+            sshConfiguration.setSSHKeyName(sshKeyName);
         }
 
         // The private keys are base64 encoded to preserve newlines
@@ -188,8 +194,9 @@ public class SSHLauncherApplet extends JApplet {
             {userParam,                 "boolean", "User to SSH as (optional)"},
             {portParam,                 "int",     "Port to SSH to (optional)"},
             {logLevelParam,             "string",  "Logging level (optional, defaults to INFO)"},
-            {openSSHKeyParam,           "string",  "base64-encoded OpenSSH Private Key to SSH with (optional)"},
-            {puttyKeyParam,             "url",     "base64-encoded PuTTY Private Key to SSH with (optional)"},
+            {openSSHKeyParam,           "string",  "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
+            {puttyKeyParam,             "url",     "Base64-encoded PuTTY Private Key to SSH with (optional)"},
+            {sshKeyNameParam,           "string",  "Name to use for the private key (optional)"},
             {preferredLauncherParam,    "url",     "Preferred SSH Launcher to use (optional)"},
             {returnURLParam,            "url",     "URL to return to once the applet exits (optional)"},
         };

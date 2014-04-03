@@ -6,6 +6,8 @@ public class SSHConfiguration {
     private Integer port;
     private String openSSHPrivateKey;
     private String puttySSHPrivateKey;
+    private String sshKeyName;
+
 
     public SSHConfiguration (String host) {
         this.host = host;
@@ -45,5 +47,13 @@ public class SSHConfiguration {
 
     public void setPuttySSHPrivateKey(String puttySSHPrivateKey) {
         this.puttySSHPrivateKey = puttySSHPrivateKey;
+    }
+
+    public String getSSHKeyName() {
+        return sshKeyName;
+    }
+
+    public void setSSHKeyName(String sshKeyName) {
+        this.sshKeyName = sshKeyName;
     }
 }
