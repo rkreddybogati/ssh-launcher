@@ -1,6 +1,6 @@
 package lib.util;
 
-import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.filesystem.FileSystemManager;
 import lib.mock.MockFileSystemManager;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.ExternalResource;

@@ -1,6 +1,7 @@
-package com.scalr.ssh;
+package com.scalr.ssh.launcher;
 
 import com.scalr.ssh.exception.LauncherException;
+import com.scalr.ssh.launcher.configuration.CLILauncherConfiguration;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;

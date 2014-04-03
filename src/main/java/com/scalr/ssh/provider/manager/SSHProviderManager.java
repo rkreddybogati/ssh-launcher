@@ -1,4 +1,4 @@
-package com.scalr.ssh;
+package com.scalr.ssh.provider.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;

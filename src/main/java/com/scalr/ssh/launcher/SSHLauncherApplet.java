@@ -1,5 +1,6 @@
-package com.scalr.ssh;
+package com.scalr.ssh.launcher;
 
+import com.scalr.ssh.launcher.configuration.AppletLauncherConfiguration;
 import com.scalr.ssh.logging.JTextAreaHandler;
 
 import javax.swing.*;

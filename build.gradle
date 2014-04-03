@@ -37,7 +37,7 @@ jar {
         attributes  'Application-Name': 'Scalr SSH Launcher',
                     'Implementation-Title': 'SSH Launcher',
                     'Implementation-Version': version,
-                    'Main-Class': 'com.scalr.ssh.SSHLauncherCLI',
+                    'Main-Class': 'com.scalr.ssh.launcher.SSHLauncherCLI',
                     'Permissions': 'all-permissions',
                     'Codebase': codebase,
                     'Application-Library-Allowable-Codebase': allowableCodebase,

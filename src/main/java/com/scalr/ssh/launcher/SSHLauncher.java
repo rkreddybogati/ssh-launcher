@@ -1,9 +1,11 @@
-package com.scalr.ssh;
+package com.scalr.ssh.launcher;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
+import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
 import com.scalr.ssh.provider.SSHProviderInterface;
+import com.scalr.ssh.provider.manager.SSHProviderManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 

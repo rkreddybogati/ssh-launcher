@@ -2,7 +2,7 @@ package com.scalr.ssh.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
-import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.filesystem.FileSystemManager;
 
 import java.io.File;
 import java.io.IOException;

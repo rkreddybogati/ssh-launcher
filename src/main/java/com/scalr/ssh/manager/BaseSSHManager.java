@@ -3,7 +3,7 @@ package com.scalr.ssh.manager;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
-import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.logging.Loggable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;

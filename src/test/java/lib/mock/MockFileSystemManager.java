@@ -1,6 +1,6 @@
 package lib.mock;
 
-import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.filesystem.FileSystemManager;
 
 import java.io.File;
 import java.util.ArrayList;

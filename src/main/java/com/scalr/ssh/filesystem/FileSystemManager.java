@@ -1,4 +1,4 @@
-package com.scalr.ssh.fs;
+package com.scalr.ssh.filesystem;
 
 import com.scalr.ssh.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;

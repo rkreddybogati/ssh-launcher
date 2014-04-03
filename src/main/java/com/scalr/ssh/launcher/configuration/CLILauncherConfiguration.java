@@ -1,4 +1,4 @@
-package com.scalr.ssh;
+package com.scalr.ssh.launcher.configuration;
 
 import org.apache.commons.cli.CommandLine;
 

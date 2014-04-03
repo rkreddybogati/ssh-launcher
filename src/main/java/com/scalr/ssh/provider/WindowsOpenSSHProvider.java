@@ -2,7 +2,7 @@ package com.scalr.ssh.provider;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.manager.OpenSSHManager;
 
 import java.util.ArrayList;

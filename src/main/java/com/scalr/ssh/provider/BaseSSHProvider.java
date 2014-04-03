@@ -1,7 +1,7 @@
 package com.scalr.ssh.provider;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.fs.FileSystemManager;
+import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.logging.Loggable;
 
 abstract public class BaseSSHProvider extends Loggable implements SSHProviderInterface {

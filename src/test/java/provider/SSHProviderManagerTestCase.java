@@ -1,6 +1,6 @@
 package provider;
 
-import com.scalr.ssh.SSHProviderManager;
+import com.scalr.ssh.provider.manager.SSHProviderManager;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.provider.SSHProviderInterface;
