@@ -1,4 +1,4 @@
-package com.scalr.ssh.provider;
+package com.scalr.ssh.provider.base;
 
 import com.scalr.ssh.exception.LauncherException;
 

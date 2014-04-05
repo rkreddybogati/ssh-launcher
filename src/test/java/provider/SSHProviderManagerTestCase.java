@@ -3,7 +3,7 @@ package provider;
 import com.scalr.ssh.provider.manager.SSHProviderManager;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
-import com.scalr.ssh.provider.SSHProviderInterface;
+import com.scalr.ssh.provider.base.SSHProviderInterface;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -23,11 +23,11 @@ public class SSHProviderManagerTestCase {
 
         sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, null);
         assertEquals(2, sshProviders.size());
-        assertEquals("com.scalr.ssh.provider.MacNativeSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
+        assertEquals("com.scalr.ssh.provider.mac.MacNativeSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
 
-        sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, "com.scalr.ssh.provider.MacSSHProvider");
+        sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, "com.scalr.ssh.provider.mac.MacSSHProvider");
         assertEquals(2, sshProviders.size());
-        assertEquals("com.scalr.ssh.provider.MacSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
+        assertEquals("com.scalr.ssh.provider.mac.MacSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
 
     }
 }

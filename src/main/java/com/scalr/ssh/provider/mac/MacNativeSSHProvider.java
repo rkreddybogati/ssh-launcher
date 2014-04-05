@@ -1,4 +1,4 @@
-package com.scalr.ssh.provider;
+package com.scalr.ssh.provider.mac;
 
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
@@ -7,6 +7,7 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
+import com.scalr.ssh.provider.base.BaseSSHProvider;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;

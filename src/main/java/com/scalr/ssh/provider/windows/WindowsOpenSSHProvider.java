@@ -1,9 +1,10 @@
-package com.scalr.ssh.provider;
+package com.scalr.ssh.provider.windows;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.manager.OpenSSHManager;
+import com.scalr.ssh.provider.base.BaseSSHProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;

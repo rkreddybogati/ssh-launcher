@@ -1,6 +1,7 @@
-package com.scalr.ssh.provider;
+package com.scalr.ssh.provider.linux;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.provider.base.BaseUnixSSHProvider;
 
 public class LinuxSSHProvider extends BaseUnixSSHProvider {
 

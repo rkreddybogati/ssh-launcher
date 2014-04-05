@@ -1,8 +1,9 @@
-package com.scalr.ssh.provider;
+package com.scalr.ssh.provider.windows;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.PuTTYManager;
+import com.scalr.ssh.provider.base.BaseSSHProvider;
 
 public class WindowsPuTTYProvider extends BaseSSHProvider {
     public WindowsPuTTYProvider(SSHConfiguration sshConfiguration) {

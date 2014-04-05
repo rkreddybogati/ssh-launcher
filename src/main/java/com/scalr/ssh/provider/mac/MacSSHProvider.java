@@ -1,6 +1,7 @@
-package com.scalr.ssh.provider;
+package com.scalr.ssh.provider.mac;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.provider.base.BaseUnixSSHProvider;
 
 public class MacSSHProvider extends BaseUnixSSHProvider {
     public MacSSHProvider(SSHConfiguration sshConfiguration) {

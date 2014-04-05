@@ -2,7 +2,11 @@ package com.scalr.ssh.provider.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
-import com.scalr.ssh.provider.*;
+import com.scalr.ssh.provider.base.SSHProviderInterface;
+import com.scalr.ssh.provider.mac.MacNativeSSHProvider;
+import com.scalr.ssh.provider.mac.MacSSHProvider;
+import com.scalr.ssh.provider.windows.WindowsOpenSSHProvider;
+import com.scalr.ssh.provider.windows.WindowsPuTTYProvider;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
