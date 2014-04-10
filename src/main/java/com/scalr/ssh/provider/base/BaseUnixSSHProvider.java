@@ -36,7 +36,7 @@ public abstract class BaseUnixSSHProvider extends BaseSSHProvider {
 
         writer.println("#!/bin/bash");
         writer.println(sshCommandLine);
-        writer.println("read"); // TODO -> "Enter to exit"
+        writer.println("read -p 'Press enter to exit'"); // TODO -> "Enter to exit"
         writer.close();
 
         if (!commandFile.setExecutable(true, true)) {

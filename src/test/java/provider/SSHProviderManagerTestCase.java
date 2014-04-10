@@ -22,11 +22,11 @@ public class SSHProviderManagerTestCase {
         ArrayList<SSHProviderInterface> sshProviders;
 
         sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, null);
-        assertEquals(2, sshProviders.size());
+        assertEquals(3, sshProviders.size());
         assertEquals("com.scalr.ssh.provider.mac.MacSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
 
         sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, "com.scalr.ssh.provider.mac.MacNativeSSHProvider");
-        assertEquals(2, sshProviders.size());
+        assertEquals(3, sshProviders.size());
         assertEquals("com.scalr.ssh.provider.mac.MacNativeSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
 
     }
