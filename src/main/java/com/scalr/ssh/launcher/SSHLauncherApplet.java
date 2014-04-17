@@ -36,7 +36,6 @@ public class SSHLauncherApplet extends JApplet {
         Logger rootLogger = Logger.getLogger("");
         rootLogger.addHandler(textAreaHandler);
 
-
         String requestedLogLevel = getParameter(SSHLauncher.logLevelParam);
         Level logLevel;
 

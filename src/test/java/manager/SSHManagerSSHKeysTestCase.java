@@ -1,7 +1,6 @@
 package manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
@@ -15,7 +14,10 @@ import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
@@ -93,7 +95,7 @@ public class SSHManagerSSHKeysTestCase {
     }
 
     @Test(expected=SecurityException.class)
-    public void testInvalidSSHKeyName () throws EnvironmentSetupException {
+    public void testInvalidSSHKeyName () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("../not-valid-key");
@@ -102,6 +104,17 @@ public class SSHManagerSSHKeysTestCase {
         sshManager.setUpSSHEnvironment();
     }
 
+    @Test
+    public void testValidSSHKeyName() throws LauncherException {
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        sshConfiguration.setOpenSSHPrivateKey("test");
+        sshConfiguration.setSSHKeyName("valid.key");
+
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        sshManager.setUpSSHEnvironment();
+    }
+
+    @Test
     public void testSSHKeyName () throws InvalidEnvironmentException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("test");

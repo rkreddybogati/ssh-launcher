@@ -52,8 +52,9 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
         } else {
             // Use the SSH Key Name if provided, but ensure it is not relative, as we do not want to create a
             // security hole.
-            if (Paths.get(sshKeyName).getFileName() != Paths.get(sshKeyName)) {
-                throw new SecurityException("SSH Key path may not be relative");
+            if (!Paths.get(sshKeyName).getFileName().equals(Paths.get(sshKeyName))) {
+                getLogger().severe(String.format("Invalid SSH Key Path. Actual name: %s, File name: %s", Paths.get(sshKeyName), Paths.get(sshKeyName).getFileName()));
+                throw new SecurityException(String.format("SSH Key path can not be relative. Received: %s", sshKeyName));
             }
         }
 

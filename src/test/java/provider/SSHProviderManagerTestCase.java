@@ -23,7 +23,7 @@ public class SSHProviderManagerTestCase {
 
         sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, null);
         assertEquals(3, sshProviders.size());
-        assertEquals("com.scalr.ssh.provider.mac.MacSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
+        assertEquals("com.scalr.ssh.provider.mac.MacAppleScriptSSHProvider", sshProviders.get(0).getClass().getCanonicalName());
 
         sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, "com.scalr.ssh.provider.mac.MacNativeSSHProvider");
         assertEquals(3, sshProviders.size());
