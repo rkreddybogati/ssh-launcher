@@ -5,8 +5,8 @@ import com.scalr.ssh.logging.JTextAreaHandler;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,17 +19,25 @@ public class SSHLauncherApplet extends JApplet {
     }
 
     public void init() {
-        GridLayout layout = new GridLayout(1, 1);
-        setLayout(layout);
+        setLayout(new BorderLayout());
 
         JTextArea textArea  = new JTextArea();
         textArea.setLineWrap(true);
         textArea.setEditable(false);
 
         JScrollPane jScrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        getContentPane().add(jScrollPane, BorderLayout.CENTER);
 
-        getContentPane().add(jScrollPane);
+        JButton button = new JButton("Launch another session");
+        getContentPane().add(button, BorderLayout.PAGE_END);
 
+        button.addActionListener( new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+               launchNewSSHSession();
+            }
+        });
 
         Handler textAreaHandler = new JTextAreaHandler(textArea);
 
@@ -78,24 +86,17 @@ public class SSHLauncherApplet extends JApplet {
 
     public void start() {
         logger.info("Starting");
+        launchNewSSHSession();
+    }
 
-        SSHLauncher sshLauncher = new SSHLauncher(new AppletLauncherConfiguration(this));
-        boolean hasSucceeded = sshLauncher.launch();
+    private void launchNewSSHSession() {
+        final SSHLauncher sshLauncher = new SSHLauncher(new AppletLauncherConfiguration(this));
 
-        if (!hasSucceeded){
-            return;
-        }
-
-        String returnURL = getParameter(SSHLauncher.returnURLParam);
-        if (returnURL == null) {
-            return;
-        }
-
-        try {
-            getAppletContext().showDocument(new URL(returnURL));
-        } catch (MalformedURLException e) {
-            logger.warning(String.format("Unable to exit: %s", e.toString()));
-        }
+        new Thread() {
+            public void run() {
+                sshLauncher.launch();
+            }
+        }.start();
     }
 
     public void stop() {

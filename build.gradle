@@ -42,8 +42,8 @@ jar {
                     'Codebase': codebase,
                     'Application-Library-Allowable-Codebase': allowableCodebase,
                     'Created-By': "$javaVersion ($javaVendor)",
-                    'Manifest-Version': '1.0',
-                    'Trusted-Only': 'true'
+                    'Manifest-Version': '1.0'//,
+                    //'Trusted-Only': 'true'
                     //'Trusted-Library': 'true',
     }
 }

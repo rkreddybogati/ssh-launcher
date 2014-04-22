@@ -23,8 +23,8 @@ public class JTextAreaHandler extends Handler {
                 StringWriter text = new StringWriter();
                 PrintWriter out = new PrintWriter(text);
                 out.println(textArea.getText());
-                out.printf("[%s]: %s:%s -> %s", record.getLevel(), record.getLoggerName(), record.getSourceMethodName(),
-                        record.getMessage());
+                out.printf("[Thread #%s - %s]: %s:%s -> %s", record.getThreadID(), record.getLevel(),
+                        record.getLoggerName(), record.getSourceMethodName(), record.getMessage());
                 textArea.setText(text.toString());
             }
 

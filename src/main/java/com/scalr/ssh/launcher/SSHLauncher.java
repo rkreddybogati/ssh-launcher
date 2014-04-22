@@ -30,7 +30,6 @@ public class SSHLauncher {
     public final static String puttyKeyParam               = "puttyPrivateKey";
     public final static String sshKeyNameParam             = "sshKeyName";
     public final static String preferredProviderParam      = "preferredProvider";
-    public final static String returnURLParam              = "returnURL";
 
     public SSHLauncher (LauncherConfigurationInterface launcherConfiguration) {
         this.launcherConfiguration = launcherConfiguration;
@@ -61,7 +60,7 @@ public class SSHLauncher {
                 ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
                 pb.start();
 
-                logger.info("Assuming SSH session was launched. Exiting.");
+                logger.info("Started SSH process.");
                 return;
             } catch (LauncherException e) {
                 logger.log(Level.WARNING, String.format("Launcher '%s' failed to prepare SSH", sshLauncher.getClass().getCanonicalName()), e);
@@ -154,7 +153,6 @@ public class SSHLauncher {
                 {puttyKeyParam,             "url",     "Base64-encoded PuTTY Private Key to SSH with (optional)"},
                 {sshKeyNameParam,           "string",  "Name to use for the private key (optional)"},
                 {preferredProviderParam,    "url",     "Preferred SSH Launcher to use (optional)"},
-                {returnURLParam,            "url",     "URL to return to once the applet exits (optional)"},
         };
     }
 }

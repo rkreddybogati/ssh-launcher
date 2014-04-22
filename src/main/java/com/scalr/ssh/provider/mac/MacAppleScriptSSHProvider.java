@@ -28,8 +28,8 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
         appleScript.add("tell application \"System Events\"");
         appleScript.add("if (count (processes whose bundle identifier is \"com.apple.Terminal\")) is 0 then");
         appleScript.add("tell application \"/Applications/Utilities/Terminal.app\"");
-        appleScript.add("activate");
         appleScript.add(String.format("do script \"%s\" in window 0", scriptCommand));
+        appleScript.add("activate");
         appleScript.add("end tell");
         appleScript.add("else");
         appleScript.add("tell application \"/Applications/Utilities/Terminal.app\"");
