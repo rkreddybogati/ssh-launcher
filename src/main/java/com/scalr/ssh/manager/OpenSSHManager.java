@@ -54,6 +54,10 @@ public class OpenSSHManager extends BaseSSHManager {
 
     @Override
     protected String[] getExecutableExtraOptions() {
+        if (sshConfiguration.getIgnoreHostKeys() != null && sshConfiguration.getIgnoreHostKeys()) {
+            // TODO -> May not work on Windows OpenSSH.
+            return new String[] {"-o", "UserKnownHostsFile=/dev/null", "-o", "CheckHostIP=no",  "-o", "StrictHostKeyChecking=no"};
+        }
         return new String[0];
     }
 

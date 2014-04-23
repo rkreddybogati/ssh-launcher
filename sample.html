@@ -22,7 +22,7 @@
       }
 
       var attributes = {
-        archive: './build/distributions/ssh-launcher-0.5.0-shadow.jar',
+        archive: './build/distributions/ssh-launcher-0.6.0-shadow.jar',
         code:'com.scalr.ssh.launcher.SSHLauncherApplet',
         width:'900',
         height:'200',
@@ -37,6 +37,7 @@
         "preferredProvider": "",    // Fully-qualified class name of the provider to try first (optional)
         "logLevel": "FINER"         // Log level to report (optional: defaults to INFO)
         "sshKeyName": "",           // Name to use for the SSH key (optional: defaults to a hash of the key)
+        "ignoreHostKeys": ""        // Whether to disable host keys. Set to 1 to ignore (optional)
       };
 
       docWriteWrapper($('#ssh-launcher'), function () {

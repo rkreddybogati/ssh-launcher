@@ -22,14 +22,16 @@ public class SSHLauncher {
     private final static Logger logger = Logger.getLogger(SSHLauncher.class.getName());
     private LauncherConfigurationInterface launcherConfiguration;
 
-    public final static String hostParam                   = "host";
-    public final static String userParam                   = "user";
-    public final static String portParam                   = "port";
-    public final static String logLevelParam               = "logLevel";
-    public final static String openSSHKeyParam             = "sshPrivateKey";
-    public final static String puttyKeyParam               = "puttyPrivateKey";
-    public final static String sshKeyNameParam             = "sshKeyName";
-    public final static String preferredProviderParam      = "preferredProvider";
+    private final static String hostParam               = "host";
+    private final static String userParam               = "user";
+    private final static String portParam               = "port";
+    private final static String openSSHKeyParam         = "sshPrivateKey";
+    private final static String puttyKeyParam           = "puttyPrivateKey";
+    private final static String sshKeyNameParam         = "sshKeyName";
+    private final static String preferredProviderParam  = "preferredProvider";
+    private final static String ignoreHostKeysParam     = "ignoreHostKeys";
+
+    private final static String paramTrue = "1";
 
     public SSHLauncher (LauncherConfigurationInterface launcherConfiguration) {
         this.launcherConfiguration = launcherConfiguration;
@@ -79,6 +81,7 @@ public class SSHLauncher {
         String openSSHPrivateKey    = launcherConfiguration.getOption(openSSHKeyParam);
         String puttyPrivateKey      = launcherConfiguration.getOption(puttyKeyParam);
         String sshKeyName           = launcherConfiguration.getOption(sshKeyNameParam);
+        String ignoreHostKeys       = launcherConfiguration.getOption(ignoreHostKeysParam);
 
 
         if (host == null) {
@@ -120,6 +123,9 @@ public class SSHLauncher {
             throw new InvalidConfigurationException("UTF-8 encoded is not supported"); // TODO -> Add info for those
         }
 
+        if (ignoreHostKeys != null) {
+            sshConfiguration.setIgnoreHostKeys(ignoreHostKeys.equals(paramTrue));
+        }
 
         return sshConfiguration;
     }
@@ -143,16 +149,17 @@ public class SSHLauncher {
         }
         return false;
     }
+
     public static String[][] getParameterInfo () {
         return new String [][] {
-                {hostParam,                 "string",  "Host to SSH into"},
-                {userParam,                 "boolean", "User to SSH as (optional)"},
-                {portParam,                 "int",     "Port to SSH to (optional)"},
-                {logLevelParam,             "string",  "Logging level (optional, defaults to INFO)"},
-                {openSSHKeyParam,           "string",  "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
-                {puttyKeyParam,             "url",     "Base64-encoded PuTTY Private Key to SSH with (optional)"},
-                {sshKeyNameParam,           "string",  "Name to use for the private key (optional)"},
-                {preferredProviderParam,    "url",     "Preferred SSH Launcher to use (optional)"},
+                {hostParam,                 "string",   "Host to SSH into"},
+                {userParam,                 "boolean",  "User to SSH as (optional)"},
+                {portParam,                 "int",      "Port to SSH to (optional)"},
+                {openSSHKeyParam,           "string",   "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
+                {puttyKeyParam,             "url",      "Base64-encoded PuTTY Private Key to SSH with (optional)"},
+                {sshKeyNameParam,           "string",   "Name to use for the private key (optional)"},
+                {preferredProviderParam,    "url",      "Preferred SSH Launcher to use (optional)"},
+                {ignoreHostKeysParam,       "int",      "Set to 1 to ignore Host Keys (optional)"},
         };
     }
 }

@@ -42,6 +42,15 @@ public class SSHManagerCommandsTestCase {
     }
 
     @Test
+    public void testUnixSSHManagerWithNoHostKeyChecking () throws InvalidEnvironmentException {
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        sshConfiguration.setIgnoreHostKeys(true);
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "CheckHostIP=no", "-o", "StrictHostKeyChecking=no", "example.com"},
+                sshManager.getSSHCommandLineBits());
+    }
+
+    @Test
     public void testUnixSSHManagerWithKey () throws InvalidEnvironmentException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("My Private Key");

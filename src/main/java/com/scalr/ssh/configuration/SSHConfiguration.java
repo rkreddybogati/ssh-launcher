@@ -7,6 +7,7 @@ public class SSHConfiguration {
     private String openSSHPrivateKey;
     private String puttySSHPrivateKey;
     private String sshKeyName;
+    private Boolean ignoreHostKeys;
 
 
     public SSHConfiguration (String host) {
@@ -55,5 +56,13 @@ public class SSHConfiguration {
 
     public void setSSHKeyName(String sshKeyName) {
         this.sshKeyName = sshKeyName;
+    }
+
+    public Boolean getIgnoreHostKeys() {
+        return ignoreHostKeys;
+    }
+
+    public void setIgnoreHostKeys(Boolean ignoreHostKeys) {
+        this.ignoreHostKeys = ignoreHostKeys;
     }
 }
