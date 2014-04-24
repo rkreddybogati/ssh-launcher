@@ -21,18 +21,8 @@ public class SSHLauncherApplet extends JApplet {
     }
 
     public void init() {
-        setLayout(new BorderLayout());
-
-        JTextArea textArea  = new JTextArea();
-        textArea.setLineWrap(true);
-        textArea.setEditable(false);
-
-        JScrollPane jScrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        getContentPane().add(jScrollPane, BorderLayout.CENTER);
-
+        // Another session button
         JButton button = new JButton("Launch another session");
-        getContentPane().add(button, BorderLayout.PAGE_END);
-
         button.addActionListener( new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -40,6 +30,12 @@ public class SSHLauncherApplet extends JApplet {
                launchNewSSHSession();
             }
         });
+
+        // Log window
+        JTextArea textArea  = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        JScrollPane jScrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         Handler textAreaHandler = new JTextAreaHandler(textArea);
 
@@ -83,6 +79,14 @@ public class SSHLauncherApplet extends JApplet {
             }
             logger.config(String.format("Applet parameter '%s': '%s'", paramName, paramValue));
         }
+
+
+        // Add items to layout
+        button.setPreferredSize(new Dimension(0, 50));
+
+        setLayout(new BorderLayout());
+        getContentPane().add(jScrollPane, BorderLayout.CENTER);
+        getContentPane().add(button, BorderLayout.PAGE_END);
     }
 
 

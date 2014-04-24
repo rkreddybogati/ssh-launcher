@@ -21,7 +21,8 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
     }
 
     private String[] getAppleScriptLines(SSHManagerInterface sshManager) throws InvalidEnvironmentException {
-        String scriptCommand = String.format("%s ; echo 'Hit enter to exit' ; read ; logout", StringUtils.join(sshManager.getSSHCommandLineBits(), " "));
+        String sshCommand = StringUtils.join(sshManager.getSSHCommandLineBits(), " ");
+        String scriptCommand = String.format("clear ; echo '%s' ; %s ; echo 'Hit enter to exit' ; read ; logout", sshCommand, sshCommand);
 
         ArrayList<String> appleScript = new ArrayList<String>();
 
