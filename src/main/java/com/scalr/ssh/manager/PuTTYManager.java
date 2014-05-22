@@ -35,7 +35,7 @@ public class PuTTYManager extends BaseSSHManager {
 
         if (puttyExecutable == null) {
             getLogger().severe("Unable to locate PuTTY executable");
-            throw new InvalidEnvironmentException(String.format("Unable to find PuTTy. Is it installed?"));
+            throw new InvalidEnvironmentException("Unable to find PuTTy. Is it installed?");
         }
 
         try {
