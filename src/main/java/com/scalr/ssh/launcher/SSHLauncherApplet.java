@@ -64,6 +64,7 @@ public class SSHLauncherApplet extends JApplet {
 
         // Info
         logger.info("Initialized applet");
+        logger.info(String.format("Version: %s", SSHLauncher.class.getPackage().getImplementationVersion()));
 
         String paramName;
         String paramValue;
