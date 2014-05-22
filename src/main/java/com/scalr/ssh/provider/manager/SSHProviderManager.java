@@ -3,6 +3,8 @@ package com.scalr.ssh.provider.manager;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.provider.base.SSHProviderInterface;
+import com.scalr.ssh.provider.linux.LinuxGnomeTerminalSSHProvider;
+import com.scalr.ssh.provider.linux.LinuxXTermSSHProvider;
 import com.scalr.ssh.provider.mac.MacAppleScriptSSHProvider;
 import com.scalr.ssh.provider.mac.MacNativeSSHProvider;
 import com.scalr.ssh.provider.mac.MacSSHProvider;
@@ -32,7 +34,8 @@ public class SSHProviderManager {
             availableSSHProviders.add(new MacSSHProvider(sshConfiguration));
             availableSSHProviders.add(new MacNativeSSHProvider(sshConfiguration));
         } else if (platformName.contains("nux") || platformName.contains("nix")) {
-            // None
+            availableSSHProviders.add(new LinuxGnomeTerminalSSHProvider(sshConfiguration));
+            availableSSHProviders.add(new LinuxXTermSSHProvider(sshConfiguration));
         } else {
             // None
         }
