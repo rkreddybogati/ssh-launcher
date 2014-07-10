@@ -1,7 +1,6 @@
 package com.scalr.ssh.provider.mac;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.manager.OpenSSHManager;
@@ -20,7 +19,7 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
         super(sshConfiguration, fsManager);
     }
 
-    private String[] getAppleScriptLines(SSHManagerInterface sshManager) throws InvalidEnvironmentException {
+    private String[] getAppleScriptLines(SSHManagerInterface sshManager) throws LauncherException {
         String sshCommand = StringUtils.join(sshManager.getSSHCommandLineBits(), " ");
         String scriptCommand = String.format("clear ; echo '%s' ; %s ; echo 'Hit enter to exit' ; read ; logout", sshCommand, sshCommand);
         // TODO -> clear; echo wrapping -> externalize. (see LinuxBaseSSHProvider)

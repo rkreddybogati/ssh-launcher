@@ -29,6 +29,7 @@ public class SSHLauncher {
     private final static String puttyKeyParam           = "puttyPrivateKey";
     private final static String sshKeyNameParam         = "sshKeyName";
     private final static String preferredProviderParam  = "preferredProvider";
+    private final static String disableKeyAuthParam     = "disableKeyAuth";
     private final static String ignoreHostKeysParam     = "ignoreHostKeys";
 
     private final static String paramTrue = "1";
@@ -82,7 +83,7 @@ public class SSHLauncher {
         String puttyPrivateKey      = launcherConfiguration.getOption(puttyKeyParam);
         String sshKeyName           = launcherConfiguration.getOption(sshKeyNameParam);
         String ignoreHostKeys       = launcherConfiguration.getOption(ignoreHostKeysParam);
-
+        String disableKeyAuth       = launcherConfiguration.getOption(disableKeyAuthParam);
 
         if (host == null) {
             throw new InvalidConfigurationException("Host ('host') must be specified.");
@@ -123,9 +124,8 @@ public class SSHLauncher {
             throw new InvalidConfigurationException("UTF-8 encoded is not supported"); // TODO -> Add info for those
         }
 
-        if (ignoreHostKeys != null) {
-            sshConfiguration.setIgnoreHostKeys(ignoreHostKeys.equals(paramTrue));
-        }
+       sshConfiguration.setIgnoreHostKeys(paramTrue.equals(ignoreHostKeys));
+       sshConfiguration.setDisableKeyAuth(paramTrue.equals(disableKeyAuth));
 
         return sshConfiguration;
     }
@@ -160,6 +160,7 @@ public class SSHLauncher {
                 {sshKeyNameParam,           "string",   "Name to use for the private key (optional)"},
                 {preferredProviderParam,    "url",      "Preferred SSH Launcher to use (optional)"},
                 {ignoreHostKeysParam,       "int",      "Set to 1 to ignore Host Keys (optional)"},
+                {disableKeyAuthParam,       "int",      "Set to 1 to not use SSH keys (optional)"}
         };
     }
 }

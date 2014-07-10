@@ -7,7 +7,8 @@ public class SSHConfiguration {
     private String openSSHPrivateKey;
     private String puttySSHPrivateKey;
     private String sshKeyName;
-    private Boolean ignoreHostKeys;
+    private Boolean ignoreHostKeys = Boolean.FALSE;
+    private Boolean disableKeyAuth = Boolean.FALSE;
 
 
     public SSHConfiguration (String host) {
@@ -64,5 +65,17 @@ public class SSHConfiguration {
 
     public void setIgnoreHostKeys(Boolean ignoreHostKeys) {
         this.ignoreHostKeys = ignoreHostKeys;
+    }
+
+    public Boolean getDisableKeyAuth() {
+        return disableKeyAuth;
+    }
+
+    public void setDisableKeyAuth(Boolean disableKeyAuth) {
+        this.disableKeyAuth = disableKeyAuth;
+    }
+
+    public Boolean useKeyAuth() {
+        return !disableKeyAuth;
     }
 }

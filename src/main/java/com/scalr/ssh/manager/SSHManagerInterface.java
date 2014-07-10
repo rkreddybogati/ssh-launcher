@@ -1,9 +1,8 @@
 package com.scalr.ssh.manager;
 
-import com.scalr.ssh.exception.EnvironmentSetupException;
-import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.exception.LauncherException;
 
 public interface SSHManagerInterface {
-    public void setUpSSHEnvironment() throws EnvironmentSetupException;
-    public String[] getSSHCommandLineBits() throws InvalidEnvironmentException;
+    public void setUpSSHEnvironment() throws LauncherException;
+    public String[] getSSHCommandLineBits() throws LauncherException;
 }
