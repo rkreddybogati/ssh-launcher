@@ -5,6 +5,9 @@ import com.scalr.ssh.launcher.configuration.CLILauncherConfiguration;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SSHLauncherCLI {
 
@@ -35,6 +38,27 @@ public class SSHLauncherCLI {
             System.exit(1);
         }
 
+        // Set logging
+        // TODO - Share code with applet
+        String requestedLogLevel = cmd.getOptionValue(SSHLauncher.logLevelParam);
+        Level logLevel;
+
+        try {
+            logLevel = Level.parse(requestedLogLevel);
+        } catch (IllegalArgumentException e) {
+            logLevel = Level.INFO;
+        }
+
+        Logger launcherLogger = Logger.getLogger("com.scalr.ssh");
+        launcherLogger.setLevel(logLevel);
+
+        Logger root = Logger.getLogger("");
+        Handler[] handlers = root.getHandlers();
+        for(Handler h: handlers){
+            h.setLevel(logLevel);
+        }
+
+        // Actually launch
         SSHLauncher sshLauncher = new SSHLauncher(new CLILauncherConfiguration(cmd));
         boolean hasSucceeded = sshLauncher.launch();
 

@@ -32,6 +32,7 @@ public class SSHLauncher {
     private final static String preferredProviderParam  = "preferredProvider";
     private final static String disableKeyAuthParam     = "disableKeyAuth";
     private final static String ignoreHostKeysParam     = "ignoreHostKeys";
+    public  final static String logLevelParam           = "logLevel";  // A bit hackish to make it public.
 
     private final static String paramTrue = "1";
 
@@ -168,7 +169,8 @@ public class SSHLauncher {
                 {sshKeyNameParam,           "string",   "Name to use for the private key (optional)"},
                 {preferredProviderParam,    "url",      "Preferred SSH Launcher to use (optional)"},
                 {ignoreHostKeysParam,       "int",      "Set to 1 to ignore Host Keys (optional)"},
-                {disableKeyAuthParam,       "int",      "Set to 1 to not use SSH keys (optional)"}
+                {disableKeyAuthParam,       "int",      "Set to 1 to not use SSH keys (optional)"},
+                {logLevelParam,             "string",   "Logging level (optional, defaults to INFO)"}
         };
     }
 }

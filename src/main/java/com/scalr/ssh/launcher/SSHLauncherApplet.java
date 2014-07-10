@@ -2,7 +2,6 @@ package com.scalr.ssh.launcher;
 
 import com.scalr.ssh.launcher.configuration.AppletLauncherConfiguration;
 import com.scalr.ssh.logging.JTextAreaHandler;
-import org.apache.commons.lang3.ArrayUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +13,6 @@ import java.util.logging.Logger;
 
 public class SSHLauncherApplet extends JApplet {
     private final static Logger logger = Logger.getLogger(SSHLauncherApplet.class.getName());
-    private final static String logLevelParam = "logLevel";
     private final static int    paramLogLength = 20;
 
     public SSHLauncherApplet () {
@@ -42,7 +40,7 @@ public class SSHLauncherApplet extends JApplet {
         Logger rootLogger = Logger.getLogger("");
         rootLogger.addHandler(textAreaHandler);
 
-        String requestedLogLevel = getParameter(logLevelParam);
+        String requestedLogLevel = getParameter(SSHLauncher.logLevelParam);
         Level logLevel;
 
         if (requestedLogLevel != null) {
@@ -57,8 +55,8 @@ public class SSHLauncherApplet extends JApplet {
                     requestedLogLevel));
 
             // Do not set this on the main logger. Too much output crashes the Java applet console (?!).
-            Logger launcherLogger = Logger.getLogger("com.scalr.ssh");
             textAreaHandler.setLevel(logLevel);
+            Logger launcherLogger = Logger.getLogger("com.scalr.ssh");
             launcherLogger.setLevel(logLevel);
         }
 
@@ -90,7 +88,6 @@ public class SSHLauncherApplet extends JApplet {
         getContentPane().add(button, BorderLayout.PAGE_END);
     }
 
-
     public void start() {
         logger.info("Starting");
         launchNewSSHSession();
@@ -115,7 +112,6 @@ public class SSHLauncherApplet extends JApplet {
     }
 
     public String[][] getParameterInfo () {
-        return ArrayUtils.addAll(SSHLauncher.getParameterInfo(),
-                new String[][] {{logLevelParam, "string", "Logging level (optional, defaults to INFO)"}});
+        return SSHLauncher.getParameterInfo();
     }
 }
