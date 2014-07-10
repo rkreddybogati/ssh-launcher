@@ -102,6 +102,8 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
 
             // Check if the file happens to already be there. We don't want to override the
             // key, in order to maximize user flexibility.
+            getLogger().info(String.format("Looking up a local key in SSH Key File '%s'", keyPath));
+
             Boolean sshFileExists = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
                 @Override
                 public Boolean run() {
