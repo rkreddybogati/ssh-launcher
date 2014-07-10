@@ -46,9 +46,9 @@ public class SSHLauncher {
         });
 
         logger.info(String.format("Detected Platform: '%s'", platformName));
-        SSHProviderManager sshLauncherManager = new SSHProviderManager(platformName);
+        SSHProviderManager sshProviderManager = new SSHProviderManager(platformName);
 
-        ArrayList<SSHProviderInterface> sshLaunchers = sshLauncherManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
+        ArrayList<SSHProviderInterface> sshLaunchers = sshProviderManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
         if (sshLaunchers.isEmpty()) {
             logger.severe(String.format("No SSH Launcher available for platform '%s'", platformName));
         }
