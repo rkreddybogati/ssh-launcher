@@ -93,12 +93,15 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
         if (sshConfiguration.useKeyAuth()) {
             final String keyPath;
 
+            // Figure out where the key is supposed to go.
             try {
                 keyPath = getSSHPrivateKeyFilePath();
             } catch (IOException e) {
                 throw new EnvironmentSetupException("Unable to resolve path to SSH key");
             }
 
+            // Check if the file happens to already be there. We don't want to override the
+            // key, in order to maximize user flexibility.
             Boolean sshFileExists = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
                 @Override
                 public Boolean run() {
@@ -110,6 +113,10 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                 getLogger().info(String.format("SSH Key File '%s' already exists. Not replacing.", keyPath));
                 return;
             }
+
+            // Check we have a private key to write before opening the file
+            // We don't want to create an empty file.
+            String privateKey = getAndCheckPrivateKey();
 
             // TODO - Refactor not to ov the key if it exists!
             File sshFile = AccessController.doPrivileged(new PrivilegedAction<File>() {
@@ -152,7 +159,7 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
 
             try {
                 BufferedWriter output = new BufferedWriter(new FileWriter(sshFile));
-                output.write(getAndCheckPrivateKey());
+                output.write(privateKey);
                 output.close();
             } catch (IOException e) {
                 getLogger().log(Level.SEVERE, "Error writing private key to SSH File", e);
