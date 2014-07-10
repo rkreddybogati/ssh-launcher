@@ -8,6 +8,7 @@ import com.scalr.ssh.provider.base.SSHProviderInterface;
 import com.scalr.ssh.provider.manager.SSHProviderManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -38,6 +39,13 @@ public class SSHLauncher {
         this.launcherConfiguration = launcherConfiguration;
     }
 
+    private void handleLauncherError (SSHProviderInterface sshProvider, Throwable e) {
+        logger.log(Level.WARNING, String.format("Provider '%s' failed to launch SSH", sshProvider.getClass().getCanonicalName()));
+        logger.log(Level.INFO, ExceptionUtils.getMessage(e));
+        logger.log(Level.FINEST, ExceptionUtils.getStackTrace(e));
+
+    }
+
     private void launchFromSSHConfiguration(SSHConfiguration sshConfiguration, String preferredLauncher) throws LauncherException {
         String platformName = AccessController.doPrivileged(new PrivilegedAction<String>() {
             @Override
@@ -49,15 +57,15 @@ public class SSHLauncher {
         logger.info(String.format("Detected Platform: '%s'", platformName));
         SSHProviderManager sshProviderManager = new SSHProviderManager(platformName);
 
-        ArrayList<SSHProviderInterface> sshLaunchers = sshProviderManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
-        if (sshLaunchers.isEmpty()) {
+        ArrayList<SSHProviderInterface> sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
+        if (sshProviders.isEmpty()) {
             logger.severe(String.format("No SSH Launcher available for platform '%s'", platformName));
         }
 
-        for (SSHProviderInterface sshLauncher: sshLaunchers) {
-            logger.info(String.format("Creating SSH Session with provider: '%s'", sshLauncher.getClass().getCanonicalName()));
+        for (SSHProviderInterface sshProvider: sshProviders) {
+            logger.info(String.format("Creating SSH Session with provider: '%s'", sshProvider.getClass().getCanonicalName()));
             try {
-                String[] sshCommand = sshLauncher.getSSHCommand();
+                String[] sshCommand = sshProvider.getSSHCommand();
                 logger.info(String.format("Launcher Command Line: '%s'", StringUtils.join(sshCommand, " ")));
 
                 ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
@@ -66,9 +74,9 @@ public class SSHLauncher {
                 logger.info("Started SSH process.");
                 return;
             } catch (LauncherException e) {
-                logger.log(Level.WARNING, String.format("Launcher '%s' failed to prepare SSH", sshLauncher.getClass().getCanonicalName()), e);
+                handleLauncherError(sshProvider, e);
             } catch (IOException e) {
-                logger.log(Level.WARNING, String.format("Launcher '%s' failed to launch SSH", sshLauncher.getClass().getCanonicalName()), e);
+                handleLauncherError(sshProvider, e);
             }
         }
 
@@ -138,8 +146,8 @@ public class SSHLauncher {
             SSHConfiguration sshConfiguration = getSSHConfiguration();
             try {
                 logger.info("Creating SSH Session");
-                String preferredLauncher = launcherConfiguration.getOption(preferredProviderParam);
-                launchFromSSHConfiguration(sshConfiguration, preferredLauncher);
+                String preferredProvider = launcherConfiguration.getOption(preferredProviderParam);
+                launchFromSSHConfiguration(sshConfiguration, preferredProvider);
                 return true;
             } catch (LauncherException e) {
                 logger.log(Level.SEVERE, "Unable to create SSH Session", e);

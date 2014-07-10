@@ -1,7 +1,6 @@
 package com.scalr.ssh.provider.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.provider.base.SSHProviderInterface;
 import com.scalr.ssh.provider.linux.LinuxGnomeTerminalSSHProvider;
 import com.scalr.ssh.provider.linux.LinuxXTermSSHProvider;
@@ -43,7 +42,7 @@ public class SSHProviderManager {
         return availableSSHProviders;
     }
 
-    public ArrayList<SSHProviderInterface> getOrderedSSHProviders(SSHConfiguration sshConfiguration, String preferredProvider) throws InvalidEnvironmentException {
+    public ArrayList<SSHProviderInterface> getOrderedSSHProviders(SSHConfiguration sshConfiguration, String preferredProvider) {
         ArrayList<SSHProviderInterface> availableProviders = getAvailableSSHProviders(sshConfiguration);
         ArrayList<SSHProviderInterface> orderedProviders = new ArrayList<SSHProviderInterface>();
 
