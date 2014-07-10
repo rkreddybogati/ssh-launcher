@@ -1,7 +1,7 @@
 package manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
@@ -75,7 +75,7 @@ public class SSHManagerSSHKeysTestCase {
     }
 
     @Test
-    public void testSSHKeyPathDependsOnKey () throws InvalidEnvironmentException {
+    public void testSSHKeyPathDependsOnKey () throws LauncherException {
         SSHConfiguration sshConfiguration1 = new SSHConfiguration("example.com");
         sshConfiguration1.setOpenSSHPrivateKey("Private Key 1");
         SSHManagerInterface sshManager1 = new OpenSSHManager(sshConfiguration1);
@@ -115,12 +115,12 @@ public class SSHManagerSSHKeysTestCase {
     }
 
     @Test
-    public void testSSHKeyName () throws InvalidEnvironmentException {
+    public void testSSHKeyName () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("valid-key-name");
 
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
         String sshPrivateKeyPath = sshCommandLineBits[2];
 
@@ -128,4 +128,37 @@ public class SSHManagerSSHKeysTestCase {
         // What's on the filesystem
         assertEquals("valid-key-name.pem", Paths.get(sshPrivateKeyPath).getFileName().toString());
     }
+
+    @Test
+    public void testNoKeyOverwrite () throws LauncherException, IOException {
+        String keyName = "existing-key";
+        String keyContents = "this is the key!";
+
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        sshConfiguration.setSSHKeyName(keyName);
+        sshConfiguration.setOpenSSHPrivateKey("Not really: " + keyContents);
+
+        Path homeDirectoryPath = fsRule.getTestDirectory();
+        Path sshDirectoryPath = homeDirectoryPath.resolve(".ssh");
+        File keyFile = sshDirectoryPath.resolve(keyName).toFile();
+
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+
+        FileUtils.writeStringToFile(keyFile, keyContents);
+        sshManager.setUpSSHEnvironment();
+        assertEquals(keyContents, FileUtils.readFileToString(keyFile));
+    }
+
+    @Test(expected=InvalidConfigurationException.class)
+    public void testEmptySSHKeyWithKeyName () throws LauncherException {
+        // In this case, we'll attempt to write an empty key to the disk.
+        // This should error out
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        sshConfiguration.setSSHKeyName("My Key");
+
+        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        sshManager.setUpSSHEnvironment();
+    }
+
+    // TODO - Add a test that the key does not get replaced
 }

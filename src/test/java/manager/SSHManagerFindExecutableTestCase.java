@@ -2,6 +2,7 @@ package manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.manager.PuTTYManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
@@ -22,17 +23,18 @@ public class SSHManagerFindExecutableTestCase {
     public MockFileSystemManagerRule fsRule = new MockFileSystemManagerRule();
 
     @Test(expected=InvalidEnvironmentException.class)
-    public void testSSHNotFound () throws InvalidEnvironmentException {
+    public void testSSHNotFound () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
         sshManager.getSSHCommandLineBits();
     }
 
     @Test
-    public void testFindPuTTY () throws InvalidEnvironmentException {
+    public void testFindPuTTY () throws LauncherException {
         fsRule.addExistingPath("C:/Program Files (x86)/PuTTY/putty.exe");
 
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        sshConfiguration.setDisableKeyAuth(true);
         SSHManagerInterface sshManager = new PuTTYManager(sshConfiguration, fsRule.getFileSystemManager());
 
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
@@ -48,7 +50,7 @@ public class SSHManagerFindExecutableTestCase {
     }
 
     @Test(expected=InvalidEnvironmentException.class)
-    public void testPuTTYNotFound () throws InvalidEnvironmentException {
+    public void testPuTTYNotFound () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         SSHManagerInterface sshManager = new PuTTYManager(sshConfiguration, fsRule.getFileSystemManager());
         sshManager.getSSHCommandLineBits();
