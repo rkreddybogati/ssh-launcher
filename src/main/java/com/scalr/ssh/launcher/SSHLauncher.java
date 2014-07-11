@@ -41,11 +41,14 @@ public class SSHLauncher {
         this.launcherConfiguration = launcherConfiguration;
     }
 
-    private void handleLauncherError (SSHProviderInterface sshProvider, Throwable e) {
-        logger.log(Level.WARNING, String.format("Provider '%s' failed to launch SSH", sshProvider.getClass().getCanonicalName()));
+    private void logGenericError(Throwable e) {
         logger.log(Level.INFO, ExceptionUtils.getMessage(e));
         logger.log(Level.FINEST, ExceptionUtils.getStackTrace(e));
+    }
 
+    private void logProviderError(SSHProviderInterface sshProvider, Throwable e) {
+        logger.log(Level.WARNING, String.format("Provider '%s' failed to launch SSH", sshProvider.getClass().getCanonicalName()));
+        logGenericError(e);
     }
 
     private void launchFromSSHConfiguration(SSHConfiguration sshConfiguration, String preferredLauncher) throws LauncherException {
@@ -63,9 +66,9 @@ public class SSHLauncher {
                 logger.info("Started SSH process.");
                 return;
             } catch (LauncherException e) {
-                handleLauncherError(sshProvider, e);
+                logProviderError(sshProvider, e);
             } catch (IOException e) {
-                handleLauncherError(sshProvider, e);
+                logProviderError(sshProvider, e);
             }
         }
 
@@ -173,9 +176,11 @@ public class SSHLauncher {
                 return true;
             } catch (LauncherException e) {
                 logger.log(Level.SEVERE, "Unable to create SSH Session", e);
+                logGenericError(e);
             }
         } catch (InvalidConfigurationException e) {
             logger.log(Level.SEVERE, "Unable to create SSH Configuration", e);
+            logGenericError(e);
         }
         return false;
     }
