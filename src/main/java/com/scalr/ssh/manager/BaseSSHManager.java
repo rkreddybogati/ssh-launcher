@@ -10,10 +10,7 @@ import com.scalr.ssh.logging.Loggable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -160,7 +157,8 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
             }
 
             try {
-                BufferedWriter output = new BufferedWriter(new FileWriter(sshFile));
+                Writer writer = new OutputStreamWriter(new FileOutputStream(sshFile), "UTF-8");
+                BufferedWriter output = new BufferedWriter(writer);
                 output.write(privateKey);
                 output.close();
             } catch (IOException e) {

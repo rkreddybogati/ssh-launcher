@@ -5,8 +5,6 @@ import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.manager.SSHManagerInterface;
-import lib.util.MockFileSystemManagerWithSSHRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -16,9 +14,6 @@ import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
 public class SSHManagerCommandsTestCase {
-    @Rule
-    public MockFileSystemManagerWithSSHRule fsRule = new MockFileSystemManagerWithSSHRule();
-
     @Test
     public void testUnixSSHManager () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");

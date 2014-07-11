@@ -10,20 +10,6 @@ import java.security.PrivilegedAction;
 
 
 public class FileSystemManager extends Loggable {
-
-    private class FileExistencePrivilegedAction implements PrivilegedAction<Boolean> {
-        private final File file;
-
-        public FileExistencePrivilegedAction (File file) {
-            this.file = file;
-        }
-
-        @Override
-        public Boolean run() {
-            return (file.exists() && !file.isDirectory());
-        }
-    }
-
     public File getTemporaryFile (final String prefix, final String suffix) throws IOException {
         File tempFile = AccessController.doPrivileged(
                 new PrivilegedAction<File>() {

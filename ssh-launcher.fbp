@@ -1,0 +1,5 @@
+<Project projectName="">
+  <Jar>./build/classes</Jar>
+  <AuxClasspathEntry>../../../.gradle/caches/modules-2/files-2.1</AuxClasspathEntry>
+  <SrcDir>./src</SrcDir>
+</Project>

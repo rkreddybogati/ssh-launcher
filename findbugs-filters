@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Method name="~.*\.getTerminalEmulator" />
+  <Method name="~.*\.getExecutablePath" />
+  <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+</FindBugsFilter>
