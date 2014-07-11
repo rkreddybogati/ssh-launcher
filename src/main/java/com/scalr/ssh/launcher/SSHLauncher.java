@@ -5,6 +5,7 @@ import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
 import com.scalr.ssh.provider.base.SSHProviderInterface;
+import com.scalr.ssh.provider.debug.PassthroughProvider;
 import com.scalr.ssh.provider.manager.SSHProviderManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -48,20 +49,7 @@ public class SSHLauncher {
     }
 
     private void launchFromSSHConfiguration(SSHConfiguration sshConfiguration, String preferredLauncher) throws LauncherException {
-        String platformName = AccessController.doPrivileged(new PrivilegedAction<String>() {
-            @Override
-            public String run() {
-                return System.getProperty("os.name");
-            }
-        });
-
-        logger.info(String.format("Detected Platform: '%s'", platformName));
-        SSHProviderManager sshProviderManager = new SSHProviderManager(platformName);
-
-        ArrayList<SSHProviderInterface> sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
-        if (sshProviders.isEmpty()) {
-            logger.severe(String.format("No SSH Launcher available for platform '%s'", platformName));
-        }
+        ArrayList<SSHProviderInterface> sshProviders = getSSHProviders(sshConfiguration, preferredLauncher);
 
         for (SSHProviderInterface sshProvider: sshProviders) {
             logger.info(String.format("Creating SSH Session with provider: '%s'", sshProvider.getClass().getCanonicalName()));
@@ -82,6 +70,39 @@ public class SSHLauncher {
         }
 
         throw new LauncherException("All launchers failed to launch SSH");
+    }
+
+    private ArrayList<SSHProviderInterface> getSSHProviders(final SSHConfiguration sshConfiguration, String preferredLauncher) {
+        // Are we in debug mode?
+        Boolean debugMode = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            @Override
+            public Boolean run() {
+                return "1".equals(System.getenv("SCALR_SSH_LAUNCHER_DEBUG"));
+            }
+        });
+
+        if (debugMode) {
+            return new ArrayList<SSHProviderInterface>() {{
+                add(new PassthroughProvider(sshConfiguration));
+            }};
+        }
+
+        // Not in debug mode - proceed
+        String platformName = AccessController.doPrivileged(new PrivilegedAction<String>() {
+            @Override
+            public String run() {
+                return System.getProperty("os.name");
+            }
+        });
+
+        logger.info(String.format("Detected Platform: '%s'", platformName));
+        SSHProviderManager sshProviderManager = new SSHProviderManager(platformName);
+
+        ArrayList<SSHProviderInterface> sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
+        if (sshProviders.isEmpty()) {
+            logger.severe(String.format("No SSH Launcher available for platform '%s'", platformName));
+        }
+        return sshProviders;
     }
 
     private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {

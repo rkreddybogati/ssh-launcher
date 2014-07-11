@@ -43,19 +43,21 @@ public class SSHLauncherCLI {
         String requestedLogLevel = cmd.getOptionValue(SSHLauncher.logLevelParam);
         Level logLevel;
 
-        try {
-            logLevel = Level.parse(requestedLogLevel);
-        } catch (IllegalArgumentException e) {
-            logLevel = Level.INFO;
-        }
+        if (requestedLogLevel != null) {
+            try {
+                logLevel = Level.parse(requestedLogLevel);
+            } catch (IllegalArgumentException e) {
+                logLevel = Level.INFO;
+            }
 
-        Logger launcherLogger = Logger.getLogger("com.scalr.ssh");
-        launcherLogger.setLevel(logLevel);
+            Logger launcherLogger = Logger.getLogger("com.scalr.ssh");
+            launcherLogger.setLevel(logLevel);
 
-        Logger root = Logger.getLogger("");
-        Handler[] handlers = root.getHandlers();
-        for(Handler h: handlers){
-            h.setLevel(logLevel);
+            Logger root = Logger.getLogger("");
+            Handler[] handlers = root.getHandlers();
+            for(Handler h: handlers){
+                h.setLevel(logLevel);
+            }
         }
 
         // Actually launch
