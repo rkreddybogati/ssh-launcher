@@ -1,9 +1,9 @@
 package com.scalr.ssh.provider.windows;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
-import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.provider.base.BaseSSHProvider;
 
 import java.util.ArrayList;
@@ -20,8 +20,8 @@ public class WindowsOpenSSHProvider extends BaseSSHProvider {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        OpenSSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        sshManager.setUpSSHEnvironment();
+        OpenSSHController sshController = new OpenSSHController(sshConfiguration);
+        sshController.setUpSSHEnvironment();
 
         ArrayList<String> providerCommandLineBits = new ArrayList<String>();
 
@@ -29,7 +29,7 @@ public class WindowsOpenSSHProvider extends BaseSSHProvider {
         providerCommandLineBits.add("/c"); // TODO -> Use /k?
         providerCommandLineBits.add("start");
         providerCommandLineBits.add("Scalr SSH Session");
-        Collections.addAll(providerCommandLineBits, sshManager.getSSHCommandLineBits());
+        Collections.addAll(providerCommandLineBits, sshController.getSSHCommandLineBits());
 
         ArrayList<String> escapedProviderCommandLineBits = new ArrayList<String>();
         for (String sshCommandLineBit : providerCommandLineBits) {

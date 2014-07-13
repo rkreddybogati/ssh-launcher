@@ -1,8 +1,8 @@
-package com.scalr.ssh.manager;
+package com.scalr.ssh.controller;
 
 import com.scalr.ssh.exception.LauncherException;
 
-public interface SSHManager {
+public interface SSHController {
     public void setUpSSHEnvironment() throws LauncherException;
     public String[] getSSHCommandLineBits() throws LauncherException;
 }

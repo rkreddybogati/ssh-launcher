@@ -1,10 +1,10 @@
 package com.scalr.ssh.provider.mac;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
-import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManager;
+import com.scalr.ssh.controller.SSHController;
 import com.scalr.ssh.provider.base.BaseSSHProvider;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,8 +19,8 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
         super(sshConfiguration, fsManager);
     }
 
-    private String[] getAppleScriptLines(SSHManager sshManager) throws LauncherException {
-        String sshCommand = StringUtils.join(sshManager.getSSHCommandLineBits(), " ");
+    private String[] getAppleScriptLines(SSHController sshController) throws LauncherException {
+        String sshCommand = StringUtils.join(sshController.getSSHCommandLineBits(), " ");
         String scriptCommand = String.format("clear ; echo '%s' ; %s ; echo 'Hit enter to exit' ; read ; logout", sshCommand, sshCommand);
         // TODO -> clear; echo wrapping -> externalize. (see LinuxBaseSSHProvider)
 
@@ -45,13 +45,13 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        sshManager.setUpSSHEnvironment();
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        sshController.setUpSSHEnvironment();
 
         ArrayList<String> commandBits = new ArrayList<String>();
         commandBits.add("/usr/bin/osascript");
 
-        for (String appleScriptLine: getAppleScriptLines(sshManager)) {
+        for (String appleScriptLine: getAppleScriptLines(sshController)) {
             commandBits.add("-e");
             commandBits.add(appleScriptLine);
         }

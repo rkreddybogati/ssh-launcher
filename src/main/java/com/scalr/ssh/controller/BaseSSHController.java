@@ -1,4 +1,4 @@
-package com.scalr.ssh.manager;
+package com.scalr.ssh.controller;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.EnvironmentSetupException;
@@ -19,16 +19,16 @@ import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collections;
 
-abstract public class BaseSSHManager extends Loggable implements SSHManager {
+abstract public class BaseSSHController extends Loggable implements SSHController {
     protected final SSHConfiguration sshConfiguration;
     protected final FileSystemManager fsManager;
 
-    public BaseSSHManager (SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
+    public BaseSSHController(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
         this.sshConfiguration = sshConfiguration;
         this.fsManager = fsManager;
     }
 
-    public BaseSSHManager (SSHConfiguration sshConfiguration) {
+    public BaseSSHController(SSHConfiguration sshConfiguration) {
         this(sshConfiguration, new FileSystemManager());
     }
 

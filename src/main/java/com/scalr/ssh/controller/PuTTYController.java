@@ -1,4 +1,4 @@
-package com.scalr.ssh.manager;
+package com.scalr.ssh.controller;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
@@ -7,12 +7,12 @@ import com.scalr.ssh.filesystem.FileSystemManager;
 import java.io.File;
 import java.io.IOException;
 
-public class PuTTYManager extends BaseSSHManager {
-    public PuTTYManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
+public class PuTTYController extends BaseSSHController {
+    public PuTTYController(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
         super(sshConfiguration, fsManager);
     }
 
-    public PuTTYManager(SSHConfiguration sshConfiguration) {
+    public PuTTYController(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 

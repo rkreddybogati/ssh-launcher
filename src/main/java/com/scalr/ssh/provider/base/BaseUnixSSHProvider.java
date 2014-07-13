@@ -1,11 +1,11 @@
 package com.scalr.ssh.provider.base;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManager;
+import com.scalr.ssh.controller.SSHController;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -46,16 +46,16 @@ public abstract class BaseUnixSSHProvider extends BaseSSHProvider {
         return commandFile;
     }
 
-    protected SSHManager getSSHManager(SSHConfiguration sshConfiguration) {
-        return new OpenSSHManager(sshConfiguration);
+    protected SSHController getSSHController(SSHConfiguration sshConfiguration) {
+        return new OpenSSHController(sshConfiguration);
     }
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManager sshManager = getSSHManager(sshConfiguration);
-        sshManager.setUpSSHEnvironment();
+        SSHController sshController = getSSHController(sshConfiguration);
+        sshController.setUpSSHEnvironment();
 
-        String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
+        String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
         String   sshCommandLine = StringUtils.join(sshCommandLineBits, " ");
 
         File commandFile = createCommandFile(sshCommandLine);

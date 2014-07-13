@@ -1,10 +1,10 @@
-package manager;
+package controller;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManager;
+import com.scalr.ssh.controller.SSHController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -13,50 +13,50 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
-public class SSHManagerCommandsTestCase {
+public class SSHControllerCommandsTestCase {
     @Test
-    public void testUnixSSHManager () throws LauncherException {
+    public void testUnixSSHController () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setDisableKeyAuth(true);
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"/usr/bin/ssh", "example.com"}, sshManager.getSSHCommandLineBits());
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "example.com"}, sshController.getSSHCommandLineBits());
     }
 
     @Test
-    public void testUnixSSHManagerWithUser () throws LauncherException {
+    public void testUnixSSHControllerWithUser () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setUsername("user");
         sshConfiguration.setDisableKeyAuth(true);
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"/usr/bin/ssh", "user@example.com"}, sshManager.getSSHCommandLineBits());
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "user@example.com"}, sshController.getSSHCommandLineBits());
     }
 
     @Test
-    public void testUnixSSHManagerWithPort () throws LauncherException {
+    public void testUnixSSHControllerWithPort () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setPort(2222);
         sshConfiguration.setDisableKeyAuth(true);
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        assertArrayEquals(new String[]{"/usr/bin/ssh", "-p", "2222", "example.com"}, sshManager.getSSHCommandLineBits());
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "-p", "2222", "example.com"}, sshController.getSSHCommandLineBits());
     }
 
     @Test
-    public void testUnixSSHManagerWithNoHostKeyChecking () throws LauncherException {
+    public void testUnixSSHControllerWithNoHostKeyChecking () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setIgnoreHostKeys(true);
         sshConfiguration.setDisableKeyAuth(true);
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration);
         assertArrayEquals(new String[]{"/usr/bin/ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "CheckHostIP=no", "-o", "StrictHostKeyChecking=no", "example.com"},
-                sshManager.getSSHCommandLineBits());
+                sshController.getSSHCommandLineBits());
     }
 
     @Test
-    public void testUnixSSHManagerWithKey () throws LauncherException {
+    public void testUnixSSHControllerWithKey () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("My Private Key");
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration);
 
-        String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
+        String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
 
         assertEquals(4, sshCommandLineBits.length);
 
@@ -76,8 +76,8 @@ public class SSHManagerCommandsTestCase {
         // This should error out
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
 
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        sshManager.getSSHCommandLineBits();
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        sshController.getSSHCommandLineBits();
     }
 
     @Test(expected=InvalidConfigurationException.class)
@@ -87,7 +87,7 @@ public class SSHManagerCommandsTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setSSHKeyName("");
 
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        sshManager.getSSHCommandLineBits();
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        sshController.getSSHCommandLineBits();
     }
 }

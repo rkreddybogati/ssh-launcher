@@ -1,10 +1,10 @@
-package manager;
+package controller;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManager;
+import com.scalr.ssh.controller.SSHController;
 import lib.util.MockFileSystemManagerWithSSHRule;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -23,7 +23,7 @@ import java.util.Iterator;
 import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
-public class SSHManagerSSHKeysTestCase {
+public class SSHControllerKeysTestCase {
     @Rule
     public MockFileSystemManagerWithSSHRule fsRule = new MockFileSystemManagerWithSSHRule();
 
@@ -33,7 +33,7 @@ public class SSHManagerSSHKeysTestCase {
 
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey(privateKey);
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
 
         Path homeDirectoryPath = fsRule.getTestDirectory();
         Path sshDirectoryPath = homeDirectoryPath.resolve(".ssh");
@@ -47,7 +47,7 @@ public class SSHManagerSSHKeysTestCase {
         paths = Files.newDirectoryStream(homeDirectoryPath);
         assertFalse(paths.iterator().hasNext());
 
-        sshManager.setUpSSHEnvironment();
+        sshController.setUpSSHEnvironment();
 
         // Check a folder is created to hold the key
         paths = Files.newDirectoryStream(sshDirectoryPath);
@@ -65,7 +65,7 @@ public class SSHManagerSSHKeysTestCase {
         assertFalse(dirIter.hasNext());
 
         // Check the file is in the right location
-        String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
+        String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
         String sshPrivateKeyPath = sshCommandLineBits[2];
 
         assertEquals(Paths.get(sshPrivateKeyPath).toFile().getCanonicalPath(), keyFilePath.toFile().getCanonicalPath());
@@ -78,14 +78,14 @@ public class SSHManagerSSHKeysTestCase {
     public void testSSHKeyPathDependsOnKey () throws LauncherException {
         SSHConfiguration sshConfiguration1 = new SSHConfiguration("example.com");
         sshConfiguration1.setOpenSSHPrivateKey("Private Key 1");
-        SSHManager sshManager1 = new OpenSSHManager(sshConfiguration1);
+        SSHController sshController1 = new OpenSSHController(sshConfiguration1);
 
         SSHConfiguration sshConfiguration2 = new SSHConfiguration("example.com");
         sshConfiguration2.setOpenSSHPrivateKey("Private Key 2");
-        SSHManager sshManager2 = new OpenSSHManager(sshConfiguration2);
+        SSHController sshController2 = new OpenSSHController(sshConfiguration2);
 
-        String[] sshCommandLineBits1 = sshManager1.getSSHCommandLineBits();
-        String[] sshCommandLineBits2 = sshManager2.getSSHCommandLineBits();
+        String[] sshCommandLineBits1 = sshController1.getSSHCommandLineBits();
+        String[] sshCommandLineBits2 = sshController2.getSSHCommandLineBits();
 
         for (Integer i : new Integer[] {0, 1, 3}) {
             assertEquals(sshCommandLineBits1[i], sshCommandLineBits2[i]);
@@ -100,8 +100,8 @@ public class SSHManagerSSHKeysTestCase {
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("../not-valid-key");
 
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
-        sshManager.setUpSSHEnvironment();
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
+        sshController.setUpSSHEnvironment();
     }
 
     @Test
@@ -110,8 +110,8 @@ public class SSHManagerSSHKeysTestCase {
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("valid.key");
 
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
-        sshManager.setUpSSHEnvironment();
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
+        sshController.setUpSSHEnvironment();
     }
 
     @Test
@@ -120,8 +120,8 @@ public class SSHManagerSSHKeysTestCase {
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("valid-key-name");
 
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
-        String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
+        String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
         String sshPrivateKeyPath = sshCommandLineBits[2];
 
         // It's OK to only check the name passed in SSH configuration, as we check above that this matches
@@ -142,10 +142,10 @@ public class SSHManagerSSHKeysTestCase {
         Path sshDirectoryPath = homeDirectoryPath.resolve(".ssh");
         File keyFile = sshDirectoryPath.resolve(keyName).toFile();
 
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
 
         FileUtils.writeStringToFile(keyFile, keyContents);
-        sshManager.setUpSSHEnvironment();
+        sshController.setUpSSHEnvironment();
         assertEquals(keyContents, FileUtils.readFileToString(keyFile));
     }
 
@@ -156,8 +156,8 @@ public class SSHManagerSSHKeysTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setSSHKeyName("My Key");
 
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
-        sshManager.setUpSSHEnvironment();
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
+        sshController.setUpSSHEnvironment();
     }
 
     // TODO - Add a test that the key does not get replaced

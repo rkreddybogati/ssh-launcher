@@ -4,9 +4,9 @@ import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListParser;
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.LauncherException;
-import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManager;
+import com.scalr.ssh.controller.SSHController;
 import com.scalr.ssh.provider.base.BaseSSHProvider;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,10 +70,10 @@ public class MacNativeSSHProvider extends BaseSSHProvider {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
-        sshManager.setUpSSHEnvironment();
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        sshController.setUpSSHEnvironment();
 
-        String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
+        String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
         String   sshCommandLine = StringUtils.join(sshCommandLineBits, " ");
 
         final NSDictionary root = getBaseTerminalConfiguration();

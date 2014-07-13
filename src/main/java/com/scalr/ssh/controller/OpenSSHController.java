@@ -1,4 +1,4 @@
-package com.scalr.ssh.manager;
+package com.scalr.ssh.controller;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
@@ -7,8 +7,8 @@ import com.scalr.ssh.filesystem.FileSystemManager;
 import java.io.File;
 import java.io.IOException;
 
-public class OpenSSHManager extends BaseSSHManager {
-    public OpenSSHManager(SSHConfiguration sshConfiguration) {
+public class OpenSSHController extends BaseSSHController {
+    public OpenSSHController(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
     }
 
@@ -22,7 +22,7 @@ public class OpenSSHManager extends BaseSSHManager {
         return "pem";
     }
 
-    public OpenSSHManager(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
+    public OpenSSHController(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
         super(sshConfiguration, fsManager);
     }
 
