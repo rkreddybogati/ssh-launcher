@@ -38,11 +38,11 @@ public class WritePrivateKeyPrivilegedAction extends Loggable implements Privile
         }
 
         if (!keyFile.setWritable(false, false) || !keyFile.setWritable(true, true)) {
-            getLogger().warning(String.format("Failed to make SSH File '%s' writable", keyPath));
+            getLogger().warning(String.format("Failed to make SSH File '%s' writable by owner", keyPath));
         }
 
         if (!keyFile.setReadable(false, false) || !keyFile.setReadable(true, true)) {
-            getLogger().warning(String.format("Failed to make SSH File '%s' writable", keyPath));
+            getLogger().warning(String.format("Failed to make SSH File '%s' readable by owner", keyPath));
         }
 
         try {
