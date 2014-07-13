@@ -4,7 +4,7 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManagerInterface;
+import com.scalr.ssh.manager.SSHManager;
 import com.scalr.ssh.provider.base.BaseSSHProvider;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,7 +19,7 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
         super(sshConfiguration, fsManager);
     }
 
-    private String[] getAppleScriptLines(SSHManagerInterface sshManager) throws LauncherException {
+    private String[] getAppleScriptLines(SSHManager sshManager) throws LauncherException {
         String sshCommand = StringUtils.join(sshManager.getSSHCommandLineBits(), " ");
         String scriptCommand = String.format("clear ; echo '%s' ; %s ; echo 'Hit enter to exit' ; read ; logout", sshCommand, sshCommand);
         // TODO -> clear; echo wrapping -> externalize. (see LinuxBaseSSHProvider)
@@ -45,7 +45,7 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
         sshManager.setUpSSHEnvironment();
 
         ArrayList<String> commandBits = new ArrayList<String>();

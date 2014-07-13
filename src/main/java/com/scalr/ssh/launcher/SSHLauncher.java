@@ -4,7 +4,7 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
-import com.scalr.ssh.provider.base.SSHProviderInterface;
+import com.scalr.ssh.provider.SSHProvider;
 import com.scalr.ssh.provider.debug.PassthroughProvider;
 import com.scalr.ssh.provider.manager.SSHProviderManager;
 import org.apache.commons.codec.binary.Base64;
@@ -46,15 +46,15 @@ public class SSHLauncher {
         logger.log(Level.FINEST, ExceptionUtils.getStackTrace(e));
     }
 
-    private void logProviderError(SSHProviderInterface sshProvider, Throwable e) {
+    private void logProviderError(SSHProvider sshProvider, Throwable e) {
         logger.log(Level.WARNING, String.format("Provider '%s' failed to launch SSH", sshProvider.getClass().getCanonicalName()));
         logGenericError(e);
     }
 
     private void launchFromSSHConfiguration(SSHConfiguration sshConfiguration, String preferredLauncher) throws LauncherException {
-        ArrayList<SSHProviderInterface> sshProviders = getSSHProviders(sshConfiguration, preferredLauncher);
+        ArrayList<SSHProvider> sshProviders = getSSHProviders(sshConfiguration, preferredLauncher);
 
-        for (SSHProviderInterface sshProvider: sshProviders) {
+        for (SSHProvider sshProvider: sshProviders) {
             logger.info(String.format("Creating SSH Session with provider: '%s'", sshProvider.getClass().getCanonicalName()));
             try {
                 String[] sshCommand = sshProvider.getSSHCommand();
@@ -75,7 +75,7 @@ public class SSHLauncher {
         throw new LauncherException("All launchers failed to launch SSH");
     }
 
-    private ArrayList<SSHProviderInterface> getSSHProviders(final SSHConfiguration sshConfiguration, String preferredLauncher) {
+    private ArrayList<SSHProvider> getSSHProviders(final SSHConfiguration sshConfiguration, String preferredLauncher) {
         // Are we in debug mode?
         Boolean debugMode = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
             @Override
@@ -85,7 +85,7 @@ public class SSHLauncher {
         });
 
         if (debugMode) {
-            return new ArrayList<SSHProviderInterface>() {{
+            return new ArrayList<SSHProvider>() {{
                 add(new PassthroughProvider(sshConfiguration));
             }};
         }
@@ -101,7 +101,7 @@ public class SSHLauncher {
         logger.info(String.format("Detected Platform: '%s'", platformName));
         SSHProviderManager sshProviderManager = new SSHProviderManager(platformName);
 
-        ArrayList<SSHProviderInterface> sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
+        ArrayList<SSHProvider> sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, preferredLauncher);
         if (sshProviders.isEmpty()) {
             logger.severe(String.format("No SSH Launcher available for platform '%s'", platformName));
         }

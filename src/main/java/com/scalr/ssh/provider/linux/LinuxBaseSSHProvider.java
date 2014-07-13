@@ -5,7 +5,7 @@ import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManagerInterface;
+import com.scalr.ssh.manager.SSHManager;
 import com.scalr.ssh.provider.base.BaseSSHProvider;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +25,7 @@ abstract public class LinuxBaseSSHProvider extends BaseSSHProvider {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
         sshManager.setUpSSHEnvironment();
 
         // Note: we wrap ssh into a command line so that we can keep the terminal window open when

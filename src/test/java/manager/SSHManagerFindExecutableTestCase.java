@@ -5,7 +5,7 @@ import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
 import com.scalr.ssh.manager.PuTTYManager;
-import com.scalr.ssh.manager.SSHManagerInterface;
+import com.scalr.ssh.manager.SSHManager;
 import lib.util.MockFileSystemManagerRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class SSHManagerFindExecutableTestCase {
     @Test(expected=InvalidEnvironmentException.class)
     public void testSSHNotFound () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
         sshManager.getSSHCommandLineBits();
     }
 
@@ -35,7 +35,7 @@ public class SSHManagerFindExecutableTestCase {
 
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setDisableKeyAuth(true);
-        SSHManagerInterface sshManager = new PuTTYManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new PuTTYManager(sshConfiguration, fsRule.getFileSystemManager());
 
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
 
@@ -52,7 +52,7 @@ public class SSHManagerFindExecutableTestCase {
     @Test(expected=InvalidEnvironmentException.class)
     public void testPuTTYNotFound () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
-        SSHManagerInterface sshManager = new PuTTYManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new PuTTYManager(sshConfiguration, fsRule.getFileSystemManager());
         sshManager.getSSHCommandLineBits();
     }
 }

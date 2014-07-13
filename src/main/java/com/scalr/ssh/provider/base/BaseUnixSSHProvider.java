@@ -5,7 +5,7 @@ import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManagerInterface;
+import com.scalr.ssh.manager.SSHManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -46,13 +46,13 @@ public abstract class BaseUnixSSHProvider extends BaseSSHProvider {
         return commandFile;
     }
 
-    protected SSHManagerInterface getSSHManager(SSHConfiguration sshConfiguration) {
+    protected SSHManager getSSHManager(SSHConfiguration sshConfiguration) {
         return new OpenSSHManager(sshConfiguration);
     }
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManagerInterface sshManager = getSSHManager(sshConfiguration);
+        SSHManager sshManager = getSSHManager(sshConfiguration);
         sshManager.setUpSSHEnvironment();
 
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();

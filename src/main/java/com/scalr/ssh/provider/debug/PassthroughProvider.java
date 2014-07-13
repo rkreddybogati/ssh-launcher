@@ -4,7 +4,7 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManagerInterface;
+import com.scalr.ssh.manager.SSHManager;
 import com.scalr.ssh.provider.base.BaseSSHProvider;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class PassthroughProvider extends BaseSSHProvider {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration);
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration);
         sshManager.setUpSSHEnvironment();
 
         ArrayList<String> commandBits = new ArrayList<String>();

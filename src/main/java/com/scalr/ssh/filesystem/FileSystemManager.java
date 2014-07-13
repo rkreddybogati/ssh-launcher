@@ -34,7 +34,7 @@ public class FileSystemManager extends Loggable {
     }
 
     public boolean fileExists (File file) {
-        return AccessController.doPrivileged(new FileExistencePrivilegedAction(file));
+        return AccessController.doPrivileged(new FileExistsPrivilegedAction(file));
     }
 
     public File findInPaths (File[] containingFiles, String needle) {

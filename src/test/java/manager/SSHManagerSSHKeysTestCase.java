@@ -4,7 +4,7 @@ import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.manager.OpenSSHManager;
-import com.scalr.ssh.manager.SSHManagerInterface;
+import com.scalr.ssh.manager.SSHManager;
 import lib.util.MockFileSystemManagerWithSSHRule;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -33,7 +33,7 @@ public class SSHManagerSSHKeysTestCase {
 
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey(privateKey);
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
 
         Path homeDirectoryPath = fsRule.getTestDirectory();
         Path sshDirectoryPath = homeDirectoryPath.resolve(".ssh");
@@ -78,11 +78,11 @@ public class SSHManagerSSHKeysTestCase {
     public void testSSHKeyPathDependsOnKey () throws LauncherException {
         SSHConfiguration sshConfiguration1 = new SSHConfiguration("example.com");
         sshConfiguration1.setOpenSSHPrivateKey("Private Key 1");
-        SSHManagerInterface sshManager1 = new OpenSSHManager(sshConfiguration1);
+        SSHManager sshManager1 = new OpenSSHManager(sshConfiguration1);
 
         SSHConfiguration sshConfiguration2 = new SSHConfiguration("example.com");
         sshConfiguration2.setOpenSSHPrivateKey("Private Key 2");
-        SSHManagerInterface sshManager2 = new OpenSSHManager(sshConfiguration2);
+        SSHManager sshManager2 = new OpenSSHManager(sshConfiguration2);
 
         String[] sshCommandLineBits1 = sshManager1.getSSHCommandLineBits();
         String[] sshCommandLineBits2 = sshManager2.getSSHCommandLineBits();
@@ -100,7 +100,7 @@ public class SSHManagerSSHKeysTestCase {
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("../not-valid-key");
 
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
         sshManager.setUpSSHEnvironment();
     }
 
@@ -110,7 +110,7 @@ public class SSHManagerSSHKeysTestCase {
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("valid.key");
 
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
         sshManager.setUpSSHEnvironment();
     }
 
@@ -120,7 +120,7 @@ public class SSHManagerSSHKeysTestCase {
         sshConfiguration.setOpenSSHPrivateKey("test");
         sshConfiguration.setSSHKeyName("valid-key-name");
 
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
         String[] sshCommandLineBits = sshManager.getSSHCommandLineBits();
         String sshPrivateKeyPath = sshCommandLineBits[2];
 
@@ -142,7 +142,7 @@ public class SSHManagerSSHKeysTestCase {
         Path sshDirectoryPath = homeDirectoryPath.resolve(".ssh");
         File keyFile = sshDirectoryPath.resolve(keyName).toFile();
 
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
 
         FileUtils.writeStringToFile(keyFile, keyContents);
         sshManager.setUpSSHEnvironment();
@@ -156,7 +156,7 @@ public class SSHManagerSSHKeysTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setSSHKeyName("My Key");
 
-        SSHManagerInterface sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
+        SSHManager sshManager = new OpenSSHManager(sshConfiguration, fsRule.getFileSystemManager());
         sshManager.setUpSSHEnvironment();
     }
 

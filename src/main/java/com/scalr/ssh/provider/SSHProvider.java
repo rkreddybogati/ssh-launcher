@@ -1,7 +1,7 @@
-package com.scalr.ssh.provider.base;
+package com.scalr.ssh.provider;
 
 import com.scalr.ssh.exception.LauncherException;
 
-public interface SSHProviderInterface {
+public interface SSHProvider {
     public String[] getSSHCommand() throws LauncherException;
 }

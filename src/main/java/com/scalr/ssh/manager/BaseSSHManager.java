@@ -5,20 +5,21 @@ import com.scalr.ssh.exception.EnvironmentSetupException;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
+import com.scalr.ssh.filesystem.FileExistsPrivilegedAction;
 import com.scalr.ssh.filesystem.FileSystemManager;
+import com.scalr.ssh.filesystem.WritePrivateKeyPrivilegedAction;
 import com.scalr.ssh.logging.Loggable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.logging.Level;
 
-abstract public class BaseSSHManager extends Loggable implements SSHManagerInterface {
+abstract public class BaseSSHManager extends Loggable implements SSHManager {
     protected final SSHConfiguration sshConfiguration;
     protected final FileSystemManager fsManager;
 
@@ -97,74 +98,30 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
                 throw new EnvironmentSetupException("Unable to resolve path to SSH key");
             }
 
+            File keyFile = new File(keyPath);
+
             // Check if the file happens to already be there. We don't want to override the
             // key, in order to maximize user flexibility.
             getLogger().info(String.format("Looking up a local key in SSH Key File '%s'", keyPath));
+            Boolean keyFileExists = AccessController.doPrivileged(new FileExistsPrivilegedAction(keyFile));
 
-            Boolean sshFileExists = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-                @Override
-                public Boolean run() {
-                    return new File(keyPath).exists();
-                }
-            });
-
-            if (sshFileExists) {
+            if (keyFileExists) {
                 getLogger().info(String.format("SSH Key File '%s' already exists. Not replacing.", keyPath));
-                return;
+            } else {
+                createKeyFile(keyFile);
             }
+        }
+    }
 
-            // Check we have a private key to write before opening the file
-            // We don't want to create an empty file.
-            String privateKey = getAndCheckPrivateKey();
+    private void createKeyFile(final File keyFile) throws LauncherException {
+        // TODO - Fix exception class hierarchy
+        // Check we have a private key to write before opening the file
+        // We don't want to create an empty file.
+        String privateKey = getAndCheckPrivateKey();
 
-            // TODO - Refactor not to ov the key if it exists!
-            File sshFile = AccessController.doPrivileged(new PrivilegedAction<File>() {
-                @Override
-                public File run() {
-                    File sshFile = new File(keyPath);
-
-                    if (!sshFile.getParentFile().exists() && !sshFile.getParentFile().mkdirs()) {
-                        getLogger().severe(String.format("Failed to create directory tree for SSH File '%s'",
-                                keyPath));
-                        return null;
-                    }
-
-                    try {
-                        getLogger().finer(String.format("Creating new SSH file: '%s'", keyPath));
-                        if (!sshFile.createNewFile()) {
-                            getLogger().severe(String.format("Failed to create SSH key file: %s", keyPath));
-                            return null;
-                        }
-                    } catch (IOException e) {
-                        getLogger().log(Level.SEVERE, String.format("Error creating SSH File '%s'", keyPath), e);
-                        return null;
-                    }
-
-                    if (!sshFile.setWritable(false, false) || !sshFile.setWritable(true, true)) {
-                        getLogger().warning(String.format("Failed to make SSH File '%s' writable", keyPath));
-                    }
-
-                    if (!sshFile.setReadable(false, false) || !sshFile.setReadable(true, true)) {
-                        getLogger().warning(String.format("Failed to make SSH File '%s' writable", keyPath));
-                    }
-
-                    return sshFile;
-                }
-            });
-
-            if (sshFile == null) {
-                throw new EnvironmentSetupException("Error creating SSH Key File");
-            }
-
-            try {
-                Writer writer = new OutputStreamWriter(new FileOutputStream(sshFile), "UTF-8");
-                BufferedWriter output = new BufferedWriter(writer);
-                output.write(privateKey);
-                output.close();
-            } catch (IOException e) {
-                getLogger().log(Level.SEVERE, "Error writing private key to SSH File", e);
-                throw new EnvironmentSetupException("Error writing private key to the filesystem.");
-            }
+        Boolean keyFileCreated = AccessController.doPrivileged(new WritePrivateKeyPrivilegedAction(keyFile, privateKey));
+        if (!keyFileCreated) {
+            throw new EnvironmentSetupException("Unable to create SSH Key File");
         }
     }
 
@@ -188,7 +145,6 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
         ArrayList<String> sshCommandLineBits = new ArrayList<String>();
 
         sshCommandLineBits.add(getExecutablePath());
-        Collections.addAll(sshCommandLineBits, getExecutableExtraOptions());
 
         if (sshConfiguration.getPort() != null) {
             sshCommandLineBits.add(getPortOption());
@@ -204,10 +160,11 @@ abstract public class BaseSSHManager extends Loggable implements SSHManagerInter
             }
         }
 
+        Collections.addAll(sshCommandLineBits, getExecutableExtraOptions());
+
         sshCommandLineBits.add(getDestination());
 
         getLogger().info(String.format("SSH Command Line: '%s'", StringUtils.join(sshCommandLineBits, " ")));
-
         return sshCommandLineBits.toArray(new String[sshCommandLineBits.size()]);
     }
 }

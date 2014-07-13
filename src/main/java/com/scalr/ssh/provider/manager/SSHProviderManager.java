@@ -1,7 +1,7 @@
 package com.scalr.ssh.provider.manager;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.provider.base.SSHProviderInterface;
+import com.scalr.ssh.provider.SSHProvider;
 import com.scalr.ssh.provider.linux.LinuxGnomeTerminalSSHProvider;
 import com.scalr.ssh.provider.linux.LinuxXTermSSHProvider;
 import com.scalr.ssh.provider.mac.MacAppleScriptSSHProvider;
@@ -22,8 +22,8 @@ public class SSHProviderManager {
         this.platformName = platformName.toLowerCase();
     }
 
-    public ArrayList<SSHProviderInterface> getAvailableSSHProviders(SSHConfiguration sshConfiguration) {
-        ArrayList<SSHProviderInterface> availableSSHProviders = new ArrayList<SSHProviderInterface>();
+    public ArrayList<SSHProvider> getAvailableSSHProviders(SSHConfiguration sshConfiguration) {
+        ArrayList<SSHProvider> availableSSHProviders = new ArrayList<SSHProvider>();
 
         if (platformName.contains("win")) {
             availableSSHProviders.add(new WindowsPuTTYProvider(sshConfiguration));
@@ -42,17 +42,17 @@ public class SSHProviderManager {
         return availableSSHProviders;
     }
 
-    public ArrayList<SSHProviderInterface> getOrderedSSHProviders(SSHConfiguration sshConfiguration, String preferredProvider) {
-        ArrayList<SSHProviderInterface> availableProviders = getAvailableSSHProviders(sshConfiguration);
-        ArrayList<SSHProviderInterface> orderedProviders = new ArrayList<SSHProviderInterface>();
+    public ArrayList<SSHProvider> getOrderedSSHProviders(SSHConfiguration sshConfiguration, String preferredProvider) {
+        ArrayList<SSHProvider> availableProviders = getAvailableSSHProviders(sshConfiguration);
+        ArrayList<SSHProvider> orderedProviders = new ArrayList<SSHProvider>();
 
         if (preferredProvider != null) {
             // Reorder if required.
             logger.info(String.format("Preferred provider is: '%s'", preferredProvider));
 
-            ListIterator<SSHProviderInterface> iter = availableProviders.listIterator();
+            ListIterator<SSHProvider> iter = availableProviders.listIterator();
             int iterIndex;
-            SSHProviderInterface iterProviders;
+            SSHProvider iterProviders;
 
             while (iter.hasNext()) {
                 iterIndex = iter.nextIndex();

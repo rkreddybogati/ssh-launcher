@@ -3,10 +3,10 @@ package com.scalr.ssh.filesystem;
 import java.io.File;
 import java.security.PrivilegedAction;
 
-public class FileExistencePrivilegedAction implements PrivilegedAction<Boolean> {
+public class FileExistsPrivilegedAction implements PrivilegedAction<Boolean> {
     private final File file;
 
-    public FileExistencePrivilegedAction (File file) {
+    public FileExistsPrivilegedAction(File file) {
         this.file = file;
     }
 

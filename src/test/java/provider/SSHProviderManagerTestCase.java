@@ -1,9 +1,9 @@
 package provider;
 
+import com.scalr.ssh.provider.SSHProvider;
 import com.scalr.ssh.provider.manager.SSHProviderManager;
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
-import com.scalr.ssh.provider.base.SSHProviderInterface;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -19,7 +19,7 @@ public class SSHProviderManagerTestCase {
     @Test
     public void testPreferredProvider () throws InvalidEnvironmentException {
         SSHProviderManager sshProviderManager = new SSHProviderManager("mac os x");
-        ArrayList<SSHProviderInterface> sshProviders;
+        ArrayList<SSHProvider> sshProviders;
 
         sshProviders = sshProviderManager.getOrderedSSHProviders(sshConfiguration, null);
         assertEquals(3, sshProviders.size());
