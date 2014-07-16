@@ -21,7 +21,7 @@ public class WindowsOpenSSHProvider extends BaseSSHProvider {
     @Override
     public String[] getSSHCommand() throws LauncherException {
         OpenSSHController sshController = new OpenSSHController(sshConfiguration);
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
 
         ArrayList<String> providerCommandLineBits = new ArrayList<String>();
 

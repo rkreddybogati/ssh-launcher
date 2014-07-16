@@ -22,7 +22,7 @@ public class PassthroughProvider extends BaseSSHProvider {
     @Override
     public String[] getSSHCommand() throws LauncherException {
         SSHController sshController = new OpenSSHController(sshConfiguration);
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
 
         ArrayList<String> commandBits = new ArrayList<String>();
         Collections.addAll(commandBits, sshController.getSSHCommandLineBits());

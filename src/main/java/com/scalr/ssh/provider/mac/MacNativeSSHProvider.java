@@ -71,7 +71,7 @@ public class MacNativeSSHProvider extends BaseSSHProvider {
     @Override
     public String[] getSSHCommand() throws LauncherException {
         SSHController sshController = new OpenSSHController(sshConfiguration);
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
 
         String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
         String   sshCommandLine = StringUtils.join(sshCommandLineBits, " ");

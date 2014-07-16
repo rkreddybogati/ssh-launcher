@@ -46,7 +46,7 @@ public class MacAppleScriptSSHProvider extends BaseSSHProvider {
     @Override
     public String[] getSSHCommand() throws LauncherException {
         SSHController sshController = new OpenSSHController(sshConfiguration);
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
 
         ArrayList<String> commandBits = new ArrayList<String>();
         commandBits.add("/usr/bin/osascript");

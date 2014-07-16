@@ -14,7 +14,7 @@ public class WindowsPuTTYProvider extends BaseSSHProvider {
     public String[] getSSHCommand() throws LauncherException {
         PuTTYController sshController = new PuTTYController(sshConfiguration);
 
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
         //TODO -> Quoting of the SSH command
         return sshController.getSSHCommandLineBits();
     }

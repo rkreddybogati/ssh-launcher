@@ -47,7 +47,7 @@ public class SSHControllerKeysTestCase {
         paths = Files.newDirectoryStream(homeDirectoryPath);
         assertFalse(paths.iterator().hasNext());
 
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
 
         // Check a folder is created to hold the key
         paths = Files.newDirectoryStream(sshDirectoryPath);
@@ -101,7 +101,7 @@ public class SSHControllerKeysTestCase {
         sshConfiguration.setSSHKeyName("../not-valid-key");
 
         SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
     }
 
     @Test
@@ -111,7 +111,7 @@ public class SSHControllerKeysTestCase {
         sshConfiguration.setSSHKeyName("valid.key");
 
         SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SSHControllerKeysTestCase {
         SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
 
         FileUtils.writeStringToFile(keyFile, keyContents);
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
         assertEquals(keyContents, FileUtils.readFileToString(keyFile));
     }
 
@@ -157,7 +157,7 @@ public class SSHControllerKeysTestCase {
         sshConfiguration.setSSHKeyName("My Key");
 
         SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
     }
 
     // TODO - Add a test that the key does not get replaced

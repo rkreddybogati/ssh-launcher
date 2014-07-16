@@ -53,7 +53,7 @@ public abstract class BaseUnixSSHProvider extends BaseSSHProvider {
     @Override
     public String[] getSSHCommand() throws LauncherException {
         SSHController sshController = getSSHController(sshConfiguration);
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
 
         String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
         String   sshCommandLine = StringUtils.join(sshCommandLineBits, " ");

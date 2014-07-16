@@ -1,25 +1,17 @@
 package com.scalr.ssh.controller;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
-import com.scalr.ssh.exception.InvalidEnvironmentException;
+import com.scalr.ssh.controller.extension.ControllerExtension;
+import com.scalr.ssh.controller.extension.openssh.OpensshIgnoreHostKeysControllerExtension;
+import com.scalr.ssh.controller.extension.openssh.OpensshKeyAuthControllerExtension;
+import com.scalr.ssh.controller.extension.openssh.OpensshPortControllerExtension;
 import com.scalr.ssh.filesystem.FileSystemManager;
 
 import java.io.File;
-import java.io.IOException;
 
 public class OpenSSHController extends BaseSSHController {
     public OpenSSHController(SSHConfiguration sshConfiguration) {
         super(sshConfiguration);
-    }
-
-    @Override
-    protected String getPrivateKey() {
-        return sshConfiguration.getOpenSSHPrivateKey();
-    }
-
-    @Override
-    protected String getPrivateKeyExtension() {
-        return "pem";
     }
 
     public OpenSSHController(SSHConfiguration sshConfiguration, FileSystemManager fsManager) {
@@ -27,47 +19,31 @@ public class OpenSSHController extends BaseSSHController {
     }
 
     @Override
-    protected String getExecutablePath() throws InvalidEnvironmentException {
-        // TODO --> Refactor and reuse code from PuTTY
-        File[] candidateLocations = new File[] {
-                fsManager.pathJoin("/usr", "bin"), fsManager.pathJoin("/usr", "local", "bin"), new File("/bin"),
-                fsManager.pathJoin("C:/", "Program Files (x86)", "OpenSSH", "bin"),
-                fsManager.pathJoin("C:/", "Program Files", "OpenSSH", "bin")
+    protected ControllerExtension getKeyAuthControllerExtension() {
+        return new OpensshKeyAuthControllerExtension(sshConfiguration, fsManager);
+    }
+
+    @Override
+    protected ControllerExtension getPortControllerExtension() {
+        return new OpensshPortControllerExtension(sshConfiguration, fsManager);
+    }
+
+    @Override
+    protected ControllerExtension getIgnoreHostKeysControllerExtension() {
+        return new OpensshIgnoreHostKeysControllerExtension(sshConfiguration, fsManager);
+    }
+
+    @Override
+    protected File[] getExecutableExtraSearchPaths() {
+        return new File[] {
+            fsManager.pathJoin("/usr", "bin"), fsManager.pathJoin("/usr", "local", "bin"), new File("/bin"),
+            fsManager.pathJoin("C:/", "Program Files (x86)", "OpenSSH", "bin"),
+            fsManager.pathJoin("C:/", "Program Files", "OpenSSH", "bin")
         };
-        String[] candidateNames = new String[] { "ssh", "ssh.exe"};
-
-        File sshExecutable;
-        for (String candidateName : candidateNames) {
-            sshExecutable = fsManager.findInPaths(candidateLocations, candidateName);
-            if (sshExecutable != null) {
-                try {
-                    return sshExecutable.getCanonicalPath();
-                } catch (IOException e) {
-                    throw new InvalidEnvironmentException("Unable to resolve path to SSH");
-                }
-            }
-        }
-
-        getLogger().severe("Unable to locate ssh executable");
-        throw new InvalidEnvironmentException("Unable to find ssh. Is it installed?");
     }
 
     @Override
-    protected String[] getExecutableExtraOptions() {
-        if (sshConfiguration.getIgnoreHostKeys() != null && sshConfiguration.getIgnoreHostKeys()) {
-            // TODO -> May not work on Windows OpenSSH.
-            return new String[] {"-o", "UserKnownHostsFile=/dev/null", "-o", "CheckHostIP=no",  "-o", "StrictHostKeyChecking=no"};
-        }
-        return new String[0];
-    }
-
-    @Override
-    protected String getPortOption() {
-        return "-p";
-    }
-
-    @Override
-    protected String getPrivateKeyOption() {
-        return "-i";
+    protected String[] getExecutableSearchNames() {
+        return new String[] {"ssh", "ssh.exe"};
     }
 }

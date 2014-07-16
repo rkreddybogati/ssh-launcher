@@ -26,7 +26,7 @@ abstract public class LinuxBaseSSHProvider extends BaseSSHProvider {
     @Override
     public String[] getSSHCommand() throws LauncherException {
         SSHController sshController = new OpenSSHController(sshConfiguration);
-        sshController.setUpSSHEnvironment();
+        sshController.setupEnvironment();
 
         // Note: we wrap ssh into a command line so that we can keep the terminal window open when
         //       SSH exits (gnome-terminal does not let us do that)
