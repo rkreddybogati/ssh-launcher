@@ -1,6 +1,7 @@
 package com.scalr.ssh.provider.windows;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
+import com.scalr.ssh.controller.SSHController;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.controller.PuTTYController;
 import com.scalr.ssh.provider.base.BaseSSHProvider;
@@ -12,10 +13,8 @@ public class WindowsPuTTYProvider extends BaseSSHProvider {
 
     @Override
     public String[] getSSHCommand() throws LauncherException {
-        PuTTYController sshController = new PuTTYController(sshConfiguration);
-
+        SSHController sshController = new PuTTYController(sshConfiguration);
         sshController.setupEnvironment();
-        //TODO -> Quoting of the SSH command
         return sshController.getSSHCommandLineBits();
     }
 }

@@ -38,7 +38,9 @@ public class OpenSSHController extends BaseSSHController {
         return new File[] {
             fsManager.pathJoin("/usr", "bin"), fsManager.pathJoin("/usr", "local", "bin"), new File("/bin"),
             fsManager.pathJoin("C:/", "Program Files (x86)", "OpenSSH", "bin"),
-            fsManager.pathJoin("C:/", "Program Files", "OpenSSH", "bin")
+            fsManager.pathJoin("C:/", "Program Files", "OpenSSH", "bin"),
+            fsManager.pathJoin("C:/", "cygwin64", "bin"),
+            fsManager.pathJoin("C:/", "cygwin", "bin")
         };
     }
 
