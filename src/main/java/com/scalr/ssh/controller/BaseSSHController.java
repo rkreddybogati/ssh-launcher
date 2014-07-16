@@ -7,10 +7,13 @@ import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.filesystem.FileSystemManager;
 import com.scalr.ssh.logging.Loggable;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -68,9 +71,33 @@ abstract public class BaseSSHController extends Loggable implements SSHControlle
 
     // Actual logic
 
+    private File[] getExecutableSearchPathsFromEnvironment () {
+        // Load the user's path
+        String pathEnvVar= AccessController.doPrivileged(new PrivilegedAction<String>() {
+            @Override
+            public String run() {
+                return System.getenv("PATH");
+            }
+        });
+
+        if (pathEnvVar == null) {
+            pathEnvVar = "";
+        }
+
+        ArrayList<File> files = new ArrayList<File>();
+        for (String pathElement : pathEnvVar.split(File.pathSeparator)) {
+            files.add(new File(pathElement));
+        }
+
+        return files.toArray(new File[files.size()]);
+    }
+
+    private File[] getExecutableSearchPaths () {
+        return ArrayUtils.addAll(getExecutableSearchPathsFromEnvironment(), getExecutableExtraSearchPaths());
+    }
+
     protected File getExecutablePath() throws InvalidEnvironmentException {
-        // TODO: Add $PATH!
-        File[] candidateLocations = getExecutableExtraSearchPaths();
+        File[] candidateLocations = getExecutableSearchPaths();
         String[] candidateNames = getExecutableSearchNames();
 
         File sshExecutable;
