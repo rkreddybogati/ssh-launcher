@@ -97,6 +97,12 @@ abstract public class BaseSSHController extends Loggable implements SSHControlle
     }
 
     protected File getExecutablePath() throws InvalidEnvironmentException {
+        /* We provide our own search function to locate the executable in the PATH because we can't tell whether
+         * command that will be used to launch the executable will use the same PATH we are using (e.g. the PATH may
+         * be overridden by a .bashrc).
+         * By using the full executable path, we reduce the risk that we think we launched the executable when in fact
+         * we did not.
+         */
         File[] candidateLocations = getExecutableSearchPaths();
         String[] candidateNames = getExecutableSearchNames();
 
