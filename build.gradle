@@ -64,4 +64,14 @@ task signedJar (type: Task, dependsOn: shadowJar) << {
     )
 }
 
-task fullBuild(type: Task, dependsOn: signedJar)
+
+task createTestFile(type: Copy) {
+    from 'src/templates'
+    into "."
+    destinationDir projectDir
+    include "applet.html.template"
+    rename { file -> "applet.html" }
+    expand(jarPath: projectDir.toPath().relativize(shadow.getShadowJar().toPath()), version: version)
+}
+
+task fullBuild(type: Task, dependsOn: [signedJar, createTestFile])

@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://www.java.com/js/deployJava.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+<div id="ssh-launcher"></div>
+
+<script type="text/javascript">
+      function docWriteWrapper(jq, func) {
+        var oldwrite = document.write, content = "";
+        document.write = function(text) {
+          content += text;
+        }
+        func();
+        document.write = oldwrite;
+        jq.html(content);
+      }
+
+      var attributes = {
+        archive: "./${jarPath}",
+        code:"com.scalr.ssh.launcher.SSHLauncherApplet",
+        width: \$(window).width(),
+        height: \$(window).height() - 100,   // Keep some margin
+      };
+
+      var parameters = {
+        "user": "root",
+        "host": "example.com",
+        "cache_archive": "./${jarPath}",
+        "cache_version": "${version}",
+        "sshPrivateKey": "",
+        "puttyPrivateKey": "",
+        "port": "22",
+        "preferredProvider": "com.scalr.ssh.provider.windows.WindowsOpenSSHProvider",
+        "disableKeyAuth": "0",
+        "logLevel": "FINER",
+        "sshKeyName": "TEST-KEY",
+        "ignoreHostKeys": "1"
+      };
+
+      var javaVersion = "1.7";
+
+      docWriteWrapper(\$("#ssh-launcher"), function () {
+        deployJava.runApplet(attributes, parameters, javaVersion);
+      });
+
+    </script>
+
+</body>
+
+</html>
