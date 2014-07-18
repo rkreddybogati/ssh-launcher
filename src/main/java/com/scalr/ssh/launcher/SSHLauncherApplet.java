@@ -20,7 +20,7 @@ public class SSHLauncherApplet extends JApplet {
 
     public void init() {
         // Another session button
-        JButton button = new JButton("Launch another session");
+        JButton button = new JButton("Launch Another Session");
         button.addActionListener( new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -80,12 +80,18 @@ public class SSHLauncherApplet extends JApplet {
         }
 
 
-        // Add items to layout
-        button.setPreferredSize(new Dimension(0, 50));
-
         setLayout(new BorderLayout());
+
+        Container buttonContainer = new Container();
+        buttonContainer.setLayout(new GridLayout(1, 3));
+        buttonContainer.setPreferredSize(new Dimension(0, 50));
+
+        buttonContainer.add(new Label());
+        buttonContainer.add(button);
+        buttonContainer.add(new Label());
+
         getContentPane().add(jScrollPane, BorderLayout.CENTER);
-        getContentPane().add(button, BorderLayout.PAGE_END);
+        getContentPane().add(buttonContainer, BorderLayout.PAGE_END);
     }
 
     public void start() {
