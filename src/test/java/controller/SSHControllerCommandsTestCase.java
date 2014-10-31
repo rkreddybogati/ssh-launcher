@@ -5,6 +5,9 @@ import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.controller.SSHController;
+import lib.util.MockFileSystemManagerRule;
+import lib.util.MockFileSystemManagerWithSSHRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -14,11 +17,15 @@ import static org.junit.Assert.*;
 
 @RunWith(JUnit4.class)
 public class SSHControllerCommandsTestCase {
+
+    @Rule
+    public MockFileSystemManagerRule fsRule = new MockFileSystemManagerWithSSHRule();
+
     @Test
     public void testUnixSSHController () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setDisableKeyAuth(true);
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
         assertArrayEquals(new String[]{"/usr/bin/ssh", "example.com"}, sshController.getSSHCommandLineBits());
     }
 
@@ -27,7 +34,7 @@ public class SSHControllerCommandsTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setUsername("user");
         sshConfiguration.setDisableKeyAuth(true);
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
         assertArrayEquals(new String[]{"/usr/bin/ssh", "user@example.com"}, sshController.getSSHCommandLineBits());
     }
 
@@ -36,7 +43,7 @@ public class SSHControllerCommandsTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setPort(2222);
         sshConfiguration.setDisableKeyAuth(true);
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
         assertArrayEquals(new String[]{"/usr/bin/ssh", "-p", "2222", "example.com"}, sshController.getSSHCommandLineBits());
     }
 
@@ -45,7 +52,7 @@ public class SSHControllerCommandsTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setIgnoreHostKeys(true);
         sshConfiguration.setDisableKeyAuth(true);
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
         assertArrayEquals(new String[]{"/usr/bin/ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "CheckHostIP=no", "-o", "StrictHostKeyChecking=no", "example.com"},
                 sshController.getSSHCommandLineBits());
     }
@@ -55,7 +62,7 @@ public class SSHControllerCommandsTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setEnableAgentForwarding(true);
         sshConfiguration.setDisableKeyAuth(true);
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
         assertArrayEquals(new String[]{"/usr/bin/ssh", "-A", "example.com"}, sshController.getSSHCommandLineBits());
     }
 
@@ -63,7 +70,7 @@ public class SSHControllerCommandsTestCase {
     public void testUnixSSHControllerWithKey () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("My Private Key");
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
 
         String[] sshCommandLineBits = sshController.getSSHCommandLineBits();
 
@@ -85,7 +92,7 @@ public class SSHControllerCommandsTestCase {
         // This should error out
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
 
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
         sshController.getSSHCommandLineBits();
     }
 
@@ -96,7 +103,7 @@ public class SSHControllerCommandsTestCase {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setSSHKeyName("");
 
-        SSHController sshController = new OpenSSHController(sshConfiguration);
+        SSHController sshController = new OpenSSHController(sshConfiguration, fsRule.getFileSystemManager());
         sshController.getSSHCommandLineBits();
     }
 }
