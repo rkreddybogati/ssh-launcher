@@ -5,7 +5,6 @@ import com.scalr.ssh.controller.OpenSSHController;
 import com.scalr.ssh.exception.InvalidConfigurationException;
 import com.scalr.ssh.exception.LauncherException;
 import com.scalr.ssh.controller.SSHController;
-import lib.util.MockFileSystemManagerRule;
 import lib.util.MockFileSystemManagerWithSSHRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,7 +18,7 @@ import static org.junit.Assert.*;
 public class SSHControllerCommandsTestCase {
 
     @Rule
-    public MockFileSystemManagerRule fsRule = new MockFileSystemManagerWithSSHRule();
+    public MockFileSystemManagerWithSSHRule fsRule = new MockFileSystemManagerWithSSHRule();
 
     @Test
     public void testUnixSSHController () throws LauncherException {
