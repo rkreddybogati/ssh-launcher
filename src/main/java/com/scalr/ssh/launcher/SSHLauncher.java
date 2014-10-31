@@ -24,16 +24,17 @@ public class SSHLauncher {
     private final static Logger logger = Logger.getLogger(SSHLauncher.class.getName());
     private LauncherConfigurationInterface launcherConfiguration;
 
-    private final static String hostParam               = "host";
-    private final static String userParam               = "user";
-    private final static String portParam               = "port";
-    private final static String openSSHKeyParam         = "sshPrivateKey";
-    private final static String puttyKeyParam           = "puttyPrivateKey";
-    private final static String sshKeyNameParam         = "sshKeyName";
-    private final static String preferredProviderParam  = "preferredProvider";
-    private final static String disableKeyAuthParam     = "disableKeyAuth";
-    private final static String ignoreHostKeysParam     = "ignoreHostKeys";
-    public  final static String logLevelParam           = "logLevel";  // A bit hackish to make it public.
+    private final static String hostParam                   = "host";
+    private final static String userParam                   = "user";
+    private final static String portParam                   = "port";
+    private final static String openSSHKeyParam             = "sshPrivateKey";
+    private final static String puttyKeyParam               = "puttyPrivateKey";
+    private final static String sshKeyNameParam             = "sshKeyName";
+    private final static String preferredProviderParam      = "preferredProvider";
+    private final static String disableKeyAuthParam         = "disableKeyAuth";
+    private final static String ignoreHostKeysParam         = "ignoreHostKeys";
+    private final static String enableAgentForwardingParam  = "enableAgentForwarding";
+    public  final static String logLevelParam               = "logLevel";  // A bit hackish to make it public.
 
     private final static String paramTrue = "1";
 
@@ -109,14 +110,15 @@ public class SSHLauncher {
     }
 
     private SSHConfiguration getSSHConfiguration () throws InvalidConfigurationException {
-        String host                 = launcherConfiguration.getOption(hostParam);
-        String user                 = launcherConfiguration.getOption(userParam);
-        String port                 = launcherConfiguration.getOption(portParam);
-        String openSSHPrivateKey    = launcherConfiguration.getOption(openSSHKeyParam);
-        String puttyPrivateKey      = launcherConfiguration.getOption(puttyKeyParam);
-        String sshKeyName           = launcherConfiguration.getOption(sshKeyNameParam);
-        String ignoreHostKeys       = launcherConfiguration.getOption(ignoreHostKeysParam);
-        String disableKeyAuth       = launcherConfiguration.getOption(disableKeyAuthParam);
+        String host                     = launcherConfiguration.getOption(hostParam);
+        String user                     = launcherConfiguration.getOption(userParam);
+        String port                     = launcherConfiguration.getOption(portParam);
+        String openSSHPrivateKey        = launcherConfiguration.getOption(openSSHKeyParam);
+        String puttyPrivateKey          = launcherConfiguration.getOption(puttyKeyParam);
+        String sshKeyName               = launcherConfiguration.getOption(sshKeyNameParam);
+        String ignoreHostKeys           = launcherConfiguration.getOption(ignoreHostKeysParam);
+        String disableKeyAuth           = launcherConfiguration.getOption(disableKeyAuthParam);
+        String enableAgentForwarding    = launcherConfiguration.getOption(enableAgentForwardingParam);
 
         if (host == null) {
             throw new InvalidConfigurationException("Host ('host') must be specified.");
@@ -159,6 +161,7 @@ public class SSHLauncher {
 
        sshConfiguration.setIgnoreHostKeys(paramTrue.equals(ignoreHostKeys));
        sshConfiguration.setDisableKeyAuth(paramTrue.equals(disableKeyAuth));
+       sshConfiguration.setEnableAgentForwarding(paramTrue.equals(enableAgentForwarding));
 
         return sshConfiguration;
     }
@@ -187,16 +190,17 @@ public class SSHLauncher {
 
     public static String[][] getParameterInfo () {
         return new String [][] {
-                {hostParam,                 "string",   "Host to SSH into"},
-                {userParam,                 "boolean",  "User to SSH as (optional)"},
-                {portParam,                 "int",      "Port to SSH to (optional)"},
-                {openSSHKeyParam,           "string",   "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
-                {puttyKeyParam,             "url",      "Base64-encoded PuTTY Private Key to SSH with (optional)"},
-                {sshKeyNameParam,           "string",   "Name to use for the private key (optional)"},
-                {preferredProviderParam,    "url",      "Preferred SSH Launcher to use (optional)"},
-                {ignoreHostKeysParam,       "int",      "Set to 1 to ignore Host Keys (optional)"},
-                {disableKeyAuthParam,       "int",      "Set to 1 to not use SSH keys (optional)"},
-                {logLevelParam,             "string",   "Logging level (optional, defaults to INFO)"}
+                {hostParam,                     "string",   "Host to SSH into"},
+                {userParam,                     "boolean",  "User to SSH as (optional)"},
+                {portParam,                     "int",      "Port to SSH to (optional)"},
+                {openSSHKeyParam,               "string",   "Base64-encoded OpenSSH Private Key to SSH with (optional)"},
+                {puttyKeyParam,                 "url",      "Base64-encoded PuTTY Private Key to SSH with (optional)"},
+                {sshKeyNameParam,               "string",   "Name to use for the private key (optional)"},
+                {preferredProviderParam,        "url",      "Preferred SSH Launcher to use (optional)"},
+                {ignoreHostKeysParam,           "int",      "Set to 1 to ignore Host Keys (optional)"},
+                {disableKeyAuthParam,           "int",      "Set to 1 to not use SSH keys (optional)"},
+                {enableAgentForwardingParam,    "int",      "Set to 1 to enable Agent Forwarding (optional)"},
+                {logLevelParam,                 "string",   "Logging level (optional, defaults to INFO)"}
         };
     }
 }

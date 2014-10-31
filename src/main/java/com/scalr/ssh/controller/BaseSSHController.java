@@ -2,6 +2,7 @@ package com.scalr.ssh.controller;
 
 import com.scalr.ssh.configuration.SSHConfiguration;
 import com.scalr.ssh.controller.extension.ControllerExtension;
+import com.scalr.ssh.controller.extension.shared.AgentForwardingControllerExtension;
 import com.scalr.ssh.controller.extension.shared.DestinationControllerExtension;
 import com.scalr.ssh.exception.InvalidEnvironmentException;
 import com.scalr.ssh.exception.LauncherException;
@@ -38,6 +39,9 @@ abstract public class BaseSSHController extends Loggable implements SSHControlle
         if (sshConfiguration.getIgnoreHostKeys()) {
             controllerExtensionArrayList.add(getIgnoreHostKeysControllerExtension());
         }
+        if (sshConfiguration.getEnableAgentForwarding()) {
+            controllerExtensionArrayList.add(getAgentForwardingControllerExtension());
+        }
         controllerExtensionArrayList.add(getPortControllerExtension());
         controllerExtensionArrayList.add(getDestinationControllerExtension());
 
@@ -62,6 +66,10 @@ abstract public class BaseSSHController extends Loggable implements SSHControlle
 
     protected ControllerExtension getDestinationControllerExtension () {
         return new DestinationControllerExtension(sshConfiguration, fsManager);
+    }
+
+    protected ControllerExtension getAgentForwardingControllerExtension () {
+        return new AgentForwardingControllerExtension(sshConfiguration, fsManager);
     }
 
     // Hooks for executable search

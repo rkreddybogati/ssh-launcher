@@ -51,6 +51,15 @@ public class SSHControllerCommandsTestCase {
     }
 
     @Test
+    public void testUnixSSHControllerWithAgentForwarding () throws LauncherException {
+        SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
+        sshConfiguration.setEnableAgentForwarding(true);
+        sshConfiguration.setDisableKeyAuth(true);
+        SSHController sshController = new OpenSSHController(sshConfiguration);
+        assertArrayEquals(new String[]{"/usr/bin/ssh", "-A", "example.com"}, sshController.getSSHCommandLineBits());
+    }
+
+    @Test
     public void testUnixSSHControllerWithKey () throws LauncherException {
         SSHConfiguration sshConfiguration = new SSHConfiguration("example.com");
         sshConfiguration.setOpenSSHPrivateKey("My Private Key");

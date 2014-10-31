@@ -9,6 +9,7 @@ public class SSHConfiguration {
     private String sshKeyName;
     private Boolean ignoreHostKeys = Boolean.FALSE;
     private Boolean disableKeyAuth = Boolean.FALSE;
+    private Boolean enableAgentForwarding = Boolean.FALSE;
 
 
     public SSHConfiguration (String host) {
@@ -77,5 +78,13 @@ public class SSHConfiguration {
 
     public Boolean useKeyAuth() {
         return !disableKeyAuth;
+    }
+
+    public Boolean getEnableAgentForwarding() {
+        return enableAgentForwarding;
+    }
+
+    public void setEnableAgentForwarding(Boolean enableAgentForwarding) {
+        this.enableAgentForwarding = enableAgentForwarding;
     }
 }
