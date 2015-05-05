@@ -18,55 +18,46 @@ import java.util.logging.*;
 public class SSHLauncherCLI extends Loggable {
     private final static Logger logger = Logger.getLogger(SSHLauncherCLI.class.getName());
 
-    class OpenURIObserver implements OpenURIHandler {
+    // TODO - Move
+    private static class OpenURIObserver implements OpenURIHandler {
+        private final Object lock;
+        public URI uri;
+
+        public OpenURIObserver(Object lock) {
+            this.lock = lock;
+        }
 
         @Override
         public void openURI(AppEvent.OpenURIEvent openURIEvent) {
-
+            uri = openURIEvent.getURI();
+            synchronized (lock) {
+                lock.notifyAll();
+            }
         }
     }
 
     private static UriLauncherConfiguration getUriLauncherConfigurationMacOs() {
         logger.info("Trying information from URI");
 
-        final String[] uriArr = new String[1];
-        final Object lock = new Object();
+        Object lock = new Object();
+        OpenURIObserver observer = new OpenURIObserver(lock);
 
-        // This should run the Uri handler.
-        Application.getApplication().setOpenURIHandler(
-                new OpenURIHandler() {
-                    @Override
-                    public void openURI(final AppEvent.OpenURIEvent pEvent) {
-                        uriArr[0] = pEvent.getURI().toString();
-                        synchronized (lock) {
-                            lock.notify();
-                        }
-                    }
-                }
-        );
+        Application.getApplication().setOpenURIHandler(observer);
 
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (lock) {
             try {
-                logger.info("LOCK STARTED");
-                lock.wait(5000);
-                logger.info("LOCK ENDED");
+                lock.wait(5000);  // TODO (specify)
             } catch (InterruptedException ignored) {
-                logger.info("LOCK INTERRUPTED");
             }
         }
 
-        String uri = uriArr[0];
-
-        if (uri != null) {
-            logger.info(String.format("Received uri: '%s'", uriArr[0]));
-            try {
-                return new UriLauncherConfiguration(new URI(uri));
-            } catch (URISyntaxException e) {
-                logger.warning("URI could not be parsed!");
-            }
+        if (observer.uri != null) {
+            logger.info(String.format("Received uri: '%s'", observer.uri.toString()));
+            return new UriLauncherConfiguration(observer.uri);
         }
 
-        logger.info("No Mac OS URI received");
+        logger.info("No Mac OS URI configuration");
         return null;
     }
 
@@ -89,6 +80,11 @@ public class SSHLauncherCLI extends Loggable {
 
     private static CLILauncherConfiguration getCliLauncherConfiguration(String args[]) {
         logger.info("Trying information from Args");
+
+        if (args.length == 0) {
+            logger.info("No CLI Configuration");
+            return null;
+        }
 
         /// More
         CommandLineParser parser = new GnuParser();
@@ -120,9 +116,8 @@ public class SSHLauncherCLI extends Loggable {
         rootLogger.addHandler(fh);
 
 
-        // We try the CliLauncherConfiguration first, because it's fast.
-        // If that doesn't work, we try UriLauncherConfigurationMacOs, which takes more time to run (because Apple
-        // Events are not always delivered immediately)
+        // We try the CLI arguments first because parsing them is instant, and it's unlikely (read: pretty much
+        // impossible considering the way the wrapper works) to receive *both*.
 
         LauncherConfigurationInterface launcherConfiguration;
         launcherConfiguration = getCliLauncherConfiguration(args);
