@@ -57,6 +57,7 @@ shadowJar {
 macAppBundle {
     mainClassName = "com.scalr.ssh.launcher.mac.SSHLauncherMacApp"
     appStyle = 'Oracle'
+    icon = 'assets/scalr.icns'
     bundleJRE = false
     bundleExtras = [
             CFBundleURLTypes: [
