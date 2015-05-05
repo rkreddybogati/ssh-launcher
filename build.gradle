@@ -58,7 +58,8 @@ task signedJar (type: Task, dependsOn: shadowJar) << {
         storepass: signingKeyPass,
         alias: signingKeyAlias,
         strict: true,
-        verbose: true
+        verbose: true,
+        tsaurl: 'http://timestamp.digicert.com'
     )
 }
 
