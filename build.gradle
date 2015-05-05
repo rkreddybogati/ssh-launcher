@@ -55,7 +55,7 @@ shadowJar {
 }
 
 macAppBundle {
-    mainClassName = "com.scalr.ssh.launcher.SSHLauncherCLI"
+    mainClassName = "com.scalr.ssh.launcher.mac.SSHLauncherMacApp"
     appStyle = 'Oracle'
     bundleJRE = false
     bundleExtras = [

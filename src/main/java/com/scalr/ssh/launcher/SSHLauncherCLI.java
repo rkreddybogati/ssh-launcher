@@ -12,13 +12,11 @@ import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.logging.*;
 
 public class SSHLauncherCLI extends Loggable {
     private final static Logger logger = Logger.getLogger(SSHLauncherCLI.class.getName());
 
-    // TODO - Move
     private static class OpenURIObserver implements OpenURIHandler {
         private final Object lock;
         public URI uri;
