@@ -75,3 +75,9 @@ task createTestFile(type: Copy) {
 }
 
 task fullBuild(type: Task, dependsOn: [signedJar, createTestFile])
+
+
+// Helpers
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
