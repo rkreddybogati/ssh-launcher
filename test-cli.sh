@@ -6,11 +6,8 @@ set -o errexit
 set -o nounset
 
 # -- Base setup
-ROOT_DIR=$(dirname $0)
-BUILD_DIR="${ROOT_DIR}/build/distributions"
-LATEST_JAR_FILE=$(ls "${BUILD_DIR}" | sort | tail -n 1)
-LATEST_JAR="${BUILD_DIR}/${LATEST_JAR_FILE}"
-
+ROOT_DIR="$(dirname "$0")"
+LATEST_JAR="${ROOT_DIR}/build/libs/ssh-launcher-all.jar"
 LAUNCH_CMD="java -jar ${LATEST_JAR}"
 
 echo "Running tests with: ${LATEST_JAR}"

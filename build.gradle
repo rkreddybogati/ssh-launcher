@@ -1,15 +1,14 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
-    }
+plugins {
+    id "com.github.johnrengelman.shadow" version "1.2.1"
+    id "java"
+    id "idea"
 }
 
-apply plugin: 'shadow'
-apply plugin: 'java'
-apply plugin: 'idea'
+ext {
+    appVersion = '0.13.2'
+    codebase = '*'
+    allowableCodebase = '*'
+}
 
 sourceCompatibility = 1.5
 
@@ -26,7 +25,6 @@ dependencies {
     testCompile group: 'commons-io', name: 'commons-io', version: '2.4'
 }
 
-
 jar.ext {
     javaVersion = System.properties["java.version"]
     javaVendor  = System.properties["java.vendor"]
@@ -36,7 +34,7 @@ jar {
     manifest {
         attributes  'Application-Name': 'Scalr SSH Launcher',
                     'Implementation-Title': 'SSH Launcher',
-                    'Implementation-Version': version,
+                    'Implementation-Version': appVersion,
                     'Main-Class': 'com.scalr.ssh.launcher.SSHLauncherCLI',
                     'Permissions': 'all-permissions',
                     'Codebase': codebase,
@@ -48,14 +46,14 @@ jar {
     }
 }
 
-shadow {
+shadowJar {
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
 }
 
 task signedJar (type: Task, dependsOn: shadowJar) << {
     ant.signjar(
-        jar: shadow.getShadowJar().getCanonicalPath(),
+        jar: shadowJar.getArchivePath(),
         keystore: signingKeyStore,
         storepass: signingKeyPass,
         alias: signingKeyAlias,
@@ -65,13 +63,13 @@ task signedJar (type: Task, dependsOn: shadowJar) << {
 }
 
 
-task createTestFile(type: Copy) {
+task createTestFile(type: Copy, dependsOn: shadowJar) {
     from 'src/templates'
     into "."
     destinationDir projectDir
     include "applet.html.template"
     rename { file -> "applet.html" }
-    expand(jarPath: projectDir.toPath().relativize(shadow.getShadowJar().toPath()), version: version)
+    expand(jarPath: projectDir.toPath().relativize(shadowJar.getArchivePath().toPath()), version: appVersion)
 }
 
 task fullBuild(type: Task, dependsOn: [signedJar, createTestFile])
