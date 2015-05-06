@@ -70,11 +70,17 @@ macAppBundle {
     certIdentity = signingKeyIdentity
 }
 
+// Use our local stub (command line arguments)
 task overwriteStub(type: Copy) {
     from "./vendor/${project.macAppBundle.bundleExecutable}"
     into "${->project.buildDir}/${->project.macAppBundle.appOutputDir}/${->project.macAppBundle.appName}.app/Contents/MacOS"
 }
 copyStub.finalizedBy overwriteStub
+
+
+// Force codesign of the app when creating dmg
+createApp.finalizedBy codeSign
+
 
 
 task signedJar (type: Task, dependsOn: shadowJar) << {
