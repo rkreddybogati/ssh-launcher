@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'edu.sc.seis.gradle:launch4j:1.0.6'
+    }
+}
+
 plugins {
     id "edu.sc.seis.macAppBundle" version "2.1.0"
     id "com.github.johnrengelman.shadow" version "1.2.1"
@@ -5,13 +15,18 @@ plugins {
     id "idea"
 }
 
+apply plugin: 'launch4j'
+
+
+version '0.14.0'
+
 ext {
-    appVersion = '0.13.2'
     codebase = '*'
     allowableCodebase = '*'
 }
 
 sourceCompatibility = 1.5
+
 
 repositories {
     mavenCentral()
@@ -37,7 +52,7 @@ jar {
     manifest {
         attributes  'Application-Name': 'Scalr SSH Launcher',
                     'Implementation-Title': 'SSH Launcher',
-                    'Implementation-Version': appVersion,
+                    'Implementation-Version': version,
                     'Main-Class': 'com.scalr.ssh.launcher.SSHLauncherCLI',
                     'Permissions': 'all-permissions',
                     'Codebase': codebase,
@@ -49,10 +64,10 @@ jar {
     }
 }
 
-shadowJar {
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
-}
+
+/***************
+ * Mac OSX App *
+ ***************/
 
 macAppBundle {
     mainClassName = "com.scalr.ssh.launcher.mac.SSHLauncherMacApp"
@@ -65,7 +80,8 @@ macAppBundle {
                             CFBundleURLName: "com.scalr.bar",
                             CFBundleURLSchemes: ["scalr+bar",]
                     ],
-            ]
+            ],
+            NSHighResolutionCapable: true
     ]
     certIdentity = signingKeyIdentity
 }
@@ -82,6 +98,27 @@ copyStub.finalizedBy overwriteStub
 createApp.finalizedBy codeSign
 
 
+/***************
+ * Windows App *
+ ***************/
+
+// Use shadow jar in Launch4j
+task copyL4jLib (overwrite: true, dependsOn: shadowJar)
+
+launch4j {
+    mainClassName = "com.scalr.ssh.launcher.SSHLauncherCLI"
+    jar = shadowJar.getArchivePath()
+    headerType = 'console'  // TEMPORARY
+}
+
+/**********
+ * Applet *
+ **********/
+
+shadowJar {
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+}
 
 task signedJar (type: Task, dependsOn: shadowJar) << {
     ant.signjar(
@@ -102,7 +139,7 @@ task createTestFile(type: Copy, dependsOn: shadowJar) {
     destinationDir projectDir
     include "applet.html.template"
     rename { file -> "applet.html" }
-    expand(jarPath: projectDir.toPath().relativize(shadowJar.getArchivePath().toPath()), version: appVersion)
+    expand(jarPath: projectDir.toPath().relativize(shadowJar.getArchivePath().toPath()), version: version)
 }
 
 task fullBuild(type: Task, dependsOn: [signedJar, createTestFile])
