@@ -10,8 +10,10 @@ import java.awt.event.ActionListener;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
-public class AppFrame extends JFrame {
-    private final static Logger logger = Logger.getLogger(AppFrame.class.getName());
+public class MacAppFrame extends JFrame {
+    private final Logger logger = Logger.getLogger(MacAppFrame.class.getName());
+
+    private final MacAppController appController;
 
     private static String getAppName () {
         return "Scalr SSH Launcher";
@@ -21,8 +23,12 @@ public class AppFrame extends JFrame {
         return SSHLauncher.class.getPackage().getImplementationVersion();
     }
 
-    public AppFrame() {
+    public MacAppFrame(final MacAppController appController) {
         super(String.format("%s %s", getAppName(), getAppVersion()));
+
+        this.appController = appController;
+
+        // Frame initialization
         setSize(800, 600);
 
         // Close Behavior
@@ -40,13 +46,14 @@ public class AppFrame extends JFrame {
         rootLogger.addHandler(textAreaHandler);
 
         // Quit Button
-        JButton button = new JButton("Quit");
+        final MacAppFrame _this = this;
+        JButton button = new JButton("Launch New Session");
         button.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        dispose();
+                        _this.appController.launchSshSession();
                     }
                 });
             }
@@ -64,7 +71,7 @@ public class AppFrame extends JFrame {
         buttonContainer.add(new Label());
 
         add(jScrollPane, BorderLayout.CENTER);
-        //add(buttonContainer, BorderLayout.PAGE_END);
+        add(buttonContainer, BorderLayout.PAGE_END);
 
         // Info
         logger.info(String.format("Loaded: %s %s", getAppName(), getAppVersion()));

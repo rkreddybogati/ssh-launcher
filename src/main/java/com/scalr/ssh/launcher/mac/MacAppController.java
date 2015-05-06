@@ -1,28 +1,22 @@
 package com.scalr.ssh.launcher.mac;
 
-import com.apple.eawt.AppEvent;
-import com.apple.eawt.OpenURIHandler;
 import com.scalr.ssh.launcher.SSHLauncher;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
-import com.scalr.ssh.launcher.configuration.UriLauncherConfiguration;
 import com.scalr.ssh.logging.Loggable;
 
-import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class OpenURIObserver extends Loggable implements OpenURIHandler {
 
-    @Override
-    public void openURI(AppEvent.OpenURIEvent openURIEvent) {
-        URI uri = openURIEvent.getURI();
-        UriLauncherConfiguration launcherConfiguration = new UriLauncherConfiguration(uri);
+public class MacAppController extends Loggable {
+    private LauncherConfigurationInterface launcherConfiguration;
 
-        launchSshSession(launcherConfiguration);
-        updateAppSettings(launcherConfiguration);
-    }
+    public void launchSshSession() {
+        if (launcherConfiguration == null) {
+            getLogger().warning("You must launch at least one SSH session to be able to use this feature.");
+            return;
+        }
 
-    private void launchSshSession (LauncherConfigurationInterface launcherConfiguration) {
         final SSHLauncher sshLauncher = new SSHLauncher(launcherConfiguration);
         new Thread() {
             public void run() {
@@ -31,8 +25,16 @@ public class OpenURIObserver extends Loggable implements OpenURIHandler {
         }.start();
     }
 
-    private void updateAppSettings (LauncherConfigurationInterface launcherConfiguration) {
+    public void launchSshSession (LauncherConfigurationInterface launcherConfiguration) {
+        updateAppSettings(launcherConfiguration);
+        launchSshSession();
+    }
 
+    private void updateAppSettings (LauncherConfigurationInterface launcherConfiguration) {
+        // Update to the last configuration
+        this.launcherConfiguration = launcherConfiguration;
+
+        // Update log settings
         String requestedLogLevel = launcherConfiguration.getOption(SSHLauncher.logLevelParam);
         Level logLevel;
 
@@ -50,6 +52,5 @@ public class OpenURIObserver extends Loggable implements OpenURIHandler {
             Logger launcherLogger = Logger.getLogger("com.scalr.ssh");
             launcherLogger.setLevel(logLevel);
         }
-
     }
 }

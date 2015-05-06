@@ -8,11 +8,12 @@ import javax.swing.*;
 public class SSHLauncherMacApp {
 
     public static void main(String args[]) {
-        final AppFrame appFrame = new AppFrame();
-        final OpenURIObserver appObserver = new OpenURIObserver();
+        final MacAppController appController = new MacAppController();
 
+        final MacAppFrame appFrame = new MacAppFrame(appController);
+        final MacAppOpenURIObserver appObserver = new MacAppOpenURIObserver(appController);
 
-        // Launch app
+        // Launch app frame
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
