@@ -1,7 +1,5 @@
-package com.scalr.ssh.launcher.mac;
+package com.scalr.ssh.launcher.gui.generic;
 
-import com.apple.eawt.Application;
-import com.apple.eawt.QuitStrategy;
 import com.scalr.ssh.launcher.SSHLauncher;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
 import com.scalr.ssh.logging.Loggable;
@@ -12,23 +10,20 @@ import java.util.logging.Logger;
 
 
 
-public class MacAppController extends Loggable {
+public class AppController extends Loggable {
     private LauncherConfigurationInterface launcherConfiguration;
-    private ArrayList<MacAppViewInterface> views;
+    private ArrayList<AppViewInterface> views;
 
-    public MacAppController () {
-        views = new ArrayList<MacAppViewInterface>();
+    public AppController() {
+        views = new ArrayList<AppViewInterface>();
     }
 
-    public void registerView (MacAppViewInterface view) {
+    public void registerView (AppViewInterface view) {
         views.add(view);
     }
 
     public void start () {
-        Application.getApplication().disableSuddenTermination();
-        Application.getApplication().setQuitStrategy(QuitStrategy.CLOSE_ALL_WINDOWS);
-
-        for (MacAppViewInterface view: views) {
+        for (AppViewInterface view: views) {
             view.appStarts();
         }
     }
@@ -58,7 +53,7 @@ public class MacAppController extends Loggable {
         this.launcherConfiguration = launcherConfiguration;
 
         // Notify views
-        for (MacAppViewInterface view: views) {
+        for (AppViewInterface view: views) {
             view.appSettingsChanged(this.launcherConfiguration);
         }
 

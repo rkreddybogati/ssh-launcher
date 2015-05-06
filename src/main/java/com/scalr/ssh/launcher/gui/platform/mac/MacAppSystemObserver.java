@@ -1,18 +1,20 @@
-package com.scalr.ssh.launcher.mac;
+package com.scalr.ssh.launcher.gui.platform.mac;
 
 import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
 import com.apple.eawt.OpenURIHandler;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
 import com.scalr.ssh.launcher.configuration.UriLauncherConfiguration;
+import com.scalr.ssh.launcher.gui.generic.AppController;
+import com.scalr.ssh.launcher.gui.generic.AppViewInterface;
 import com.scalr.ssh.logging.Loggable;
 
 import java.net.URI;
 
-public class MacAppSystemObserver extends Loggable implements OpenURIHandler, MacAppViewInterface {
-    private final MacAppController appController;
+public class MacAppSystemObserver extends Loggable implements OpenURIHandler, AppViewInterface {
+    private final AppController appController;
 
-    public MacAppSystemObserver(MacAppController appController) {
+    public MacAppSystemObserver(AppController appController) {
         this.appController = appController;
     }
 

@@ -1,13 +1,13 @@
-package com.scalr.ssh.launcher.mac;
+package com.scalr.ssh.launcher.gui.generic;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class WindowCloseListener extends WindowAdapter {
+public class AppFrameCloseListener extends WindowAdapter {
     private Frame frame;
 
-    public WindowCloseListener(Frame frame) {
+    public AppFrameCloseListener(Frame frame) {
         this.frame = frame;
     }
 

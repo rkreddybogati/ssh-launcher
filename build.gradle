@@ -70,7 +70,7 @@ jar {
  ***************/
 
 macAppBundle {
-    mainClassName = "com.scalr.ssh.launcher.mac.SSHLauncherMacApp"
+    mainClassName = "com.scalr.ssh.launcher.gui.platform.mac.MacSshLauncherApp"
     appStyle = 'Oracle'
     icon = 'assets/scalr.icns'
     bundleJRE = false
@@ -102,13 +102,13 @@ createApp.finalizedBy codeSign
  * Windows App *
  ***************/
 
-// Use shadow jar in Launch4j
-task copyL4jLib (overwrite: true, dependsOn: shadowJar)
+// Use shadow jar in Launch4j. We cannot redefine when overriding.
+copyL4jLib.finalizedBy shadowJar
 
 launch4j {
-    mainClassName = "com.scalr.ssh.launcher.SSHLauncherCLI"
+    mainClassName = "com.scalr.ssh.launcher.gui.platform.win.WinSshLauncherApp"
     jar = shadowJar.getArchivePath()
-    headerType = 'console'  // TEMPORARY
+    headerType = 'gui'
 }
 
 /**********
@@ -118,6 +118,7 @@ launch4j {
 shadowJar {
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
+    exclude 'com/scalr/ssh/launcher/mac'  // TODO - This is a hack that just relies on the fact that we don't use this in the mac app.
 }
 
 task signedJar (type: Task, dependsOn: shadowJar) << {

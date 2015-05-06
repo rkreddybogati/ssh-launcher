@@ -1,4 +1,4 @@
-package com.scalr.ssh.launcher.mac;
+package com.scalr.ssh.launcher.gui.generic;
 
 import com.scalr.ssh.launcher.SSHLauncher;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
@@ -11,9 +11,9 @@ import java.awt.event.ActionListener;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
-public class MacAppFrameView extends JFrame implements MacAppViewInterface {
-    private final Logger logger = Logger.getLogger(MacAppFrameView.class.getName());
-    private final MacAppController appController;
+public class AppFrameView extends JFrame implements AppViewInterface {
+    private final Logger logger = Logger.getLogger(AppFrameView.class.getName());
+    private final AppController appController;
     private final JButton launchButton ;
 
     private static String getAppName () {
@@ -24,7 +24,7 @@ public class MacAppFrameView extends JFrame implements MacAppViewInterface {
         return SSHLauncher.class.getPackage().getImplementationVersion();
     }
 
-    public MacAppFrameView(final MacAppController appController) {
+    public AppFrameView(final AppController appController) {
         super(String.format("%s %s", getAppName(), getAppVersion()));
 
         this.appController = appController;
@@ -33,7 +33,7 @@ public class MacAppFrameView extends JFrame implements MacAppViewInterface {
         setSize(800, 600);
 
         // Close Behavior
-        addWindowListener(new WindowCloseListener(this));
+        addWindowListener(new AppFrameCloseListener(this));
 
         // Log window
         JTextArea textArea  = new JTextArea();
@@ -47,7 +47,7 @@ public class MacAppFrameView extends JFrame implements MacAppViewInterface {
         rootLogger.addHandler(textAreaHandler);
 
         // Quit Button
-        final MacAppFrameView _this = this;
+        final AppFrameView _this = this;
         launchButton = new JButton("Launch New Session");
         launchButton.setEnabled(Boolean.FALSE);
         launchButton.addActionListener(new ActionListener() {
@@ -96,7 +96,7 @@ public class MacAppFrameView extends JFrame implements MacAppViewInterface {
 
     @Override
     public void appStarts() {
-        final MacAppFrameView _this = this;
+        final AppFrameView _this = this;
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
