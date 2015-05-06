@@ -67,6 +67,7 @@ macAppBundle {
                     ],
             ]
     ]
+    certIdentity = signingKeyIdentity
 }
 
 task overwriteStub(type: Copy) {
