@@ -1,6 +1,7 @@
 package com.scalr.ssh.launcher.mac;
 
 import com.scalr.ssh.launcher.SSHLauncher;
+import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
 import com.scalr.ssh.logging.JTextAreaHandler;
 
 import javax.swing.*;
@@ -10,10 +11,10 @@ import java.awt.event.ActionListener;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
-public class MacAppFrame extends JFrame {
-    private final Logger logger = Logger.getLogger(MacAppFrame.class.getName());
-
+public class MacAppFrameView extends JFrame implements MacAppViewInterface {
+    private final Logger logger = Logger.getLogger(MacAppFrameView.class.getName());
     private final MacAppController appController;
+    private final JButton launchButton ;
 
     private static String getAppName () {
         return "Scalr SSH Launcher";
@@ -23,7 +24,7 @@ public class MacAppFrame extends JFrame {
         return SSHLauncher.class.getPackage().getImplementationVersion();
     }
 
-    public MacAppFrame(final MacAppController appController) {
+    public MacAppFrameView(final MacAppController appController) {
         super(String.format("%s %s", getAppName(), getAppVersion()));
 
         this.appController = appController;
@@ -46,9 +47,10 @@ public class MacAppFrame extends JFrame {
         rootLogger.addHandler(textAreaHandler);
 
         // Quit Button
-        final MacAppFrame _this = this;
-        JButton button = new JButton("Launch New Session");
-        button.addActionListener( new ActionListener() {
+        final MacAppFrameView _this = this;
+        launchButton = new JButton("Launch New Session");
+        launchButton.setEnabled(Boolean.FALSE);
+        launchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -67,7 +69,7 @@ public class MacAppFrame extends JFrame {
         buttonContainer.setPreferredSize(new Dimension(0, 50));
 
         buttonContainer.add(new Label());
-        buttonContainer.add(button);
+        buttonContainer.add(launchButton);
         buttonContainer.add(new Label());
 
         add(jScrollPane, BorderLayout.CENTER);
@@ -77,4 +79,31 @@ public class MacAppFrame extends JFrame {
         logger.info(String.format("Loaded: %s %s", getAppName(), getAppVersion()));
     }
 
+    @Override
+    public void appSettingsChanged(LauncherConfigurationInterface launcherConfiguration) {
+        if (launcherConfiguration == null) {
+            return;
+        }
+
+        String host = launcherConfiguration.getOption(SSHLauncher.hostParam);  // TODO - Better isolation.
+        if (host == null) {
+            return;
+        }
+
+        launchButton.setEnabled(Boolean.TRUE);
+        launchButton.setText(String.format("Launch New Session: %s", host));
+    }
+
+    @Override
+    public void appStarts() {
+        final MacAppFrameView _this = this;
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                _this.setVisible(true);
+
+            }
+        });
+    }
 }

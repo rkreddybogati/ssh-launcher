@@ -24,7 +24,7 @@ public class SSHLauncher {
     private final static Logger logger = Logger.getLogger(SSHLauncher.class.getName());
     private LauncherConfigurationInterface launcherConfiguration;
 
-    private final static String hostParam                   = "host";
+    public  final static String hostParam                   = "host";
     private final static String userParam                   = "user";
     private final static String portParam                   = "port";
     private final static String openSSHKeyParam             = "sshPrivateKey";

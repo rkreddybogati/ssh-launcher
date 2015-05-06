@@ -1,28 +1,18 @@
 package com.scalr.ssh.launcher.mac;
 
-import com.apple.eawt.Application;
-
-import javax.swing.*;
-
 
 public class SSHLauncherMacApp {
 
     public static void main(String args[]) {
         final MacAppController appController = new MacAppController();
 
-        final MacAppFrame appFrame = new MacAppFrame(appController);
-        final MacAppOpenURIObserver appObserver = new MacAppOpenURIObserver(appController);
+        // Connect the bits
+        final MacAppFrameView appFrame = new MacAppFrameView(appController);
+        final MacAppSystemObserver appObserver = new MacAppSystemObserver(appController);
 
-        // Launch app frame
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                appFrame.setVisible(true);
-            }
-        });
+        appController.registerView(appFrame);
+        appController.registerView(appObserver);
 
-        // Set Mac OS Settings
-        Application.getApplication().setOpenURIHandler(appObserver);
-        Application.getApplication().enableSuddenTermination();
+        appController.start();
     }
 }
