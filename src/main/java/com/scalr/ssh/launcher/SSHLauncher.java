@@ -43,8 +43,8 @@ public class SSHLauncher {
     }
 
     private void logGenericError(Throwable e) {
-        logger.log(Level.INFO, ExceptionUtils.getMessage(e));
-        logger.log(Level.FINEST, ExceptionUtils.getStackTrace(e));
+        logger.log(Level.WARNING, ExceptionUtils.getMessage(e));
+        logger.log(Level.FINE, ExceptionUtils.getStackTrace(e));
     }
 
     private void logProviderError(SSHProvider sshProvider, Throwable e) {
@@ -59,7 +59,7 @@ public class SSHLauncher {
             logger.info(String.format("Creating SSH Session with provider: '%s'", sshProvider.getClass().getCanonicalName()));
             try {
                 String[] sshCommand = sshProvider.getSSHCommand();
-                logger.info(String.format("Launcher Command Line: '%s'", StringUtils.join(sshCommand, " ")));
+                logger.log(Level.FINE, String.format("Launcher Command Line: '%s'", StringUtils.join(sshCommand, " ")));
 
                 ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
                 pb.start();
