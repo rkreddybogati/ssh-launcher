@@ -1,6 +1,8 @@
 # Name of the resulting file
 OutFile "Scalr-SSH-Launcher-Installer.exe"
 
+RequestExecutionLevel admin
+
 SetCompressor /SOLID lzma
 ShowInstDetails show
 ShowUninstDetails show
@@ -55,21 +57,21 @@ SectionEnd
 
 ;--------------------------------
 ;Functions
- 
+
 ; Default the URI handler checkboxes if Scalr is the current handler or if there is no handler
- 
+
 ; Check if Scalr is the current handler
 ; Returns a boolean on the stack
 !macro CheckIfScalrIsCurrentURIHandlerMacro UN
 Function ${UN}CheckIfScalrIsCurrentURIHandler
   Exch $R0
   ClearErrors
- 
+
   ReadRegStr $R0 HKCR "$R0\shell\Open\command" ""
   IfErrors 0 +3
     IntOp $R0 0 + 0
     Goto done
- 
+
   !ifdef __UNINSTALL__
   ${un.WordFind} "$R0" "ssh-launcher.exe" "E+1{" $R0
   !else
@@ -78,35 +80,35 @@ Function ${UN}CheckIfScalrIsCurrentURIHandler
   IntOp $R0 0 + 1
   IfErrors 0 +2
     IntOp $R0 0 + 0
- 
+
   done:
   Exch $R0
 FunctionEnd
 !macroend
 !insertmacro CheckIfScalrIsCurrentURIHandlerMacro ""
 !insertmacro CheckIfScalrIsCurrentURIHandlerMacro "un."
- 
+
 ; If Scalr is the current URI handler for the specified protocol, remove it.
 Function un.UnregisterURIHandler
   Exch $R0
   Push $R1
- 
+
   Push $R0
   Call un.CheckIfScalrIsCurrentURIHandler
   Pop $R1
- 
+
   ; If Scalr isn't the current handler, leave it as-is
   IntCmp $R1 0 done
- 
+
   ;Unregister the URI handler
   DetailPrint "Unregistering $R0 URI Handler"
   DeleteRegKey HKCR "$R0"
- 
+
   done:
   Pop $R1
   Pop $R0
 FunctionEnd
- 
+
 Function RegisterURIHandler
   Exch $R0
   DetailPrint "Registering $R0 URI Handler"
@@ -119,4 +121,3 @@ Function RegisterURIHandler
   WriteRegStr HKCR "$R0\shell\Open\command" "" '$INSTDIR\ssh-launcher.exe "%1"'
   Pop $R0
 FunctionEnd
- 
