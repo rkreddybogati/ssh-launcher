@@ -1,8 +1,6 @@
 package com.scalr.ssh.launcher.gui.platform.mac;
 
-import com.apple.eawt.AppEvent;
-import com.apple.eawt.Application;
-import com.apple.eawt.OpenURIHandler;
+import com.apple.eawt.*;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
 import com.scalr.ssh.launcher.configuration.UriLauncherConfiguration;
 import com.scalr.ssh.launcher.gui.generic.AppController;
@@ -11,7 +9,7 @@ import com.scalr.ssh.logging.Loggable;
 
 import java.net.URI;
 
-public class MacAppSystemObserver extends Loggable implements OpenURIHandler, AppViewInterface {
+public class MacAppSystemObserver extends Loggable implements OpenURIHandler, QuitHandler, AppViewInterface {
     private final AppController appController;
 
     public MacAppSystemObserver(AppController appController) {
@@ -26,12 +24,29 @@ public class MacAppSystemObserver extends Loggable implements OpenURIHandler, Ap
     }
 
     @Override
+    public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
+        quitResponse.cancelQuit();
+        appController.exit();
+    }
+
+    @Override
     public void appSettingsChanged(LauncherConfigurationInterface launcherConfiguration) {
 
     }
 
     @Override
     public void appStarts() {
-        Application.getApplication().setOpenURIHandler(this);
+        setHandlers(this);
+    }
+
+    @Override
+    public void appExits() {
+        setHandlers(null);
+    }
+
+
+    private void setHandlers (MacAppSystemObserver to) {
+        Application.getApplication().setOpenURIHandler(to);
+        Application.getApplication().setQuitHandler(to);
     }
 }

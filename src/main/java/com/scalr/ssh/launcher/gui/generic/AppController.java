@@ -28,6 +28,12 @@ public class AppController extends Loggable {
         }
     }
 
+    public void exit () {
+        for (AppViewInterface view: views) {
+            view.appExits();
+        }
+    }
+
     public void launchSshSession() {
         if (launcherConfiguration == null) {
             getLogger().warning("You must launch at least one SSH session to be able to use this feature.");

@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
@@ -32,8 +34,9 @@ public class AppFrameView extends JFrame implements AppViewInterface {
         // Frame initialization
         setSize(800, 600);
 
-        // Close Behavior
-        addWindowListener(new AppFrameCloseListener(this));
+        // Close Behavior (we want to control it)
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new AppFrameCloseListener(this.appController));
 
         // Log window
         JTextArea textArea  = new JTextArea();
@@ -105,5 +108,31 @@ public class AppFrameView extends JFrame implements AppViewInterface {
 
             }
         });
+    }
+
+    @Override
+    public void appExits() {
+        final AppFrameView _this = this;
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                _this.dispose();
+
+            }
+        });
+    }
+
+    public class AppFrameCloseListener extends WindowAdapter {
+        private AppController appController;
+
+        public AppFrameCloseListener(AppController appController) {
+            this.appController = appController;
+        }
+
+        public void windowClosing(WindowEvent e){
+            // Notify the controller that the user wants to exit.
+            appController.exit();
+        }
     }
 }
