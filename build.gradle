@@ -38,6 +38,8 @@ dependencies {
     compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
     compile group: 'com.googlecode.plist', name: 'dd-plist', version: '1.8'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1'
+    compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.4.1'
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'9.2.10.v20150310'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile group: 'commons-io', name: 'commons-io', version: '2.4'
@@ -70,7 +72,7 @@ jar {
  ***************/
 
 macAppBundle {
-    mainClassName = "com.scalr.ssh.launcher.gui.platform.mac.MacSshLauncherApp"
+    mainClassName = "com.scalr.ssh.launcher.gui.platform.mac.MacAppLauncher"
     appStyle = 'Oracle'
     icon = 'assets/scalr.icns'
     bundleJRE = false
@@ -106,7 +108,7 @@ createApp.finalizedBy codeSign
 copyL4jLib.finalizedBy shadowJar
 
 launch4j {
-    mainClassName = "com.scalr.ssh.launcher.gui.platform.win.WinSshLauncherApp"
+    mainClassName = "com.scalr.ssh.launcher.gui.platform.win.WinAppLauncher"
     jar = shadowJar.getArchivePath()
     headerType = 'gui'
 }

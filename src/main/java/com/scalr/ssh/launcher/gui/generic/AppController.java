@@ -34,7 +34,7 @@ public class AppController extends Loggable {
         }
     }
 
-    public void launchSshSession() {
+    public synchronized void launchSshSession() {
         if (launcherConfiguration == null) {
             getLogger().warning("You must launch at least one SSH session to be able to use this feature.");
             return;
@@ -48,13 +48,13 @@ public class AppController extends Loggable {
         }.start();
     }
 
-    public void launchSshSession (LauncherConfigurationInterface launcherConfiguration) {
+    public synchronized void launchSshSession (LauncherConfigurationInterface launcherConfiguration) {
         updateAppSettings(launcherConfiguration);
         launchSshSession();
     }
 
 
-    private void updateAppSettings (LauncherConfigurationInterface launcherConfiguration) {
+    private synchronized void updateAppSettings (LauncherConfigurationInterface launcherConfiguration) {
         // Update to the last configuration
         this.launcherConfiguration = launcherConfiguration;
 
