@@ -4,6 +4,8 @@ import com.scalr.ssh.launcher.gui.generic.AppController;
 import com.scalr.ssh.launcher.gui.generic.AppFrameView;
 import com.scalr.ssh.launcher.gui.platform.BaseAppLauncher;
 
+import java.io.IOException;
+
 
 public class WinAppLauncher extends BaseAppLauncher {
 

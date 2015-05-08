@@ -1,15 +1,19 @@
 package com.scalr.ssh.filesystem;
 
 import com.scalr.ssh.logging.Loggable;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.channels.FileLock;
+import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 
 public class FileSystemManager extends Loggable {
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
+
     public File getTemporaryFile (final String prefix, final String suffix) throws IOException {
         File tempFile = AccessController.doPrivileged(
                 new PrivilegedAction<File>() {
@@ -75,5 +79,41 @@ public class FileSystemManager extends Loggable {
                 return System.getProperty("user.home");
             }
         });
+    }
+
+    public void writeFile (File file, String contents) throws IOException {
+        // TODO - AccessController
+        FileOutputStream out = new FileOutputStream(file);
+
+        try {
+            Writer writer = new OutputStreamWriter(out, UTF_8);
+            writer.write(contents);
+            writer.flush();
+        } finally {
+            out.close();
+        }
+    }
+
+    public String readFile (File file) throws IOException {
+        // TODO - AccessController
+        FileInputStream in = new FileInputStream(file);
+
+        try {
+            Reader reader = new InputStreamReader(in, UTF_8);
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(reader, writer);
+            return writer.toString();
+        } finally {
+            in.close();
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void chmod600 (File file) {
+        file.setReadable(false, false);
+        file.setReadable(true, true);
+        file.setWritable(false, false);
+        file.setWritable(true, true);
+        file.setExecutable(false, false);
     }
 }

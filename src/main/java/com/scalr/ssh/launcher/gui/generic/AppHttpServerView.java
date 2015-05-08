@@ -3,6 +3,7 @@ package com.scalr.ssh.launcher.gui.generic;
 import com.scalr.ssh.launcher.configuration.LauncherConfigurationInterface;
 import com.scalr.ssh.launcher.configuration.NameValuePairLauncherConfiguration;
 import com.scalr.ssh.logging.Loggable;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.eclipse.jetty.server.Request;
@@ -13,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.BindException;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -61,9 +63,11 @@ public class AppHttpServerView extends Loggable implements AppViewInterface {
             try {
                 server.start();
                 server.join();
+            } catch (BindException e) {
+                getLogger().warning("Unable to start local listener. Remoting may not work.");
             } catch (Exception e) {
-                // TODO
-                e.printStackTrace();
+                getLogger().warning(String.format("Unknown exception starting local listener: %s\n%s",
+                        ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e)));
             }
         }
     }
@@ -91,8 +95,8 @@ public class AppHttpServerView extends Loggable implements AppViewInterface {
                 try {
                     server.stop();
                 } catch (Exception e) {
-                    getLogger().warning("Web server failed to exit!");
-                    e.printStackTrace();
+                    getLogger().warning(String.format("Local listener failed to exit: %s\n%s",
+                            ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e)));
                 }
             }
         }.start();
