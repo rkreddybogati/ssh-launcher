@@ -13,8 +13,10 @@ import java.util.logging.Logger;
 public class AppController extends Loggable {
     private LauncherConfigurationInterface launcherConfiguration;
     private ArrayList<AppViewInterface> views;
+    private String authorityKey;
 
-    public AppController() {
+    public AppController(String authorityKey) {
+        this.authorityKey = authorityKey;
         views = new ArrayList<AppViewInterface>();
     }
 
@@ -32,6 +34,10 @@ public class AppController extends Loggable {
         for (AppViewInterface view: views) {
             view.appExits();
         }
+    }
+
+    public String getAuthorityKey () {
+        return authorityKey;
     }
 
     public synchronized void launchSshSession() {

@@ -27,19 +27,22 @@ public class AppHttpServerView extends Loggable implements AppViewInterface {
                 HttpServletResponse response ) throws IOException,
                 ServletException
         {
+            // Check authority first
+            if (!target.equals(String.format("/%s/", appController.getAuthorityKey()))) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            } else {
+                // For some unexplainable reason, request.getParameter('host') *sometimes* returns null. The same goes for
+                // request.getParameterMap(). To work around this issue, we parse the querystring ourselves. This is
+                // downright idiotic, but it does the job for now, until we replace Jetty with something else or get to the
+                // bottom of the problem (this issue is a bit difficult to debug considering that you don't know it has
+                // failed until parsing is complete, at which point it's to late to debug parsing).
+                List<NameValuePair> parameters = URLEncodedUtils.parse(request.getQueryString(), Charset.forName("UTF-8"));
 
-            // For some unexplainable reason, request.getParameter('host') *sometimes* returns null. The same goes for
-            // request.getParameterMap(). To work around this issue, we parse the querystring ourselves. This is
-            // downright idiotic, but it does the job for now, until we replace Jetty with something else or get to the
-            // bottom of the problem (this issue is a bit difficult to debug considering that you don't know it has
-            // failed until parsing is complete, at which point it's to late to debug parsing).
-            List<NameValuePair> parameters = URLEncodedUtils.parse(request.getQueryString(), Charset.forName("UTF-8"));
+                response.setStatus(HttpServletResponse.SC_OK);
 
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().println("ACCEPTED");   // Make this a constant
-
-            NameValuePairLauncherConfiguration launcherConfiguration = new NameValuePairLauncherConfiguration(parameters);
-            appController.launchSshSession(launcherConfiguration);
+                NameValuePairLauncherConfiguration launcherConfiguration = new NameValuePairLauncherConfiguration(parameters);
+                appController.launchSshSession(launcherConfiguration);
+            }
 
             baseRequest.setHandled(true);
         }
