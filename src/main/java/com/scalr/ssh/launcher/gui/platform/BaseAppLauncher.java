@@ -90,9 +90,9 @@ abstract public class BaseAppLauncher extends Loggable {
     abstract protected void specializeAppController(AppController appController);
 
     protected void doMain() {
-        if(!processArgsRemotely())
+        if(!processArgsRemotely()) {
             processArgsLocally();
-
+        }
     }
 
 }

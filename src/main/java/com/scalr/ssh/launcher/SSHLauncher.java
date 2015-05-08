@@ -63,6 +63,7 @@ public class SSHLauncher {
 
                 ProcessBuilder pb = new ProcessBuilder().inheritIO().command(sshCommand);
                 pb.start();
+                // TODO - Check out? When possible?
 
                 logger.info("Started SSH process.");
                 return;
